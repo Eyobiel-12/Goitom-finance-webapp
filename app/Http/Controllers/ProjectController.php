@@ -43,6 +43,13 @@ final class ProjectController extends Controller
             ->with('success', 'Project toegevoegd.');
     }
 
+    public function show(Project $project): View
+    {
+        $project->load(['client', 'invoices', 'invoices.items']);
+        
+        return view('app.projects.show', compact('project'));
+    }
+
     public function edit(Project $project): View
     {
         $clients = Client::forOrganization(auth()->user()->organization_id)
