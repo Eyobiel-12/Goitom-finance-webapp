@@ -137,8 +137,16 @@ final class InvoiceService
             'sent_at' => now(),
         ]);
 
-        // TODO: Implement email sending
-        // Mail::to($invoice->client->email)->send(new InvoiceMail($invoice));
+        // Send email with PDF attachment
+        try {
+            \Illuminate\Support\Facades\Mail::to($invoice->client->email)
+                ->send(new \App\Mail\InvoiceSentMail($invoice));
+            
+            \Illuminate\Support\Facades\Log::info("Invoice email sent to {$invoice->client->email} for invoice {$invoice->number}");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send invoice email to {$invoice->client->email}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
