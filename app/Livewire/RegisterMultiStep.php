@@ -128,9 +128,10 @@ class RegisterMultiStep extends Component
         // Send welcome email
         try {
             Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
+            \Illuminate\Support\Facades\Log::info('Welcome email sent to: ' . $user->email);
         } catch (\Exception $e) {
             // Log error but don't block registration
-            \Illuminate\Support\Facades\Log::error('Failed to send welcome email: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to send welcome email to ' . $user->email . ': ' . $e->getMessage());
         }
 
         // Log user in
