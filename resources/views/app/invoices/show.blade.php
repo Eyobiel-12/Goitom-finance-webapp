@@ -145,30 +145,71 @@
                             </button>
                             
                             <!-- Email Preview Modal -->
-                            <div id="emailPreviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                                <div class="bg-gray-900 rounded-xl border border-yellow-400 p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h3 class="text-xl font-bold text-yellow-400">E-mail Preview</h3>
-                                        <button onclick="closeEmailPreview()" class="text-gray-400 hover:text-white">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div id="emailPreviewModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl border-2 border-yellow-400/50 shadow-2xl shadow-yellow-400/20 p-8 max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+                                    <!-- Header -->
+                                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-yellow-400/20">
+                                        <div>
+                                            <h3 class="text-2xl font-bold text-yellow-400 mb-1">📧 E-mail Preview</h3>
+                                            <p class="text-sm text-gray-400">Bekijk hoe de e-mail er uit zal zien</p>
+                                        </div>
+                                        <button onclick="closeEmailPreview()" class="p-2 hover:bg-gray-800 rounded-lg transition-colors group">
+                                            <svg class="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
                                         </button>
                                     </div>
                                     
-                                    <!-- Email Preview Content -->
-                                    <div class="border border-gray-700 rounded-lg p-4 bg-white">
-                                        @include('emails.invoice-sent', ['invoice' => $invoice, 'organization' => $invoice->organization])
+                                    <!-- Recipient Info -->
+                                    <div class="mb-6 p-4 bg-yellow-400/10 border border-yellow-400/30 rounded-xl">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <div>
+                                                <p class="text-sm text-gray-400">Naar:</p>
+                                                <p class="text-white font-semibold">{{ $invoice->client->name }} &lt;{{ $invoice->client->email }}&gt;</p>
+                                            </div>
+                                        </div>
                                     </div>
                                     
-                                    <div class="mt-4 flex space-x-3">
+                                    <!-- Email Preview Content -->
+                                    <div class="border-2 border-gray-700 rounded-xl overflow-hidden shadow-xl">
+                                        <div class="bg-gradient-to-br from-yellow-400/5 to-yellow-600/5 p-2 border-b border-gray-700">
+                                            <p class="text-xs text-gray-500 text-center">E-mail Preview</p>
+                                        </div>
+                                        <div class="p-6 bg-white">
+                                            @include('emails.invoice-sent', ['invoice' => $invoice, 'organization' => $invoice->organization])
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- PDF Attachment Preview -->
+                                    @if($invoice->pdf_path)
+                                    <div class="mt-6 p-4 bg-blue-400/10 border border-blue-400/30 rounded-xl">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <div>
+                                                <p class="text-sm text-gray-400">PDF Bijlage:</p>
+                                                <p class="text-white font-semibold">Factuur-{{ $invoice->number }}.pdf</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="mt-8 flex space-x-3">
                                         <form action="{{ route('app.invoices.send', $invoice) }}" method="POST" class="flex-1">
                                             @csrf
-                                            <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg font-semibold text-gray-900 hover:shadow-lg shadow-yellow-400/30 transition-all">
-                                                Versturen
+                                            <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl font-bold text-gray-900 hover:shadow-2xl shadow-yellow-400/30 hover:shadow-yellow-400/50 transition-all flex items-center justify-center space-x-2">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                                </svg>
+                                                <span>Versturen</span>
                                             </button>
                                         </form>
-                                        <button onclick="closeEmailPreview()" class="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg font-semibold text-white hover:bg-gray-700 transition-all">
+                                        <button onclick="closeEmailPreview()" class="px-6 py-4 bg-gray-800 border border-gray-700 rounded-xl font-semibold text-white hover:bg-gray-700 transition-all">
                                             Annuleren
                                         </button>
                                     </div>
