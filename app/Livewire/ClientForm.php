@@ -101,7 +101,11 @@ final class ClientForm extends Component
 
     public function save()
     {
-        $this->validate();
+        // Validate only required fields for all steps
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+        ]);
 
         $address = [
             'street' => $this->street,
