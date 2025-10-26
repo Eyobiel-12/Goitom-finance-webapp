@@ -111,10 +111,20 @@ class RegisterMultiStep extends Component
         ]);
 
         // Create organization for the user
+        $baseSlug = \Illuminate\Support\Str::slug($user->name . '-business');
+        $slug = $baseSlug;
+        $counter = 1;
+        
+        // Ensure unique slug
+        while (\App\Models\Organization::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        
         $organization = \App\Models\Organization::create([
             'owner_user_id' => $user->id,
             'name' => $user->name . ' Business',
-            'slug' => \Illuminate\Support\Str::slug($user->name . '-business'),
+            'slug' => $slug,
             'country' => 'NL',
             'currency' => 'EUR',
             'default_vat_rate' => 21.00,
