@@ -200,7 +200,9 @@
                 <img src="{{ public_path('storage/' . $invoice->organization->logo_path) }}" alt="Logo" style="height: 60px; margin-bottom: 10px;">
                 @endif
                 <h1>{{ $invoice->organization->name }}</h1>
-                <p class="tagline">{{ $invoice->organization->tagline ?? 'Professionele dienstverlening' }}</p>
+                @if($invoice->organization->tagline)
+                <p class="tagline">{{ $invoice->organization->tagline }}</p>
+                @endif
             </div>
             <div class="invoice-header">
                 <h2>Factuur</h2>
