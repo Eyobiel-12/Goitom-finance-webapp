@@ -107,8 +107,13 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header with Logo -->
         <div class="header">
+            @if($organization->logo_path)
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="{{ Storage::url($organization->logo_path) }}" alt="{{ $organization->name }}" style="max-height: 60px; object-fit: contain;">
+            </div>
+            @endif
             <h1>📄 Uw Factuur</h1>
         </div>
         
