@@ -50,8 +50,12 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
             return response()->file(storage_path('app/public/' . $invoice->pdf_path));
         }
         
+        // Determine which template to use
+        $template = $invoice->organization->settings['pdf_template'] ?? 'modern';
+        $viewName = "invoices.pdf-{$template}";
+        
         // Generate PDF on the fly using DomPDF
-        $pdf = \PDF::loadView('invoices.pdf', compact('invoice'))
+        $pdf = \PDF::loadView($viewName, compact('invoice'))
             ->setPaper('a4', 'portrait')
             ->setOption('enable-local-file-access', true);
         
