@@ -18,46 +18,54 @@
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Factuur Template</label>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="relative">
-                        <input type="radio" wire:model="template" value="modern" id="template-modern" class="peer sr-only">
-                        <label for="template-modern" class="flex flex-col p-4 bg-gray-800 border-2 border-gray-700 rounded-xl cursor-pointer hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" wire:model.live="template" value="modern" class="sr-only peer">
+                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 peer-checked:border-yellow-400"></div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                </div>
                                 <span class="font-semibold text-white">Modern</span>
                             </div>
                             <p class="text-sm text-gray-400 ml-9">Groen thema, professioneel</p>
-                        </label>
-                    </div>
-                    <div class="relative">
-                        <input type="radio" wire:model="template" value="minimal" id="template-minimal" class="peer sr-only">
-                        <label for="template-minimal" class="flex flex-col p-4 bg-gray-800 border-2 border-gray-700 rounded-xl cursor-pointer hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" wire:model.live="template" value="minimal" class="sr-only peer">
+                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 peer-checked:border-yellow-400"></div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                </div>
                                 <span class="font-semibold text-white">Minimaal</span>
                             </div>
                             <p class="text-sm text-gray-400 ml-9">Simpel en clean</p>
-                        </label>
-                    </div>
-                    <div class="relative">
-                        <input type="radio" wire:model="template" value="classic" id="template-classic" class="peer sr-only">
-                        <label for="template-classic" class="flex flex-col p-4 bg-gray-800 border-2 border-gray-700 rounded-xl cursor-pointer hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" wire:model.live="template" value="classic" class="sr-only peer">
+                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 peer-checked:border-yellow-400"></div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                </div>
                                 <span class="font-semibold text-white">Klassiek</span>
                             </div>
                             <p class="text-sm text-gray-400 ml-9">Traditionele stijl</p>
-                        </label>
-                    </div>
-                    <div class="relative">
-                        <input type="radio" wire:model="template" value="bold" id="template-bold" class="peer sr-only">
-                        <label for="template-bold" class="flex flex-col p-4 bg-gray-800 border-2 border-gray-700 rounded-xl cursor-pointer hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" wire:model.live="template" value="bold" class="sr-only peer">
+                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 peer-checked:border-yellow-400"></div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                </div>
                                 <span class="font-semibold text-white">Bold</span>
                             </div>
                             <p class="text-sm text-gray-400 ml-9">Opvallende kleuren</p>
-                        </label>
-                    </div>
+                        </div>
+                    </label>
                 </div>
             </div>
 
