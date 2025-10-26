@@ -51,10 +51,8 @@
         // Check if server wants to show tour (newly registered user)
         const showTour = @json(session('show_onboarding_tour', false));
         
-        // Only show tour for newly registered users or if explicitly reset
-        if ((!hasSeenTour || showTour) || localStorage.getItem('show_onboarding_tour') === 'true') {
-            localStorage.removeItem('show_onboarding_tour'); // Clear flag
-            
+        // Only show tour if user hasn't seen it before AND server wants to show it
+        if (!hasSeenTour && showTour) {
             // Delay to ensure page is fully loaded
             setTimeout(function() {
                 // Start the onboarding tour
@@ -64,20 +62,24 @@
                     showBullets: true,
                     showStepNumbers: false,
                     exitOnOverlayClick: true,
-                    disableInteraction: true,
+                    disableInteraction: false,
+                    dontShowAgain: true,
                 })
                 .setOptions({
                     steps: [
                         {
-                            intro: "👋 Welkom bij Goitom Finance!<br><br>Laten we je door de app leiden."
+                            intro: "👋 Welkom bij Goitom Finance!<br><br>Je bent succesvol geregistreerd. Laten we je door de app leiden."
                         },
                         {
                             element: '#sidebar-navigation',
-                            intro: "Hier vind je alle hoofdsecties:<br><br>📊 Dashboard<br>👥 Klanten<br>💼 Projecten<br>📄 Facturen"
+                            intro: "Hier vind je alle hoofdsecties:<br><br>📊 Dashboard - Overzicht van je financiën<br>👥 Klanten - Beheer je klanten<br>💼 Projecten - Houd je projecten bij<br>📄 Facturen - Genereer professionele facturen<br><br>Klik op een sectie om te starten."
                         },
                         {
                             element: '#user-section',
-                            intro: "Klik hier voor je profielinstellingen en om uit te loggen."
+                            intro: "Klik hier voor je profielinstellingen, organisatie-instellingen en om uit te loggen.<br><br>Je kunt hier ook je profiel en wachtwoord aanpassen."
+                        },
+                        {
+                            intro: "✅ Je bent nu klaar om te starten!<br><br>💡 Tip: Start met het toevoegen van je eerste klant en maak vervolgens een project aan.<br><br>Veel succes met Goitom Finance!"
                         },
                     ]
                 })
@@ -88,7 +90,7 @@
                     localStorage.setItem('goitom_onboarding_complete', 'true');
                 })
                 .start();
-            }, 500); // 500ms delay
+            }, 1000); // 1 second delay to ensure everything is loaded
         }
     });
 </script>
