@@ -1,17 +1,7 @@
-<div class="py-8 px-6">
-    <div class="max-w-7xl mx-auto">
+<div>
+    <div>
         <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center space-x-3">
-                <a href="{{ route('app.invoices.index') }}" class="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                </a>
-                <h2 class="text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-                    {{ $invoice ? 'Factuur Bewerken' : 'Nieuwe Factuur' }}
-                </h2>
-            </div>
+        <div class="flex items-center justify-end mb-6">
             @if($invoice)
             <div class="flex space-x-3">
                 <button wire:click="generatePdf" 
@@ -189,4 +179,3 @@
             </div>
         </form>
     </div>
-</div>
