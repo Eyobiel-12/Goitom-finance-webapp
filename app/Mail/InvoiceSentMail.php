@@ -46,8 +46,16 @@ final class InvoiceSentMail extends Mailable
             return [];
         }
 
+        // Check if file exists
+        $fullPath = storage_path('app/public/' . $this->invoice->pdf_path);
+        
+        if (!file_exists($fullPath)) {
+            \Illuminate\Support\Facades\Log::error("PDF file not found: {$fullPath}");
+            return [];
+        }
+
         return [
-            Attachment::fromStorage('public/' . $this->invoice->pdf_path)
+            Attachment::fromPath($fullPath)
                 ->as('Factuur-' . $this->invoice->number . '.pdf')
                 ->withMime('application/pdf'),
         ];
