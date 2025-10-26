@@ -14,52 +14,50 @@ final class InvoiceService
     /**
      * Create a new invoice with items
      */
-    public function createInvoice(array $data): Invoice
+    public function create(int $organizationId, array $data): Invoice
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($organizationId, $data) {
             $invoice = Invoice::create([
-                'organization_id' => $data['organization_id'],
+                'organization_id' => $organizationId,
                 'client_id' => $data['client_id'],
                 'project_id' => $data['project_id'] ?? null,
-                'number' => $data['number'],
+                'number' => $this->generateInvoiceNumber($organizationId),
                 'issue_date' => $data['issue_date'],
                 'due_date' => $data['due_date'] ?? null,
-                'currency' => $data['currency'] ?? 'EUR',
-                'status' => $data['status'] ?? 'draft',
+                'currency' => 'EUR',
+                'status' => 'draft',
                 'notes' => $data['notes'] ?? null,
             ]);
 
             // Create invoice items
-            if (isset($data['items']) && is_array($data['items'])) {
-                $subtotal = 0;
-                $vatTotal = 0;
+            $subtotal = 0;
+            $vatTotal = 0;
 
-                foreach ($data['items'] as $itemData) {
-                    $netAmount = $itemData['qty'] * $itemData['unit_price'];
-                    $vatAmount = $netAmount * ($itemData['vat_rate'] / 100);
-                    $lineTotal = $netAmount + $vatAmount;
+            foreach ($data['items'] as $itemData) {
+                $netAmount = $itemData['qty'] * $itemData['unit_price'];
+                $vatAmount = $netAmount * ($itemData['vat_rate'] / 100);
+                $lineTotal = $netAmount + $vatAmount;
 
-                    $invoice->items()->create([
-                        'description' => $itemData['description'],
-                        'qty' => $itemData['qty'],
-                        'unit_price' => $itemData['unit_price'],
-                        'vat_rate' => $itemData['vat_rate'],
-                        'net_amount' => $netAmount,
-                        'vat_amount' => $vatAmount,
-                        'line_total' => $lineTotal,
-                    ]);
-
-                    $subtotal += $netAmount;
-                    $vatTotal += $vatAmount;
-                }
-
-                // Update invoice totals
-                $invoice->update([
-                    'subtotal' => $subtotal,
-                    'vat_total' => $vatTotal,
-                    'total' => $subtotal + $vatTotal,
+                $invoice->items()->create([
+                    'description' => $itemData['description'],
+                    'qty' => $itemData['qty'],
+                    'unit_price' => $itemData['unit_price'],
+                    'vat_rate' => $itemData['vat_rate'],
+                    'net_amount' => $netAmount,
+                    'vat_amount' => $vatAmount,
+                    'line_total' => $lineTotal,
                 ]);
+
+                $subtotal += $netAmount;
+                $vatTotal += $vatAmount;
             }
+
+            // Update invoice totals
+            $invoice->update([
+                'subtotal' => $subtotal,
+                'vat_total' => $vatTotal,
+                'total' => $subtotal + $vatTotal,
+            ]);
 
             return $invoice->fresh(['items']);
         });
@@ -68,52 +66,48 @@ final class InvoiceService
     /**
      * Update an existing invoice
      */
-    public function updateInvoice(Invoice $invoice, array $data): Invoice
+    public function update(Invoice $invoice, array $data): Invoice
     {
         return DB::transaction(function () use ($invoice, $data) {
             $invoice->update([
-                'client_id' => $data['client_id'] ?? $invoice->client_id,
-                'project_id' => $data['project_id'] ?? $invoice->project_id,
-                'issue_date' => $data['issue_date'] ?? $invoice->issue_date,
-                'due_date' => $data['due_date'] ?? $invoice->due_date,
-                'currency' => $data['currency'] ?? $invoice->currency,
-                'status' => $data['status'] ?? $invoice->status,
-                'notes' => $data['notes'] ?? $invoice->notes,
+                'client_id' => $data['client_id'],
+                'project_id' => $data['project_id'] ?? null,
+                'issue_date' => $data['issue_date'],
+                'due_date' => $data['due_date'],
+                'notes' => $data['notes'] ?? null,
             ]);
 
-            // Update items if provided
-            if (isset($data['items']) && is_array($data['items'])) {
-                $invoice->items()->delete();
+            // Delete old items and create new ones
+            $invoice->items()->delete();
 
-                $subtotal = 0;
-                $vatTotal = 0;
+            $subtotal = 0;
+            $vatTotal = 0;
 
-                foreach ($data['items'] as $itemData) {
-                    $netAmount = $itemData['qty'] * $itemData['unit_price'];
-                    $vatAmount = $netAmount * ($itemData['vat_rate'] / 100);
-                    $lineTotal = $netAmount + $vatAmount;
+            foreach ($data['items'] as $itemData) {
+                $netAmount = $itemData['qty'] * $itemData['unit_price'];
+                $vatAmount = $netAmount * ($itemData['vat_rate'] / 100);
+                $lineTotal = $netAmount + $vatAmount;
 
-                    $invoice->items()->create([
-                        'description' => $itemData['description'],
-                        'qty' => $itemData['qty'],
-                        'unit_price' => $itemData['unit_price'],
-                        'vat_rate' => $itemData['vat_rate'],
-                        'net_amount' => $netAmount,
-                        'vat_amount' => $vatAmount,
-                        'line_total' => $lineTotal,
-                    ]);
-
-                    $subtotal += $netAmount;
-                    $vatTotal += $vatAmount;
-                }
-
-                // Update invoice totals
-                $invoice->update([
-                    'subtotal' => $subtotal,
-                    'vat_total' => $vatTotal,
-                    'total' => $subtotal + $vatTotal,
+                $invoice->items()->create([
+                    'description' => $itemData['description'],
+                    'qty' => $itemData['qty'],
+                    'unit_price' => $itemData['unit_price'],
+                    'vat_rate' => $itemData['vat_rate'],
+                    'net_amount' => $netAmount,
+                    'vat_amount' => $vatAmount,
+                    'line_total' => $lineTotal,
                 ]);
+
+                $subtotal += $netAmount;
+                $vatTotal += $vatAmount;
             }
+
+            // Update invoice totals
+            $invoice->update([
+                'subtotal' => $subtotal,
+                'vat_total' => $vatTotal,
+                'total' => $subtotal + $vatTotal,
+            ]);
 
             return $invoice->fresh(['items']);
         });
