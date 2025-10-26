@@ -18,7 +18,7 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 30px;
+            padding: 30px 25px;
         }
         .header {
             display: flex;
@@ -27,71 +27,71 @@
             margin-bottom: 20px;
         }
         .company-info h1 {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .company-info .tagline {
             color: #6b7280;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 400;
         }
         .invoice-header {
             text-align: right;
         }
         .invoice-header h2 {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             color: #10b981;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             letter-spacing: -0.5px;
         }
         .invoice-number {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
             color: #1a1a1a;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .status-badge {
             display: inline-block;
-            padding: 8px 20px;
+            padding: 6px 16px;
             background: #10b981;
             color: white;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 5px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
         .divider {
-            height: 3px;
+            height: 2px;
             background: #10b981;
-            margin: 30px 0;
+            margin: 15px 0;
         }
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 15px 0;
+            gap: 10px;
+            margin: 10px 0;
         }
         .info-box {
             background: #f9fafb;
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: 6px;
+            padding: 12px;
         }
         .info-box h3 {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #10b981;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .info-box p {
-            font-size: 13px;
+            font-size: 11px;
             color: #1a1a1a;
-            margin-bottom: 4px;
-            line-height: 1.6;
+            margin-bottom: 3px;
+            line-height: 1.5;
         }
         .info-box p:last-child {
             margin-bottom: 0;
@@ -99,17 +99,17 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 12px 0;
         }
         thead {
             background: #10b981;
         }
         th {
-            padding: 10px 12px;
+            padding: 8px 10px;
             text-align: left;
             color: white;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 0.3px;
         }
         th:first-child {
@@ -120,10 +120,10 @@
             text-align: right;
         }
         td {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e5e7eb;
             color: #1a1a1a;
-            font-size: 13px;
+            font-size: 11px;
         }
         td:last-child {
             text-align: right;
@@ -131,25 +131,25 @@
         }
         .totals-box {
             background: #f9fafb;
-            border-radius: 8px;
-            padding: 16px;
-            width: 280px;
+            border-radius: 6px;
+            padding: 12px;
+            width: 260px;
             margin-left: auto;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         .totals-box h3 {
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 700;
             color: #10b981;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 4px;
+            font-size: 11px;
             color: #1a1a1a;
         }
         .total-row:last-child {
@@ -158,15 +158,15 @@
         .total-divider {
             height: 2px;
             background: #10b981;
-            margin: 20px 0;
+            margin: 10px 0;
         }
         .final-total {
             display: flex;
             justify-content: space-between;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: #10b981;
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .notes {
             margin-top: 20px;
@@ -300,9 +300,9 @@
         @endif
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb;">
-            <p style="color: #1a1a1a; font-weight: 600; font-size: 14px; margin-bottom: 4px;">{{ $invoice->organization->name }}</p>
-            <p style="color: #6b7280; font-size: 12px;">Bedankt voor je vertrouwen!</p>
+        <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px solid #e5e7eb;">
+            <p style="color: #1a1a1a; font-weight: 600; font-size: 12px; margin-bottom: 2px;">{{ $invoice->organization->name }}</p>
+            <p style="color: #6b7280; font-size: 10px;">Bedankt voor je vertrouwen!</p>
         </div>
     </div>
 </body>
