@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Mail\OtpVerificationMail;
+use App\Mail\PasswordResetOtpMail;
 use App\Models\EmailVerification;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
@@ -54,7 +54,7 @@ class ForgotPasswordMultiStep extends Component
         ]);
 
         // Send email
-        Mail::to($this->email)->send(new OtpVerificationMail($otpCode));
+        Mail::to($this->email)->send(new PasswordResetOtpMail($otpCode));
 
         session()->flash('message', 'Een 6-cijferige verificatiecode is naar je e-mailadres gestuurd.');
     }
