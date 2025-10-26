@@ -15,6 +15,10 @@
             color: #1a1a1a;
             line-height: 1.6;
         }
+        
+        :root {
+            --primary-color: {{ $invoice->organization->settings['pdf_primary_color'] ?? '#10b981' }};
+        }
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -43,7 +47,7 @@
         .invoice-header h2 {
             font-size: 28px;
             font-weight: 700;
-            color: #10b981;
+            color: var(--primary-color);
             margin-bottom: 6px;
             letter-spacing: -0.5px;
         }
@@ -56,7 +60,7 @@
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
-            background: #10b981;
+            background: var(--primary-color);
             color: white;
             border-radius: 5px;
             font-size: 11px;
@@ -65,7 +69,7 @@
         }
         .divider {
             height: 2px;
-            background: #10b981;
+            background: var(--primary-color);
             margin: 15px 0;
         }
         .info-grid {
@@ -82,7 +86,7 @@
         .info-box h3 {
             font-size: 11px;
             font-weight: 700;
-            color: #10b981;
+            color: var(--primary-color);
             margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -102,7 +106,7 @@
             margin: 12px 0;
         }
         thead {
-            background: #10b981;
+            background: var(--primary-color);
         }
         th {
             padding: 8px 10px;
@@ -140,7 +144,7 @@
         .totals-box h3 {
             font-size: 11px;
             font-weight: 700;
-            color: #10b981;
+            color: var(--primary-color);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -157,7 +161,7 @@
         }
         .total-divider {
             height: 2px;
-            background: #10b981;
+            background: var(--primary-color);
             margin: 10px 0;
         }
         .final-total {
@@ -165,7 +169,7 @@
             justify-content: space-between;
             font-size: 13px;
             font-weight: 700;
-            color: #10b981;
+            color: var(--primary-color);
             margin-top: 6px;
         }
         .notes {
@@ -173,7 +177,7 @@
             padding: 12px;
             background: #f9fafb;
             border-radius: 8px;
-            border-left: 4px solid #10b981;
+            border-left: 4px solid var(--primary-color);
         }
         .notes p {
             color: #6b7280;
@@ -187,8 +191,11 @@
         <!-- Header -->
         <div class="header">
             <div class="company-info">
+                @if($invoice->organization->settings['pdf_show_logo'] ?? true && $invoice->organization->logo_path)
+                <img src="{{ public_path('storage/' . $invoice->organization->logo_path) }}" alt="Logo" style="height: 60px; margin-bottom: 8px;">
+                @endif
                 <h1>{{ $invoice->organization->name }}</h1>
-                <p class="tagline">Professionele Financiële Diensten</p>
+                <p class="tagline">{{ $invoice->organization->tagline ?? 'Professionele Financiële Diensten' }}</p>
             </div>
             <div class="invoice-header">
                 <h2>FACTUUR</h2>
@@ -302,7 +309,7 @@
         <!-- Footer -->
         <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px solid #e5e7eb;">
             <p style="color: #1a1a1a; font-weight: 600; font-size: 12px; margin-bottom: 2px;">{{ $invoice->organization->name }}</p>
-            <p style="color: #6b7280; font-size: 10px;">Bedankt voor je vertrouwen!</p>
+            <p style="color: #6b7280; font-size: 10px;">{{ $invoice->organization->settings['pdf_footer_message'] ?? 'Bedankt voor je vertrouwen!' }}</p>
         </div>
     </div>
 </body>
