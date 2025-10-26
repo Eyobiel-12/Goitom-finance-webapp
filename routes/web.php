@@ -57,6 +57,11 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
         
         return $pdf->download('factuur-' . $invoice->number . '.pdf');
     })->name('invoices.pdf');
+    
+    // PDF Settings
+    Route::get('/pdf-settings', function () {
+        return view('app.pdf-settings');
+    })->name('pdf-settings');
 });
 
 // Legacy dashboard route for Breeze compatibility

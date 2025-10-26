@@ -17,6 +17,7 @@ final class Organization extends Model
     protected $fillable = [
         'owner_user_id',
         'name',
+        'tagline',
         'slug',
         'vat_number',
         'country',
