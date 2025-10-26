@@ -41,13 +41,28 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
     Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
     
-    // PDF route
+    // PDF route - Generate on the fly
     Route::get('/invoices/{invoice}/pdf', function ($invoice) {
-        $invoice = \App\Models\Invoice::findOrFail($invoice);
-        if (!$invoice->pdf_path) {
-            abort(404, 'PDF niet gevonden');
+        $invoice = \App\Models\Invoice::with(['client', 'organization', 'items'])->findOrFail($invoice);
+        
+        // If PDF exists, return it
+        if ($invoice->pdf_path && file_exists(storage_path('app/public/' . $invoice->pdf_path))) {
+            return response()->file(storage_path('app/public/' . $invoice->pdf_path));
         }
-        return response()->file(storage_path('app/public/' . $invoice->pdf_path));
+        
+        // Generate PDF on the fly
+        $html = view('invoices.pdf', compact('invoice'))->render();
+        
+        // Use Browsershot to generate PDF
+        $pdf = \Spatie\Browsershot\Browsershot::html($html)
+            ->format('A4')
+            ->margins(10, 10, 10, 10)
+            ->showBackground()
+            ->pdf();
+        
+        return response($pdf, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="factuur-' . $invoice->number . '.pdf"');
     })->name('invoices.pdf');
 });
 
