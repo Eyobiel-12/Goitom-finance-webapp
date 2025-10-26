@@ -1,39 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factuur {{ $invoice->number }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941e 100%);
+            padding: 30px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .content {
+            padding: 30px;
+            color: #e0e0e0;
+        }
+        .greeting {
+            color: #d4af37;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .intro-text {
+            color: #cccccc;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .invoice-box {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .invoice-box strong {
+            color: #d4af37;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .invoice-details {
+            color: #ffffff;
+            margin-top: 15px;
+            line-height: 2;
+        }
+        .invoice-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .amount-highlight {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+            margin: 10px 0;
+        }
+        .notes-box {
+            background: #2a2a2a;
+            border-left: 4px solid #d4af37;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .notes-box strong {
+            color: #d4af37;
+        }
+        .footer {
+            background: #0f0f0f;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #333333;
+        }
+        .footer p {
+            color: #666666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .signature {
+            color: #d4af37;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #d4af37;">Beste {{ $invoice->client->contact_name ?? $invoice->client->name }},</h1>
-        
-        <p>Hartelijk dank voor uw vertrouwen in {{ $organization->name }}.</p>
-        
-        <p>Bij deze ontvangt u factuur <strong>{{ $invoice->number }}</strong> voor een totaalbedrag van 
-        <strong>€{{ number_format($invoice->total, 2, ',', '.') }}</strong>.</p>
-        
-        <div style="background: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
-            <strong>Factuurdetails:</strong><br>
-            Factuurnummer: {{ $invoice->number }}<br>
-            Factuurdatum: {{ $invoice->issue_date->format('d-m-Y') }}<br>
-            Vervaldatum: {{ $invoice->due_date?->format('d-m-Y') ?? 'Niet gespecificeerd' }}<br>
-            Bedrag (incl. BTW): €{{ number_format($invoice->total, 2, ',', '.') }}
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📄 Uw Factuur</h1>
         </div>
         
-        <p>De bijgevoegde PDF kunt u downloaden en bewaren voor uw administratie.</p>
-        
-        @if($invoice->notes)
-        <div style="margin-top: 20px;">
-            <strong>Opmerkingen:</strong>
-            <p>{{ $invoice->notes }}</p>
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">Beste {{ $invoice->client->contact_name ?? $invoice->client->name }},</div>
+            
+            <div class="intro-text">
+                Hartelijk dank voor uw vertrouwen in <strong style="color: #d4af37;">{{ $organization->name }}</strong>.
+            </div>
+            
+            <div class="intro-text">
+                Bij deze ontvangt u factuur <span class="invoice-number">{{ $invoice->number }}</span> 
+                voor een totaalbedrag van <span class="amount-highlight">€{{ number_format($invoice->total, 2, ',', '.') }}</span>.
+            </div>
+            
+            <!-- Invoice Details Box -->
+            <div class="invoice-box">
+                <strong>📋 Factuurdetails</strong>
+                <div class="invoice-details">
+                    <div><strong>Factuurnummer:</strong> {{ $invoice->number }}</div>
+                    <div><strong>Factuurdatum:</strong> {{ $invoice->issue_date->format('d-m-Y') }}</div>
+                    <div><strong>Vervaldatum:</strong> {{ $invoice->due_date?->format('d-m-Y') ?? 'Niet gespecificeerd' }}</div>
+                    <div><strong>Bedrag (incl. BTW):</strong> €{{ number_format($invoice->total, 2, ',', '.') }}</div>
+                </div>
+            </div>
+            
+            <div class="intro-text">
+                De bijgevoegde PDF kunt u downloaden en bewaren voor uw administratie.
+            </div>
+            
+            @if($invoice->notes)
+            <div class="notes-box">
+                <strong>📝 Opmerkingen:</strong>
+                <p style="color: #cccccc; margin: 10px 0 0 0;">{{ $invoice->notes }}</p>
+            </div>
+            @endif
+            
+            <div class="intro-text">
+                Met vriendelijke groet,<br>
+                <span class="signature">{{ $organization->name }}</span>
+            </div>
         </div>
-        @endif
         
-        <p style="margin-top: 30px;">
-            Met vriendelijke groet,<br>
-            {{ $organization->name }}
-        </p>
+        <!-- Footer -->
+        <div class="footer">
+            <p>© {{ date('Y') }} {{ $organization->name }}</p>
+            <p>Professionele Financiële Diensten</p>
+        </div>
     </div>
 </body>
 </html>

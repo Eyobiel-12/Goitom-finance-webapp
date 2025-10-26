@@ -123,12 +123,23 @@
 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-400 mb-3">Logo uploaden</label>
-                    @if($organization->logo_path)
+                    
+                    <!-- Logo Preview -->
+                    @if($logo)
+                    <div class="mb-4 p-4 bg-gray-800 border border-yellow-400 rounded-xl">
+                        <img src="{{ $logo->temporaryUrl() }}" alt="Logo preview" class="h-20 object-contain mx-auto">
+                        <p class="text-sm text-gray-400 text-center mt-2">Logo preview</p>
+                    </div>
+                    @elseif($organization->logo_path)
                     <div class="mb-4 p-4 bg-gray-800 border border-gray-700 rounded-xl">
-                        <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-16 object-contain">
+                        <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-20 object-contain mx-auto">
+                        <p class="text-sm text-gray-400 text-center mt-2">Huidige logo</p>
                     </div>
                     @endif
-                    <input type="file" wire:model="logo" accept="image/*" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-gray-900 hover:file:bg-yellow-500 transition-all">
+                    
+                    <input type="file" wire:model="logo" accept="image/png,image/jpeg,image/jpg" 
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-gray-900 hover:file:bg-yellow-500 transition-all">
+                    <p class="text-xs text-gray-500 mt-2">PNG of JPG, maximaal 2MB</p>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-xl">
@@ -147,26 +158,73 @@
             <!-- Step 4: Review -->
             @if($current_step === 4)
             <div class="mb-6">
-                <h3 class="text-xl font-bold text-white mb-4">Review</h3>
+                <h3 class="text-xl font-bold text-white mb-4">Review & Preview</h3>
                 
-                <div class="p-6 bg-white rounded-xl shadow-lg" style="max-width: 800px;">
-                    <div class="flex items-start justify-between mb-4 pb-4 border-b" style="border-color: {{ $primary_color }}">
+                <div class="p-8 bg-white rounded-xl shadow-lg" style="max-width: 800px; margin: 0 auto;">
+                    <!-- Header with Logo -->
+                    <div class="flex items-start justify-between mb-6 pb-4 border-b-2" style="border-color: {{ $primary_color }};">
                         <div>
-                            <h4 class="text-xl font-bold" style="color: #1a1a1a;">{{ $company_name }}</h4>
+                            @if($show_logo && ($logo || $organization->logo_path))
+                            <div class="mb-3">
+                                @if($logo)
+                                <img src="{{ $logo->temporaryUrl() }}" alt="Logo" class="h-12 object-contain">
+                                @elseif($organization->logo_path)
+                                <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-12 object-contain">
+                                @endif
+                            </div>
+                            @endif
+                            <h4 class="text-2xl font-bold" style="color: #1a1a1a;">{{ $company_name }}</h4>
                             @if($tagline)
-                            <p class="text-sm text-gray-600">{{ $tagline }}</p>
+                            <p class="text-sm text-gray-600 mt-1">{{ $tagline }}</p>
                             @endif
                         </div>
                         <div class="text-right">
-                            <h2 class="text-2xl font-bold" style="color: {{ $primary_color }};">FACTUUR</h2>
-                            <p class="text-sm text-gray-600">#INV-2024-001</p>
-                            @if($show_logo && $organization->logo_path)
-                            <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-8 mt-2 mx-auto">
-                            @endif
+                            <h2 class="text-3xl font-bold" style="color: {{ $primary_color }};">FACTUUR</h2>
+                            <p class="text-sm text-gray-600 mt-1">#INV-2024-001</p>
                         </div>
                     </div>
-                    <div class="text-center text-sm text-gray-500 mt-4">
-                        {{ $footer_message }}
+                    
+                    <!-- Invoice Info -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase mb-1">Factuurdatum</p>
+                            <p class="text-gray-900 font-semibold">{{ date('d-m-Y') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase mb-1">Vervaldatum</p>
+                            <p class="text-gray-900 font-semibold">{{ date('d-m-Y', strtotime('+30 days')) }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Items table -->
+                    <div class="border-t border-b pt-4 pb-4 mb-6">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2" style="color: {{ $primary_color }};">Beschrijving</th>
+                                    <th class="text-right py-2" style="color: {{ $primary_color }};">Bedrag</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="py-2">Voorbeeld dienst</td>
+                                    <td class="text-right py-2">€1.000,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-right mb-6">
+                        <p class="text-gray-600 mb-1">Subtotaal: <span class="font-semibold">€1.000,00</span></p>
+                        <p class="text-gray-600 mb-1">BTW (21%): <span class="font-semibold">€210,00</span></p>
+                        <p class="text-xl font-bold" style="color: {{ $primary_color }};">Totaal: €1.210,00</p>
+                    </div>
+                    
+                    <!-- Footer Message -->
+                    <div class="border-t pt-4">
+                        <p class="text-center text-sm" style="color: {{ $primary_color }};">
+                            {{ $footer_message }}
+                        </p>
                     </div>
                 </div>
 
