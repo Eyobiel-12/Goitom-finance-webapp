@@ -18,6 +18,7 @@
         
         :root {
             --primary-color: {{ $invoice->organization->settings['pdf_primary_color'] ?? '#10b981' }};
+            --template: {{ $invoice->organization->settings['pdf_template'] ?? 'modern' }};
         }
         .container {
             max-width: 1000px;
