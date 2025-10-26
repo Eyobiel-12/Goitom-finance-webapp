@@ -18,11 +18,11 @@
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Factuur Template</label>
                 <div class="grid grid-cols-2 gap-4">
-                    <label class="relative cursor-pointer">
-                        <input type="radio" wire:model="template" value="modern" wire:change="$refresh" class="sr-only">
-                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'modern' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
+                    <label class="relative cursor-pointer block">
+                        <input type="radio" wire:model="template" value="modern" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'modern' ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                <div class="w-6 h-6 rounded-full border-2 {{ $template === 'modern' ? 'border-yellow-400' : 'border-gray-600' }} mr-3 flex items-center justify-center">
                                     @if($template === 'modern')
                                     <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
                                     @endif
@@ -32,11 +32,11 @@
                             <p class="text-sm text-gray-400 ml-9">Groen thema, professioneel</p>
                         </div>
                     </label>
-                    <label class="relative cursor-pointer">
-                        <input type="radio" wire:model="template" value="minimal" wire:change="$refresh" class="sr-only">
-                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'minimal' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
+                    <label class="relative cursor-pointer block">
+                        <input type="radio" wire:model="template" value="minimal" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'minimal' ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                <div class="w-6 h-6 rounded-full border-2 {{ $template === 'minimal' ? 'border-yellow-400' : 'border-gray-600' }} mr-3 flex items-center justify-center">
                                     @if($template === 'minimal')
                                     <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
                                     @endif
@@ -46,11 +46,11 @@
                             <p class="text-sm text-gray-400 ml-9">Simpel en clean</p>
                         </div>
                     </label>
-                    <label class="relative cursor-pointer">
-                        <input type="radio" wire:model="template" value="classic" wire:change="$refresh" class="sr-only">
-                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'classic' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
+                    <label class="relative cursor-pointer block">
+                        <input type="radio" wire:model="template" value="classic" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'classic' ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                <div class="w-6 h-6 rounded-full border-2 {{ $template === 'classic' ? 'border-yellow-400' : 'border-gray-600' }} mr-3 flex items-center justify-center">
                                     @if($template === 'classic')
                                     <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
                                     @endif
@@ -60,11 +60,11 @@
                             <p class="text-sm text-gray-400 ml-9">Traditionele stijl</p>
                         </div>
                     </label>
-                    <label class="relative cursor-pointer">
-                        <input type="radio" wire:model="template" value="bold" wire:change="$refresh" class="sr-only">
-                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'bold' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
+                    <label class="relative cursor-pointer block">
+                        <input type="radio" wire:model="template" value="bold" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'bold' ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
+                                <div class="w-6 h-6 rounded-full border-2 {{ $template === 'bold' ? 'border-yellow-400' : 'border-gray-600' }} mr-3 flex items-center justify-center">
                                     @if($template === 'bold')
                                     <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
                                     @endif
