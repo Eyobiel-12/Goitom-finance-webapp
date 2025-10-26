@@ -45,11 +45,7 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::get('/invoices/{invoice}/pdf', function ($invoice) {
         $invoice = \App\Models\Invoice::with(['client', 'organization', 'items'])->findOrFail($invoice);
         
-        // If PDF exists, return it
-        if ($invoice->pdf_path && file_exists(storage_path('app/public/' . $invoice->pdf_path))) {
-            return response()->file(storage_path('app/public/' . $invoice->pdf_path));
-        }
-        
+        // Always generate fresh PDF with current template
         // Determine which template to use
         $template = $invoice->organization->settings['pdf_template'] ?? 'classic';
         $viewName = "invoices.pdf-{$template}";
