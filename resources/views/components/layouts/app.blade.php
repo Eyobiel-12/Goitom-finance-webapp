@@ -30,7 +30,7 @@
             </div>
 
             <!-- Navigation -->
-            <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
+            <nav id="sidebar-navigation" class="p-4 space-y-2 flex-1 overflow-y-auto">
                 <a href="{{ route('app.dashboard') }}" 
                    class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 {{ request()->routeIs('app.dashboard') ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/10 text-yellow-400 border border-yellow-400/30 shadow-lg shadow-yellow-400/10' : 'text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-2 hover:shadow-lg' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
 
             <!-- User Section -->
             <div class="p-4 border-t border-yellow-400/20 bg-gray-950/50 backdrop-blur-xl">
-                <div class="flex items-center space-x-3 mb-3 p-3 rounded-xl bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-800 hover:border-yellow-400/20 transition-all">
+                <div id="user-section" class="flex items-center space-x-3 mb-3 p-3 rounded-xl bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-800 hover:border-yellow-400/20 transition-all">
                     <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-lg shadow-yellow-400/20">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
@@ -130,5 +130,8 @@
     </style>
 
     @livewireScripts
+    
+    <!-- Onboarding Tour -->
+    @livewire('onboarding-tour')
 </body>
 </html>
