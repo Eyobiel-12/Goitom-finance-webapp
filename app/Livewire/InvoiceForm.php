@@ -42,10 +42,10 @@ final class InvoiceForm extends Component
         'status' => 'required|in:draft,sent,paid,overdue,cancelled',
         'notes' => 'nullable|string',
         'items' => 'required|array|min:1',
-        'items.*.description' => 'required|string',
-        'items.*.qty' => 'required|numeric|min:0.01',
-        'items.*.unit_price' => 'required|numeric|min:0',
-        'items.*.vat_rate' => 'required|numeric|min:0|max:100',
+        'items.*.description' => 'nullable|string',
+        'items.*.qty' => 'nullable|numeric|min:0',
+        'items.*.unit_price' => 'nullable|numeric|min:0',
+        'items.*.vat_rate' => 'nullable|numeric|min:0|max:100',
     ];
 
     public function mount($invoice = null)
