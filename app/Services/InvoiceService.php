@@ -171,6 +171,22 @@ final class InvoiceService
     }
 
     /**
+     * Create a new invoice (alias for create)
+     */
+    public function createInvoice(array $data): Invoice
+    {
+        return $this->create($data['organization_id'], $data);
+    }
+
+    /**
+     * Update an existing invoice (alias for update)
+     */
+    public function updateInvoice(Invoice $invoice, array $data): Invoice
+    {
+        return $this->update($invoice, $data);
+    }
+
+    /**
      * Generate next invoice number
      */
     public function generateInvoiceNumber(int $organizationId): string
