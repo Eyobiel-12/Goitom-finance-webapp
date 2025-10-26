@@ -18,13 +18,13 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 60px 40px;
+            padding: 40px 30px;
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
         .company-info h1 {
             font-size: 32px;
@@ -71,27 +71,27 @@
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 30px 0;
+            gap: 15px;
+            margin: 15px 0;
         }
         .info-box {
             background: #f9fafb;
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 8px;
+            padding: 16px;
         }
         .info-box h3 {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             color: #10b981;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .info-box p {
-            font-size: 15px;
+            font-size: 13px;
             color: #1a1a1a;
-            margin-bottom: 6px;
-            line-height: 1.8;
+            margin-bottom: 4px;
+            line-height: 1.6;
         }
         .info-box p:last-child {
             margin-bottom: 0;
@@ -99,17 +99,17 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 40px 0;
+            margin: 20px 0;
         }
         thead {
             background: #10b981;
         }
         th {
-            padding: 16px 20px;
+            padding: 10px 12px;
             text-align: left;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             letter-spacing: 0.3px;
         }
         th:first-child {
@@ -120,10 +120,10 @@
             text-align: right;
         }
         td {
-            padding: 18px 20px;
+            padding: 10px 12px;
             border-bottom: 1px solid #e5e7eb;
             color: #1a1a1a;
-            font-size: 15px;
+            font-size: 13px;
         }
         td:last-child {
             text-align: right;
@@ -131,11 +131,11 @@
         }
         .totals-box {
             background: #f9fafb;
-            border-radius: 12px;
-            padding: 24px;
-            width: 320px;
+            border-radius: 8px;
+            padding: 16px;
+            width: 280px;
             margin-left: auto;
-            margin-top: 30px;
+            margin-top: 15px;
         }
         .totals-box h3 {
             font-size: 14px;
@@ -148,8 +148,8 @@
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 15px;
+            margin-bottom: 6px;
+            font-size: 13px;
             color: #1a1a1a;
         }
         .total-row:last-child {
@@ -163,16 +163,16 @@
         .final-total {
             display: flex;
             justify-content: space-between;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: #10b981;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .notes {
-            margin-top: 40px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 12px;
             background: #f9fafb;
-            border-radius: 12px;
+            border-radius: 8px;
             border-left: 4px solid #10b981;
         }
         .notes p {
@@ -300,9 +300,9 @@
         @endif
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px solid #e5e7eb;">
-            <p style="color: #1a1a1a; font-weight: 600; font-size: 16px; margin-bottom: 8px;">{{ $invoice->organization->name }}</p>
-            <p style="color: #6b7280; font-size: 14px;">Bedankt voor je vertrouwen!</p>
+        <div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb;">
+            <p style="color: #1a1a1a; font-weight: 600; font-size: 14px; margin-bottom: 4px;">{{ $invoice->organization->name }}</p>
+            <p style="color: #6b7280; font-size: 12px;">Bedankt voor je vertrouwen!</p>
         </div>
     </div>
 </body>
