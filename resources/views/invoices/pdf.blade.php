@@ -193,7 +193,7 @@
             <div class="invoice-header">
                 <h2>FACTUUR</h2>
                 <div class="invoice-number">#{{ $invoice->number }}</div>
-                <div class="status-badge">VERZONDEN</div>
+                <div class="status-badge">{{ strtoupper($invoice->status) }}</div>
             </div>
         </div>
 
@@ -237,12 +237,20 @@
         </div>
 
         <!-- Invoice Details -->
-        <div class="info-box" style="margin-top: 20px;">
-            <h3>Factuurgegevens</h3>
-            <p><strong>Factuurdatum:</strong> {{ $invoice->issue_date->format('d-m-Y') }}</p>
-            @if($invoice->due_date)
-            <p><strong>Vervaldatum:</strong> {{ $invoice->due_date->format('d-m-Y') }}</p>
-            @endif
+        <div class="info-grid" style="margin-top: 20px;">
+            <div class="info-box">
+                <h3>Factuurgegevens</h3>
+                <p><strong>Factuurdatum:</strong> {{ $invoice->issue_date->format('d-m-Y') }}</p>
+                @if($invoice->due_date)
+                <p><strong>Vervaldatum:</strong> {{ $invoice->due_date->format('d-m-Y') }}</p>
+                @endif
+                @if($invoice->project)
+                <p><strong>Project:</strong> {{ $invoice->project->name }}</p>
+                @endif
+            </div>
+            <div class="info-box">
+                <!-- Empty for layout balance -->
+            </div>
         </div>
 
         <!-- Items Table -->
@@ -290,6 +298,12 @@
             <p><strong>Opmerkingen:</strong> {{ $invoice->notes }}</p>
         </div>
         @endif
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px solid #e5e7eb;">
+            <p style="color: #1a1a1a; font-weight: 600; font-size: 16px; margin-bottom: 8px;">{{ $invoice->organization->name }}</p>
+            <p style="color: #6b7280; font-size: 14px;">Bedankt voor je vertrouwen!</p>
+        </div>
     </div>
 </body>
 </html>
