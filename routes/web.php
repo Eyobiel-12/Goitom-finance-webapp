@@ -50,19 +50,12 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
             return response()->file(storage_path('app/public/' . $invoice->pdf_path));
         }
         
-        // Generate PDF on the fly
-        $html = view('invoices.pdf', compact('invoice'))->render();
+        // Generate PDF on the fly using DomPDF
+        $pdf = \PDF::loadView('invoices.pdf', compact('invoice'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('enable-local-file-access', true);
         
-        // Use Browsershot to generate PDF
-        $pdf = \Spatie\Browsershot\Browsershot::html($html)
-            ->format('A4')
-            ->margins(10, 10, 10, 10)
-            ->showBackground()
-            ->pdf();
-        
-        return response($pdf, 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="factuur-' . $invoice->number . '.pdf"');
+        return $pdf->download('factuur-' . $invoice->number . '.pdf');
     })->name('invoices.pdf');
 });
 
