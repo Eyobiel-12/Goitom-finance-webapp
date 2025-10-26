@@ -39,6 +39,13 @@ final class ClientController extends Controller
             ->with('success', 'Klant toegevoegd.');
     }
 
+    public function show(Client $client): View
+    {
+        $client->load(['projects', 'invoices', 'invoices.items']);
+        
+        return view('app.clients.show', compact('client'));
+    }
+
     public function edit(Client $client): View
     {
         return view('app.clients.edit', compact('client'));

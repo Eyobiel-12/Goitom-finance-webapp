@@ -82,7 +82,7 @@
 
                         <!-- Actions -->
                         <div class="flex gap-2 mt-4">
-                            <a href="{{ route('app.clients.edit', $client) }}" class="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium text-center">
+                            <a href="{{ route('app.clients.show', $client) }}" class="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium text-center">
                                 Bekijken
                             </a>
                             <a href="{{ route('app.clients.edit', $client) }}" class="px-4 py-2 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg hover:bg-yellow-400/20 transition-all">
