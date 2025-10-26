@@ -19,6 +19,9 @@ final class ClientForm extends Component
     public $postal_code = '';
     public $country = 'NL';
     public $tax_id = '';
+    
+    public $current_step = 1;
+    public $total_steps = 3;
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -31,6 +34,48 @@ final class ClientForm extends Component
         'country' => 'nullable|string|max:2',
         'tax_id' => 'nullable|string|max:255',
     ];
+    
+    protected function getCurrentStepRules(): array
+    {
+        return match($this->current_step) {
+            1 => [
+                'name' => 'required|string|max:255',
+                'contact_name' => 'nullable|string|max:255',
+            ],
+            2 => [
+                'email' => 'nullable|email|max:255',
+                'phone' => 'nullable|string|max:255',
+            ],
+            3 => [
+                'street' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+                'postal_code' => 'nullable|string|max:255',
+                'country' => 'nullable|string|max:2',
+                'tax_id' => 'nullable|string|max:255',
+            ],
+            default => [],
+        };
+    }
+    
+    public function nextStep()
+    {
+        $this->validate($this->getCurrentStepRules());
+        if ($this->current_step < $this->total_steps) {
+            $this->current_step++;
+        }
+    }
+    
+    public function previousStep()
+    {
+        if ($this->current_step > 1) {
+            $this->current_step--;
+        }
+    }
+    
+    public function goToStep($step)
+    {
+        $this->current_step = $step;
+    }
 
     public function mount($client = null)
     {
