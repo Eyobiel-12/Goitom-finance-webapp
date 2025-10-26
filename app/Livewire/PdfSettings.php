@@ -32,6 +32,12 @@ final class PdfSettings extends Component
         $this->footer_message = $settings['pdf_footer_message'] ?? 'Bedankt voor je vertrouwen!';
     }
 
+    public function updatedTagline()
+    {
+        $organization = auth()->user()->organization;
+        $organization->update(['tagline' => $this->tagline]);
+    }
+
     public function save()
     {
         $organization = auth()->user()->organization;

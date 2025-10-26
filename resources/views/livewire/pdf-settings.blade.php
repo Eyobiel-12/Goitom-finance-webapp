@@ -94,12 +94,50 @@
                 </label>
             </div>
 
+            <!-- Tagline -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-400 mb-3">Tagline</label>
+                <input type="text" wire:model="tagline" 
+                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
+                       placeholder="Professionele Financiële Diensten">
+                <p class="text-xs text-gray-500 mt-1">Dit wordt onder je bedrijfsnaam getoond</p>
+            </div>
+
             <!-- Footer Message -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Footer bericht</label>
                 <input type="text" wire:model="footer_message" 
                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
                        placeholder="Bedankt voor je vertrouwen!">
+            </div>
+
+            <!-- Live Preview -->
+            <div class="mb-6 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    Live Preview
+                </h3>
+                <div class="bg-white rounded-lg p-6 shadow-lg" style="max-width: 800px;">
+                    <div class="flex items-start justify-between mb-4 pb-4 border-b" style="border-color: {{ $primary_color }}">
+                        <div>
+                            <h4 class="text-xl font-bold" style="color: #1a1a1a;">{{ $company_name }}</h4>
+                            <p class="text-sm text-gray-600">{{ $tagline }}</p>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-2xl font-bold" style="color: {{ $primary_color }};">FACTUUR</h2>
+                            <p class="text-sm text-gray-600">#INV-2024-001</p>
+                            @if($show_logo && $organization->logo_path)
+                            <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-8 mt-2 mx-auto">
+                            @endif
+                        </div>
+                    </div>
+                    <div class="text-center text-sm text-gray-500 mt-4">
+                        {{ $footer_message }}
+                    </div>
+                </div>
             </div>
 
             <!-- Save Button -->
