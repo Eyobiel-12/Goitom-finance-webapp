@@ -24,7 +24,8 @@ final class InvoiceSentMail extends Mailable
     {
         return new Envelope(
             subject: 'Uw Factuur van ' . $this->invoice->organization->name,
-            from: $this->invoice->organization->owner->email ?? config('mail.from.address'),
+            from: config('mail.from.address'),
+            replyTo: $this->invoice->organization->owner->email ?? config('mail.from.address'),
         );
     }
 
