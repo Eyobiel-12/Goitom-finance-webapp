@@ -19,11 +19,13 @@
                 <label class="block text-sm font-medium text-gray-400 mb-3">Factuur Template</label>
                 <div class="grid grid-cols-2 gap-4">
                     <label class="relative cursor-pointer">
-                        <input type="radio" wire:model.live="template" value="modern" class="sr-only peer">
-                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        <input type="radio" wire:model="template" value="modern" wire:change="$refresh" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'modern' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
-                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @if($template === 'modern')
+                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @endif
                                 </div>
                                 <span class="font-semibold text-white">Modern</span>
                             </div>
@@ -31,11 +33,13 @@
                         </div>
                     </label>
                     <label class="relative cursor-pointer">
-                        <input type="radio" wire:model.live="template" value="minimal" class="sr-only peer">
-                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        <input type="radio" wire:model="template" value="minimal" wire:change="$refresh" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'minimal' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
-                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @if($template === 'minimal')
+                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @endif
                                 </div>
                                 <span class="font-semibold text-white">Minimaal</span>
                             </div>
@@ -43,11 +47,13 @@
                         </div>
                     </label>
                     <label class="relative cursor-pointer">
-                        <input type="radio" wire:model.live="template" value="classic" class="sr-only peer">
-                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        <input type="radio" wire:model="template" value="classic" wire:change="$refresh" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'classic' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
-                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @if($template === 'classic')
+                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @endif
                                 </div>
                                 <span class="font-semibold text-white">Klassiek</span>
                             </div>
@@ -55,11 +61,13 @@
                         </div>
                     </label>
                     <label class="relative cursor-pointer">
-                        <input type="radio" wire:model.live="template" value="bold" class="sr-only peer">
-                        <div class="p-4 bg-gray-800 border-2 border-gray-700 rounded-xl hover:border-yellow-400/50 transition-all peer-checked:border-yellow-400">
+                        <input type="radio" wire:model="template" value="bold" wire:change="$refresh" class="sr-only">
+                        <div class="p-4 bg-gray-800 border-2 rounded-xl transition-all {{ $template === 'bold' ? 'border-yellow-400' : 'border-gray-700 hover:border-yellow-400/50' }}">
                             <div class="flex items-center mb-2">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-600 mr-3 flex items-center justify-center">
-                                    <div class="hidden peer-checked:block w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @if($template === 'bold')
+                                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                    @endif
                                 </div>
                                 <span class="font-semibold text-white">Bold</span>
                             </div>
@@ -73,8 +81,8 @@
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Primaire kleur</label>
                 <div class="flex items-center gap-4">
-                    <input type="color" wire:model="primary_color" class="w-20 h-12 rounded-lg cursor-pointer">
-                    <input type="text" wire:model="primary_color" class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="#10b981">
+                    <input type="color" wire:model.live="primary_color" class="w-20 h-12 rounded-lg cursor-pointer">
+                    <input type="text" wire:model.live="primary_color" class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="#10b981">
                 </div>
             </div>
 
@@ -97,7 +105,7 @@
                     <p class="text-sm text-gray-400">Toon logo op de factuur</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" wire:model="show_logo" class="sr-only peer">
+                    <input type="checkbox" wire:model.live="show_logo" class="sr-only peer">
                     <div class="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-yellow-400"></div>
                 </label>
             </div>
@@ -105,7 +113,7 @@
             <!-- Tagline -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Tagline</label>
-                <input type="text" wire:model="tagline" 
+                <input type="text" wire:model.live="tagline" 
                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
                        placeholder="Professionele Financiële Diensten">
                 <p class="text-xs text-gray-500 mt-1">Dit wordt onder je bedrijfsnaam getoond</p>
@@ -114,7 +122,7 @@
             <!-- Footer Message -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Footer bericht</label>
-                <input type="text" wire:model="footer_message" 
+                <input type="text" wire:model.live="footer_message" 
                        class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
                        placeholder="Bedankt voor je vertrouwen!">
             </div>
