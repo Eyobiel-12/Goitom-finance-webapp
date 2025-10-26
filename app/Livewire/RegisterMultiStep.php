@@ -135,13 +135,15 @@ class RegisterMultiStep extends Component
         // Update user with organization
         $user->update(['organization_id' => $organization->id]);
 
-        // Send welcome email
+        // Send welcome email asynchronously (don't block registration)
         try {
-            Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
-            \Illuminate\Support\Facades\Log::info('Welcome email sent to: ' . $user->email);
+            dispatch(function () use ($user) {
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
+                \Illuminate\Support\Facades\Log::info('Welcome email sent to: ' . $user->email);
+            });
         } catch (\Exception $e) {
             // Log error but don't block registration
-            \Illuminate\Support\Facades\Log::error('Failed to send welcome email to ' . $user->email . ': ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to queue welcome email to ' . $user->email . ': ' . $e->getMessage());
         }
 
         // Log user in
