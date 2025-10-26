@@ -128,7 +128,9 @@ final class InvoiceService
     {
         // Generate PDF if not exists
         if (!$invoice->pdf_path) {
-            $this->generatePdf($invoice);
+            // Generate PDF synchronously
+            $pdf = $this->generatePdfSync($invoice);
+            $invoice->update(['pdf_path' => $pdf]);
         }
 
         // Update status and sent timestamp
@@ -147,6 +149,25 @@ final class InvoiceService
             \Illuminate\Support\Facades\Log::error("Failed to send invoice email to {$invoice->client->email}: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function generatePdfSync(Invoice $invoice): string
+    {
+        // Generate HTML for the invoice
+        $template = $invoice->organization->settings['pdf_template'] ?? 'classic';
+        $viewName = "invoices.pdf-{$template}";
+        $html = view($viewName, compact('invoice'))->render();
+        
+        // Generate PDF using DomPDF
+        $pdf = \PDF::loadHtml($html)
+            ->setPaper('a4', 'portrait')
+            ->setOption('enable-local-file-access', true);
+        
+        // Store PDF in storage
+        $filename = "invoices/invoice-{$invoice->number}.pdf";
+        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $pdf->output());
+        
+        return $filename;
     }
 
     /**

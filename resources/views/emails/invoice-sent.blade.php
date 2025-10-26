@@ -62,9 +62,12 @@
             letter-spacing: 0.5px;
         }
         .invoice-details {
-            color: #ffffff;
+            color: #e0e0e0 !important;
             margin-top: 15px;
             line-height: 2;
+        }
+        .invoice-details div {
+            color: #ffffff !important;
         }
         .invoice-number {
             font-size: 20px;
