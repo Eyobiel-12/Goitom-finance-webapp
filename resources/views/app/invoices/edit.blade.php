@@ -1,13 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Factuur Bewerken') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+<x-layouts.app>
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-8">Factuur Bewerken</h1>
             @livewire('invoice-form', ['invoice' => $invoice])
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>
