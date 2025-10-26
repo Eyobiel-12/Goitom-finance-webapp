@@ -17,69 +17,87 @@
 
             <!-- Status Tabs -->
             <div class="mb-6 flex gap-2 border-b border-gray-800">
-                <button class="px-4 py-2 text-sm font-medium border-b-2 border-yellow-400 text-yellow-400">Alle</button>
-                <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">Actief</button>
-                <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">Voltooid</button>
-                <button class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">Gepauzeerd</button>
+                <a href="{{ route('app.projects.index', ['filter' => 'all']) }}" 
+                   class="px-4 py-2 text-sm font-medium {{ request('filter', 'all') === 'all' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
+                    Alle
+                </a>
+                <a href="{{ route('app.projects.index', ['filter' => 'active']) }}" 
+                   class="px-4 py-2 text-sm font-medium {{ request('filter') === 'active' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
+                    Actief
+                </a>
+                <a href="{{ route('app.projects.index', ['filter' => 'completed']) }}" 
+                   class="px-4 py-2 text-sm font-medium {{ request('filter') === 'completed' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
+                    Voltooid
+                </a>
+                <a href="{{ route('app.projects.index', ['filter' => 'paused']) }}" 
+                   class="px-4 py-2 text-sm font-medium {{ request('filter') === 'paused' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
+                    Gepauzeerd
+                </a>
             </div>
 
-            <!-- Projects List -->
-            <div class="space-y-4">
-                @forelse(\App\Models\Project::where('organization_id', auth()->user()->organization_id)->with('client')->latest()->get() as $project)
-                <div class="group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all duration-300 hover:shadow-2xl">
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @php
+                $query = \App\Models\Project::where('organization_id', auth()->user()->organization_id)->with('client');
+                $filter = request('filter', 'all');
+                if ($filter !== 'all') {
+                    $query->where('status', $filter);
+                }
+                $projects = $query->latest()->get();
+                @endphp
+                @forelse($projects as $project)
+                <div class="group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all duration-300 hover:shadow-2xl h-full flex flex-col">
                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                     
-                    <div class="relative">
+                    <div class="relative flex flex-col h-full">
                         <!-- Header -->
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h3 class="text-xl font-bold text-white mb-1">{{ $project->name }}</h3>
-                                <div class="flex items-center space-x-4 text-sm text-gray-400">
-                                    <span class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                        </svg>
-                                        {{ $project->client->name }}
-                                    </span>
-                                    <span class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        {{ $project->hours }} uren
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
+                        <div class="mb-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="text-xl font-bold text-white line-clamp-1">{{ $project->name }}</h3>
                                 @if($project->status === 'active')
-                                <span class="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-xs font-semibold">Actief</span>
+                                <span class="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-xs font-semibold whitespace-nowrap">Actief</span>
                                 @elseif($project->status === 'completed')
-                                <span class="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full text-xs font-semibold">Voltooid</span>
+                                <span class="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full text-xs font-semibold whitespace-nowrap">Voltooid</span>
                                 @else
-                                <span class="px-3 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-full text-xs font-semibold">{{ ucfirst($project->status) }}</span>
+                                <span class="px-3 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-full text-xs font-semibold whitespace-nowrap">{{ ucfirst($project->status) }}</span>
                                 @endif
+                            </div>
+                            <div class="flex items-center text-sm text-gray-400 space-x-3">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    {{ Str::limit($project->client->name, 15) }}
+                                </span>
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    {{ $project->hours }}h
+                                </span>
                             </div>
                         </div>
 
                         @if($project->description)
-                        <p class="text-gray-400 mb-4">{{ Str::limit($project->description, 120) }}</p>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ Str::limit($project->description, 80) }}</p>
                         @endif
 
                         <!-- Progress and Rate -->
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-6">
-                                @if($project->rate)
+                        <div class="mt-auto">
+                            @if($project->rate)
+                            <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <p class="text-xs text-gray-500 mb-1">Uurtarief</p>
-                                    <p class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">€{{ number_format($project->rate, 2) }}</p>
+                                    <p class="text-xs text-gray-500">Uurtarief</p>
+                                    <p class="text-sm font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">€{{ number_format($project->rate, 2) }}</p>
                                 </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 mb-1">Totaal</p>
-                                    <p class="text-lg font-bold text-white">€{{ number_format($project->rate * $project->hours, 2) }}</p>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Totaal</p>
+                                    <p class="text-sm font-bold text-white">€{{ number_format($project->rate * $project->hours, 2) }}</p>
                                 </div>
-                                @endif
                             </div>
+                            @endif
                             <div class="flex gap-2">
-                                <a href="{{ route('app.projects.edit', $project) }}" class="px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium">
+                                <a href="{{ route('app.projects.edit', $project) }}" class="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium text-center">
                                     Bekijken
                                 </a>
                                 <a href="{{ route('app.projects.edit', $project) }}" class="px-4 py-2 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg hover:bg-yellow-400/20 transition-all">
