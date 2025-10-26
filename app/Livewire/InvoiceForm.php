@@ -79,15 +79,8 @@ final class InvoiceForm extends Component
 
     public function addItem()
     {
-        $this->validate([
-            'newItem.description' => 'required|string',
-            'newItem.qty' => 'required|numeric|min:0.01',
-            'newItem.unit_price' => 'required|numeric|min:0',
-            'newItem.vat_rate' => 'required|numeric|min:0|max:100',
-        ]);
-
-        $this->items[] = $this->newItem;
-        $this->newItem = [
+        // Add item without validation - user will fill it
+        $this->items[] = [
             'description' => '',
             'qty' => 1,
             'unit_price' => 0,
