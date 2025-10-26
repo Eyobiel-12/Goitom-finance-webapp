@@ -18,6 +18,10 @@ final class PdfSettings extends Component
     public $company_name = '';
     public $tagline = '';
     public $footer_message = 'Bedankt voor je vertrouwen!';
+    
+    // Wizard state
+    public $current_step = 1;
+    public $total_steps = 4;
 
     public function mount()
     {
@@ -47,6 +51,27 @@ final class PdfSettings extends Component
     {
         $organization = auth()->user()->organization;
         $organization->update(['name' => $this->company_name]);
+    }
+
+    public function nextStep()
+    {
+        if ($this->current_step < $this->total_steps) {
+            $this->current_step++;
+        }
+    }
+
+    public function previousStep()
+    {
+        if ($this->current_step > 1) {
+            $this->current_step--;
+        }
+    }
+
+    public function goToStep($step)
+    {
+        if ($step >= 1 && $step <= $this->total_steps) {
+            $this->current_step = $step;
+        }
     }
 
     public function updatedPrimaryColor()
