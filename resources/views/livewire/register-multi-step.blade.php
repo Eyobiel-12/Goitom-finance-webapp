@@ -1,5 +1,4 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-2xl w-full space-y-8">
+<div class="w-full max-w-2xl mx-auto space-y-8">
         <!-- Logo -->
         <div class="text-center">
             <div class="flex justify-center mb-6">
@@ -165,5 +164,3 @@
                 <a href="{{ route('login') }}" class="text-yellow-400 hover:text-yellow-300 font-semibold transition-colors">Inloggen</a>
             </p>
         </div>
-    </div>
-</div>
