@@ -43,6 +43,12 @@ final class PdfSettings extends Component
         $organization->update(['tagline' => $this->tagline]);
     }
 
+    public function updatedCompanyName()
+    {
+        $organization = auth()->user()->organization;
+        $organization->update(['name' => $this->company_name]);
+    }
+
     public function updatedPrimaryColor()
     {
         $this->saveSettings();

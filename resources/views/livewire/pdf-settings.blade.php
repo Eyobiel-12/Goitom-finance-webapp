@@ -110,6 +110,15 @@
                 </label>
             </div>
 
+            <!-- Company Name -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-400 mb-3">Bedrijfsnaam</label>
+                <input type="text" wire:model.live="company_name" 
+                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
+                       placeholder="Je bedrijfsnaam">
+                <p class="text-xs text-gray-500 mt-1">Dit wordt op de factuur getoond</p>
+            </div>
+
             <!-- Tagline -->
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-400 mb-3">Tagline</label>
