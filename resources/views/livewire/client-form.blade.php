@@ -127,14 +127,22 @@
                     </div>
                 </div>
 
-                <!-- Tax Info -->
+                <!-- Tax & KVK Info -->
                 <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
-                    <h3 class="text-xl font-bold text-white mb-6">Belasting</h3>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">BTW-nummer / Tax ID</label>
-                        <input type="text" wire:model="tax_id" 
-                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
-                               placeholder="NL123456789B01">
+                    <h3 class="text-xl font-bold text-white mb-6">Belasting & Registratie</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">KVK-nummer</label>
+                            <input type="text" wire:model="kvk_number" 
+                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
+                                   placeholder="12345678">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">BTW-nummer / Tax ID</label>
+                            <input type="text" wire:model="tax_id" 
+                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
+                                   placeholder="NL123456789B01">
+                        </div>
                     </div>
                 </div>
             </div>

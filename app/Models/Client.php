@@ -21,6 +21,7 @@ final class Client extends Model
         'phone',
         'address',
         'tax_id',
+        'kvk_number',
     ];
 
     protected function casts(): array

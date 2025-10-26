@@ -19,6 +19,7 @@ final class ClientForm extends Component
     public $postal_code = '';
     public $country = 'NL';
     public $tax_id = '';
+    public $kvk_number = '';
     
     public $current_step = 1;
     public $total_steps = 3;
@@ -33,6 +34,7 @@ final class ClientForm extends Component
         'postal_code' => 'nullable|string|max:255',
         'country' => 'nullable|string|max:2',
         'tax_id' => 'nullable|string|max:255',
+        'kvk_number' => 'nullable|string|max:255',
     ];
     
     protected function getCurrentStepRules(): array
@@ -52,6 +54,7 @@ final class ClientForm extends Component
                 'postal_code' => 'nullable|string|max:255',
                 'country' => 'nullable|string|max:2',
                 'tax_id' => 'nullable|string|max:255',
+                'kvk_number' => 'nullable|string|max:255',
             ],
             default => [],
         };
@@ -86,6 +89,7 @@ final class ClientForm extends Component
             $this->email = $client->email ?? '';
             $this->phone = $client->phone ?? '';
             $this->tax_id = $client->tax_id ?? '';
+            $this->kvk_number = $client->kvk_number ?? '';
             $this->country = $client->country ?? 'NL';
             
             $address = $client->address ?? [];
@@ -114,6 +118,7 @@ final class ClientForm extends Component
             'phone' => $this->phone ?: null,
             'address' => $address,
             'tax_id' => $this->tax_id ?: null,
+            'kvk_number' => $this->kvk_number ?: null,
         ];
 
         if ($this->client) {
