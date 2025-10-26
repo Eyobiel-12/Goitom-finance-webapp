@@ -114,7 +114,7 @@ class RegisterMultiStep extends Component
         auth()->login($user);
 
         // Redirect to organization setup or dashboard
-        return redirect()->route('app.dashboard')->with('success', 'Account succesvol aangemaakt!');
+        $this->redirect(route('app.dashboard'), navigate: true);
     }
 
     public function previousStep(): void
