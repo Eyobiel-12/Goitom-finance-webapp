@@ -42,6 +42,18 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
     Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('/invoices/{invoice}/send', function ($invoice) {
+        $invoice = \App\Models\Invoice::findOrFail($invoice);
+        $invoiceService = app(\App\Services\InvoiceService::class);
+        $invoiceService->sendInvoice($invoice);
+        return back()->with('success', 'Factuur verzonden!');
+    })->name('invoices.send');
+    Route::post('/invoices/{invoice}/mark-paid', function ($invoice) {
+        $invoice = \App\Models\Invoice::findOrFail($invoice);
+        $invoiceService = app(\App\Services\InvoiceService::class);
+        $invoiceService->markAsPaid($invoice);
+        return back()->with('success', 'Factuur gemarkeerd als betaald!');
+    })->name('invoices.markPaid');
     
     // PDF route - Generate on the fly
     Route::get('/invoices/{invoice}/pdf', function ($invoice) {
