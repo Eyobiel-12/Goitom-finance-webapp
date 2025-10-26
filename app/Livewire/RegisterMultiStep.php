@@ -110,6 +110,29 @@ class RegisterMultiStep extends Component
             'role' => 'ondernemer',
         ]);
 
+        // Create organization for the user
+        $organization = \App\Models\Organization::create([
+            'owner_user_id' => $user->id,
+            'name' => $user->name . ' Business',
+            'slug' => \Illuminate\Support\Str::slug($user->name . '-business'),
+            'country' => 'NL',
+            'currency' => 'EUR',
+            'default_vat_rate' => 21.00,
+            'branding_color' => '#d4af37',
+            'status' => 'active',
+        ]);
+
+        // Update user with organization
+        $user->update(['organization_id' => $organization->id]);
+
+        // Send welcome email
+        try {
+            Mail::to($user->email)->send(new \App\Mail\WelcomeMail($user));
+        } catch (\Exception $e) {
+            // Log error but don't block registration
+            \Illuminate\Support\Facades\Log::error('Failed to send welcome email: ' . $e->getMessage());
+        }
+
         // Log user in
         auth()->login($user);
 
