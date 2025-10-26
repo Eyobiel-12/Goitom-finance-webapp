@@ -134,13 +134,13 @@
             </div>
             
             <!-- Invoice Details Box -->
-            <div class="invoice-box">
-                <strong>📋 Factuurdetails</strong>
-                <div class="invoice-details">
-                    <div><strong>Factuurnummer:</strong> {{ $invoice->number }}</div>
-                    <div><strong>Factuurdatum:</strong> {{ $invoice->issue_date->format('d-m-Y') }}</div>
-                    <div><strong>Vervaldatum:</strong> {{ $invoice->due_date?->format('d-m-Y') ?? 'Niet gespecificeerd' }}</div>
-                    <div><strong>Bedrag (incl. BTW):</strong> €{{ number_format($invoice->total, 2, ',', '.') }}</div>
+            <div style="background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%); border: 1px solid #d4af37; border-radius: 8px; padding: 25px; margin: 25px 0;">
+                <strong style="color: #d4af37; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">📋 Factuurdetails</strong>
+                <div style="color: #ffffff !important; margin-top: 15px; line-height: 2.5;">
+                    <div style="color: #ffffff !important;"><strong style="color: #d4af37;">Factuurnummer:</strong> <span style="color: #ffffff !important;">{{ $invoice->number }}</span></div>
+                    <div style="color: #ffffff !important;"><strong style="color: #d4af37;">Factuurdatum:</strong> <span style="color: #ffffff !important;">{{ $invoice->issue_date->format('d-m-Y') }}</span></div>
+                    <div style="color: #ffffff !important;"><strong style="color: #d4af37;">Vervaldatum:</strong> <span style="color: #ffffff !important;">{{ $invoice->due_date?->format('d-m-Y') ?? 'Niet gespecificeerd' }}</span></div>
+                    <div style="color: #ffffff !important;"><strong style="color: #d4af37;">Bedrag (incl. BTW):</strong> <span style="color: #ffffff !important;">€{{ number_format($invoice->total, 2, ',', '.') }}</span></div>
                 </div>
             </div>
             
