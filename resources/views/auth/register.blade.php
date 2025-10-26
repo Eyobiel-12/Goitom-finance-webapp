@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
     <div class="min-h-screen">
         <div class="min-h-screen flex">
             <!-- Left Side - Image/Pattern -->
