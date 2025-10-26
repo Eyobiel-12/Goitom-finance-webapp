@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire;
+
+use App\Models\Client;
+use Livewire\Component;
+
+final class ClientForm extends Component
+{
+    public $client = null;
+    public $name = '';
+    public $contact_name = '';
+    public $email = '';
+    public $phone = '';
+    public $street = '';
+    public $city = '';
+    public $postal_code = '';
+    public $country = 'NL';
+    public $tax_id = '';
+
+    protected $rules = [
+        'name' => 'required|string|max:255',
+        'contact_name' => 'nullable|string|max:255',
+        'email' => 'nullable|email|max:255',
+        'phone' => 'nullable|string|max:255',
+        'street' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:255',
+        'postal_code' => 'nullable|string|max:255',
+        'country' => 'nullable|string|max:2',
+        'tax_id' => 'nullable|string|max:255',
+    ];
+
+    public function mount($client = null)
+    {
+        if ($client) {
+            $this->client = $client;
+            $this->name = $client->name;
+            $this->contact_name = $client->contact_name ?? '';
+            $this->email = $client->email ?? '';
+            $this->phone = $client->phone ?? '';
+            $this->tax_id = $client->tax_id ?? '';
+            $this->country = $client->country ?? 'NL';
+            
+            $address = $client->address ?? [];
+            $this->street = $address['street'] ?? '';
+            $this->city = $address['city'] ?? '';
+            $this->postal_code = $address['postal_code'] ?? '';
+        }
+    }
+
+    public function save()
+    {
+        $this->validate();
+
+        $address = [
+            'street' => $this->street,
+            'city' => $this->city,
+            'postal_code' => $this->postal_code,
+            'country' => $this->country,
+        ];
+
+        $data = [
+            'organization_id' => auth()->user()->organization_id,
+            'name' => $this->name,
+            'contact_name' => $this->contact_name ?: null,
+            'email' => $this->email ?: null,
+            'phone' => $this->phone ?: null,
+            'address' => $address,
+            'tax_id' => $this->tax_id ?: null,
+        ];
+
+        if ($this->client) {
+            $this->client->update($data);
+            session()->flash('message', 'Klant bijgewerkt!');
+        } else {
+            $client = Client::create($data);
+            session()->flash('message', 'Klant aangemaakt!');
+            return redirect()->route('app.clients.index');
+        }
+
+        return redirect()->route('app.clients.index');
+    }
+
+    public function render()
+    {
+        return view('livewire.client-form');
+    }
+}
