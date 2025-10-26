@@ -32,10 +32,20 @@ final class PdfSettings extends Component
         $this->footer_message = $settings['pdf_footer_message'] ?? 'Bedankt voor je vertrouwen!';
     }
 
+    public function updatedTemplate()
+    {
+        $this->saveSettings();
+    }
+
     public function updatedTagline()
     {
         $organization = auth()->user()->organization;
         $organization->update(['tagline' => $this->tagline]);
+    }
+
+    public function updatedPrimaryColor()
+    {
+        $this->saveSettings();
     }
 
     public function save()
@@ -48,6 +58,15 @@ final class PdfSettings extends Component
             $organization->update(['logo_path' => $path]);
         }
         
+        $this->saveSettings();
+        
+        session()->flash('message', 'PDF-instellingen opgeslagen!');
+    }
+
+    private function saveSettings()
+    {
+        $organization = auth()->user()->organization;
+        
         // Update settings
         $settings = $organization->settings ?? [];
         $settings['pdf_template'] = $this->template;
@@ -57,8 +76,6 @@ final class PdfSettings extends Component
         $settings['tagline'] = $this->tagline;
         
         $organization->update(['settings' => $settings]);
-        
-        session()->flash('message', 'PDF-instellingen opgeslagen!');
     }
 
     public function render()
