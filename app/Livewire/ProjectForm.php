@@ -17,6 +17,9 @@ final class ProjectForm extends Component
     public $status = 'active';
     public $rate = '';
     public $hours = 0;
+    
+    public $current_step = 1;
+    public $total_steps = 3;
 
     protected $rules = [
         'client_id' => 'required|exists:clients,id',
@@ -26,6 +29,45 @@ final class ProjectForm extends Component
         'rate' => 'nullable|numeric|min:0',
         'hours' => 'nullable|numeric|min:0',
     ];
+    
+    protected function getCurrentStepRules(): array
+    {
+        return match($this->current_step) {
+            1 => [
+                'client_id' => 'required|exists:clients,id',
+            ],
+            2 => [
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ],
+            3 => [
+                'status' => 'required|in:active,completed,paused,cancelled',
+                'rate' => 'nullable|numeric|min:0',
+                'hours' => 'nullable|numeric|min:0',
+            ],
+            default => [],
+        };
+    }
+    
+    public function nextStep()
+    {
+        $this->validate($this->getCurrentStepRules());
+        if ($this->current_step < $this->total_steps) {
+            $this->current_step++;
+        }
+    }
+    
+    public function previousStep()
+    {
+        if ($this->current_step > 1) {
+            $this->current_step--;
+        }
+    }
+    
+    public function goToStep($step)
+    {
+        $this->current_step = $step;
+    }
 
     public function mount($project = null)
     {
