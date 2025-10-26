@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
         }
         
         // Determine which template to use
-        $template = $invoice->organization->settings['pdf_template'] ?? 'modern';
+        $template = $invoice->organization->settings['pdf_template'] ?? 'classic';
         $viewName = "invoices.pdf-{$template}";
         
         // Generate PDF on the fly using DomPDF

@@ -11,7 +11,7 @@ final class PdfSettings extends Component
 {
     use WithFileUploads;
 
-    public $template = 'modern';
+    public $template = 'classic';
     public $primary_color = '#10b981';
     public $logo;
     public $show_logo = true;
@@ -24,7 +24,7 @@ final class PdfSettings extends Component
         $organization = auth()->user()->organization;
         $settings = $organization->settings ?? [];
         
-        $this->template = $settings['pdf_template'] ?? 'modern';
+        $this->template = $settings['pdf_template'] ?? 'classic';
         $this->primary_color = $settings['pdf_primary_color'] ?? '#10b981';
         $this->show_logo = $settings['pdf_show_logo'] ?? true;
         $this->company_name = $organization->name;
