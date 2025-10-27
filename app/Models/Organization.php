@@ -102,6 +102,22 @@ final class Organization extends Model
     }
 
     /**
+     * Get all BTW aftrek for this organization.
+     */
+    public function btwAftrek(): HasMany
+    {
+        return $this->hasMany(BtwAftrek::class);
+    }
+
+    /**
+     * Get all BTW aangifte for this organization.
+     */
+    public function btwAangifte(): HasMany
+    {
+        return $this->hasMany(BtwAangifte::class);
+    }
+
+    /**
      * Get all audit logs for this organization.
      */
     public function auditLogs(): HasMany

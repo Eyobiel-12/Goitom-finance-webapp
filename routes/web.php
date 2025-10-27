@@ -84,6 +84,11 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::get('/btw-aftrek/create', function () {
         return view('app.btw-aftrek.create');
     })->name('btw-aftrek.create');
+    
+    // BTW Aangifte routes
+    Route::get('/btw-aangifte', function () {
+        return view('app.btw-aangifte.index');
+    })->name('btw-aangifte.index');
 });
 
 // Legacy dashboard route for Breeze compatibility
