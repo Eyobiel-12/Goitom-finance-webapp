@@ -15,7 +15,8 @@ RUN apk add --no-cache \
     postgresql-client \
     bash \
     nginx \
-    supervisor
+    supervisor \
+    icu-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install \
@@ -27,6 +28,7 @@ RUN docker-php-ext-install \
     bcmath \
     gd \
     zip \
+    intl \
     opcache
 
 # Configure opcache
