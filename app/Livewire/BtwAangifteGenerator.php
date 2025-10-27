@@ -14,10 +14,13 @@ final class BtwAangifteGenerator extends Component
     public $kwartaal = null;
     public $btwAangifte = null;
     
-    protected array $rules = [
-        'jaar' => 'required|integer|min:2020|max:' . (date('Y') + 1),
-        'kwartaal' => 'nullable|integer|min:1|max:4',
-    ];
+    protected function rules(): array
+    {
+        return [
+            'jaar' => 'required|integer|min:2020|max:' . (date('Y') + 1),
+            'kwartaal' => 'nullable|integer|min:1|max:4',
+        ];
+    }
 
     public function mount(): void
     {

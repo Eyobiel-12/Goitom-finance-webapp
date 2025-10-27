@@ -77,16 +77,21 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
         return view('app.pdf-settings');
     })->name('pdf-settings');
     
+    // BTW Management
+    Route::get('/btw', function () {
+        return view('app.btw.index');
+    })->name('btw.index');
+    
     // BTW Aftrek routes
-    Route::get('/btw-aftrek', function () {
+    Route::get('/btw/aftrek', function () {
         return view('app.btw-aftrek.index');
     })->name('btw-aftrek.index');
-    Route::get('/btw-aftrek/create', function () {
+    Route::get('/btw/aftrek/create', function () {
         return view('app.btw-aftrek.create');
     })->name('btw-aftrek.create');
     
     // BTW Aangifte routes
-    Route::get('/btw-aangifte', function () {
+    Route::get('/btw/aangifte', function () {
         return view('app.btw-aangifte.index');
     })->name('btw-aangifte.index');
 });
