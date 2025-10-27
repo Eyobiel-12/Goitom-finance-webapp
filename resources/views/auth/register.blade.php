@@ -42,54 +42,54 @@
                         </div>
 
                         <!-- Title -->
-                        <div class="space-y-3">
-                            <h1 class="text-6xl font-bold text-gray-900 tracking-tight">Goitom Finance</h1>
-                            <p class="text-2xl text-gray-800 font-medium">Professionele Financiële Diensten</p>
+                        <div class="space-y-2">
+                            <h1 class="text-4xl font-bold text-gray-900 tracking-tight">Goitom Finance</h1>
+                            <p class="text-lg text-gray-800 font-medium">Professionele Financiële Diensten</p>
                         </div>
 
                         <!-- Features -->
-                        <div class="space-y-5 mt-12">
-                            <div class="flex items-center justify-center space-x-4 bg-white/80 backdrop-blur-sm p-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="space-y-4 mt-8">
+                            <div class="flex items-center justify-center space-x-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <div class="text-left">
-                                    <h3 class="font-bold text-gray-900 text-lg">Professioneel Factuurbeheer</h3>
-                                    <p class="text-gray-700 text-sm">Maak mooie facturen in minuten</p>
+                                    <h3 class="font-bold text-gray-900 text-base">Professioneel Factuurbeheer</h3>
+                                    <p class="text-gray-700 text-xs">Maak mooie facturen in minuten</p>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-center space-x-4 bg-white/80 backdrop-blur-sm p-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex items-center justify-center space-x-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                                 <div class="text-left">
-                                    <h3 class="font-bold text-gray-900 text-lg">Automatische BTW-berekeningen</h3>
-                                    <p class="text-gray-700 text-sm">Alles automatisch berekend</p>
+                                    <h3 class="font-bold text-gray-900 text-base">Automatische BTW-berekeningen</h3>
+                                    <p class="text-gray-700 text-xs">Alles automatisch berekend</p>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-center space-x-4 bg-white/80 backdrop-blur-sm p-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex items-center justify-center space-x-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                     </svg>
                                 </div>
                                 <div class="text-left">
-                                    <h3 class="font-bold text-gray-900 text-lg">100% Beveiligd</h3>
-                                    <p class="text-gray-700 text-sm">Je gegevens zijn veilig</p>
+                                    <h3 class="font-bold text-gray-900 text-base">100% Beveiligd</h3>
+                                    <p class="text-gray-700 text-xs">Je gegevens zijn veilig</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Bottom Text -->
-                        <div class="mt-12 p-6 bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md rounded-2xl border-2 border-gray-800/50 shadow-2xl">
-                            <p class="text-white font-semibold text-lg">Begin vandaag nog</p>
-                            <p class="text-gray-300 text-sm mt-1">Word onderdeel van honderden tevreden ondernemers</p>
+                        <div class="mt-8 p-4 bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md rounded-xl border-2 border-gray-800/50 shadow-xl">
+                            <p class="text-white font-semibold text-base">Begin vandaag nog</p>
+                            <p class="text-gray-300 text-xs mt-1">Word onderdeel van honderden tevreden ondernemers</p>
                         </div>
                     </div>
                 </div>
