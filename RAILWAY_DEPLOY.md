@@ -19,26 +19,25 @@ Ga naar het Railway dashboard en voeg deze environment variables toe:
 
 #### Database (Railway Postgres)
 
-**⚠️ BELANGRIJK**: Gebruik de private endpoint om egress fees te vermijden!
+**⚠️ BELANGRIJK**: Gebruik ALLEEN `DATABASE_URL` - dit is de private endpoint zonder egress fees!
 
-Railway stelt automatisch deze variabelen beschikbaar:
-- `${{Postgres.DATABASE_URL}}` - Private endpoint (GEBRUIK DIT!)
-- `${{Postgres.DATABASE_PUBLIC_URL}}` - Public endpoint (INCR LOSSEN!)
+Railway stelt automatisch de juiste variabelen beschikbaar. In Railway dashboard → Postgres service → Variables zie je:
 
-Set deze in Railway dashboard:
+**Private endpoint (GEBRUIK DIT!):**
+```env
+DATABASE_URL="postgresql://postgres:DvNJOjnKLHYQLTovDlWqZJCvIVultjwS@private:5432/railway"
+```
+
+**⚠️ Gebruik NIET:**
+- `DATABASE_PUBLIC_URL` (trekt egress fees via `centerbeam.proxy.rlwy.net`)
+- Individuele `DB_HOST`, `DB_PORT` etc. (gebruik alleen `DATABASE_URL`)
+
+**In je app service, voeg toe:**
 ```env
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 ```
 
-Of handmatig met private host (in dashboard wordt de private host getoond):
-```env
-DB_CONNECTION=pgsql
-DB_HOST=<private-host-from-railway>
-DB_PORT=5432
-DB_DATABASE=railway
-DB_USERNAME=postgres
-DB_PASSWORD=PassWord
-```
+Dit linkt automatisch naar de private endpoint.
 
 #### Mail (Hostinger)
 ```env
@@ -128,29 +127,64 @@ railway run php artisan <command>
 
 ## Environment Variables Setup in Railway
 
-Ga naar Railway Dashboard → goitom-finance project → Selecteer je service → Settings → Variables
+Ga naar Railway Dashboard → goitom-finance project → Selecteer je **app service** → Settings → Variables → "Add Variable"
 
-### Required Variables
+### ✅ CORRECTE Configuratie (zonder egress fees)
 
-1. `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (Railway reference)
-2. `APP_ENV` = `production`
-3. `APP_DEBUG` = `false`
-4. `APP_KEY` = Run `php artisan key:generate` in Railway shell
-5. `APP_URL` = `https://goitom-finance-production.up.railway.app`
+**In je app service, voeg deze toe:**
 
-### Mail Variables
+1. **DATABASE_URL** = Gebruik Railway's private reference:
+   - Variable: `DATABASE_URL`
+   - Value: `${{Postgres.DATABASE_URL}}`
+   - Dit gebruikt automatisch: `postgresql://postgres:DvNJOjnKLHYQLTovDlWqZJCvIVultjwS@private:5432/railway`
 
-6. `MAIL_MAILER` = `smtp`
-7. `MAIL_HOST` = `smtp.hostinger.com`
-8. `MAIL_PORT` = `465`
-9. `MAIL_USERNAME` = `info@goitomfinance.email`
-10. `MAIL_PASSWORD` = `Mydude12=`
-11. `MAIL_ENCRYPTION` = `ssl`
-12. `MAIL_FROM_ADDRESS` = `info@goitomfinance.email`
-13. `MAIL_FROM_NAME` = `Goitom Finance`
+2. **APP_ENV** = `production`
 
-### Other
+3. **APP_DEBUG** = `false`
 
-14. `QUEUE_CONNECTION` = `database`
-15. `FILESYSTEM_DISK` = `public`
+4. **APP_URL** = `https://goitom-finance-production.up.railway.app`
+
+5. **MAIL_MAILER** = `smtp`
+
+6. **MAIL_HOST** = `smtp.hostinger.com`
+
+7. **MAIL_PORT** = `465`
+
+8. **MAIL_USERNAME** = `info@goitomfinance.email`
+
+9. **MAIL_PASSWORD** = `Mydude12=`
+
+10. **MAIL_ENCRYPTION** = `ssl`
+
+11. **MAIL_FROM_ADDRESS** = `info@goitomfinance.email`
+
+12. **MAIL_FROM_NAME** = `Goitom Finance`
+
+13. **QUEUE_CONNECTION** = `database`
+
+14. **FILESYSTEM_DISK** = `public`
+
+### ❌ FOUTIEVE Configuratie (trekt egress fees!)
+
+**Voeg deze NIET toe:**
+```env
+DB_CONNECTION=pgsql
+DB_HOST=centerbeam.proxy.rlwy.net  ← PUBLIC ENDPOINT
+DB_PORT=52027
+DB_DATABASE=railway
+DB_USERNAME=postgres
+DB_PASSWORD=PassWord
+```
+
+**Gebruik ALLEEN:**
+```env
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+```
+
+### Generate APP_KEY
+
+Na het toevoegen van de variabelen:
+```bash
+railway run php artisan key:generate
+```
 

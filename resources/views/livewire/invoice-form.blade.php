@@ -164,7 +164,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+</div>
 
             <!-- Actions -->
             <div class="flex justify-end space-x-4">
