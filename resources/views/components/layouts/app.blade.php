@@ -132,7 +132,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
+            animation: fade-in 0.4s ease-out;
         }
     </style>
 
