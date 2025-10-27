@@ -1,12 +1,22 @@
 [providers]
-php = { php = "^8.4", composer = true }
+php = { php = "^8.3", composer = true }
 
 [phases.setup]
-cmds = ["composer install --no-interaction"]
+aptPackages = ["libpq-dev", "libpng-dev", "libjpeg-dev", "libfreetype6-dev", "zip", "unzip", "git"]
+
+[phases.install]
+cmds = [
+  "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"",
+  "php composer-setup.php",
+  "php -r \"unlink('composer-setup.php');\"",
+  "php composer.phar install --no-dev --prefer-dist --optimize-autoloader",
+  "npm install",
+  "npm run build"
+]
 
 [phases.build]
-cmds = ["php artisan build"]
+cmds = []
 
 [start]
-cmd = "php artisan serve --host 0.0.0.0 --port $PORT"
+cmd = ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "$PORT"]
 
