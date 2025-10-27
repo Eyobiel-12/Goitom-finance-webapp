@@ -22,11 +22,7 @@
             <!-- Logo -->
             <div class="p-6 border-b border-yellow-400/20">
                 <a href="{{ route('app.dashboard') }}" class="group flex items-center space-x-3">
-                    <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="w-12 h-12 rounded-xl shadow-lg shadow-yellow-400/20 group-hover:shadow-yellow-400/40 transition-all group-hover:scale-105 object-cover">
-                    <div class="flex flex-col">
-                        <span class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Goitom</span>
-                        <span class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Finance</span>
-                    </div>
+                    <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="h-10 rounded-lg shadow-lg shadow-yellow-400/20 group-hover:shadow-yellow-400/40 transition-all group-hover:scale-105 object-contain">
                 </a>
             </div>
 
