@@ -23,8 +23,8 @@
                 <div class="absolute inset-0 bg-gray-950/10"></div>
                 <div class="relative z-10 flex flex-col justify-center items-center p-12">
                     <div class="text-center space-y-6">
-                        <div class="w-32 h-32 bg-white rounded-3xl flex items-center justify-center shadow-2xl mx-auto">
-                            <span class="text-6xl font-bold text-gray-900">G</span>
+                        <div class="flex justify-center">
+                            <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="h-32 rounded-3xl shadow-2xl object-contain">
                         </div>
                         <h1 class="text-5xl font-bold text-gray-900">Goitom Finance</h1>
                         <p class="text-xl text-gray-800">Professionele Financiële Diensten</p>
