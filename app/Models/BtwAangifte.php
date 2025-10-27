@@ -20,10 +20,13 @@ final class BtwAangifte extends Model
         'kwartaal',
         'btw_afdracht',
         'ontvangen_btw',
+        'omzet_excl_btw',
         'betaalde_btw',
+        'uitgaven_excl_btw',
         'btw_terug',
         'status',
         'indien_datum',
+        'opmerkingen',
     ];
 
     protected function casts(): array
@@ -33,7 +36,9 @@ final class BtwAangifte extends Model
             'kwartaal' => 'integer',
             'btw_afdracht' => 'decimal:2',
             'ontvangen_btw' => 'decimal:2',
+            'omzet_excl_btw' => 'decimal:2',
             'betaalde_btw' => 'decimal:2',
+            'uitgaven_excl_btw' => 'decimal:2',
             'btw_terug' => 'decimal:2',
             'indien_datum' => 'datetime',
         ];
@@ -49,9 +54,10 @@ final class BtwAangifte extends Model
      */
     public function calculate(): void
     {
-        // BTW ontvangen van klanten (facturen)
+        // BTW ontvangen van klanten (alleen BETAALDE facturen)
         $invoices = $this->organization
             ->invoices()
+            ->where('status', 'paid') // Alleen betaalde facturen tellen
             ->whereYear('issue_date', $this->jaar)
             ->when($this->kwartaal, function ($query) {
                 $quarterStart = \Carbon\Carbon::create($this->jaar, ($this->kwartaal - 1) * 3 + 1, 1);
@@ -60,12 +66,18 @@ final class BtwAangifte extends Model
             })
             ->get();
 
+        // Omzet EXCL BTW (net_amount van alle facturen)
+        $this->omzet_excl_btw = $invoices->sum(function ($invoice) {
+            return $invoice->items->sum('net_amount');
+        });
+
+        // BTW ontvangen INCL BTW
         $this->ontvangen_btw = $invoices->sum(function ($invoice) {
             return $invoice->items->sum('vat_amount');
         });
 
         // BTW betaald (BTW aftrek)
-        $this->betaalde_btw = $this->organization
+        $aftrekken = $this->organization
             ->btwAftrek()
             ->whereYear('datum', $this->jaar)
             ->when($this->kwartaal, function ($query) {
@@ -73,16 +85,22 @@ final class BtwAangifte extends Model
                 $quarterEnd = $quarterStart->copy()->endOfQuarter();
                 return $query->whereBetween('datum', [$quarterStart, $quarterEnd]);
             })
-            ->sum('btw_bedrag');
+            ->get();
 
-        // Bereken verschil
+        // Uitgaven EXCL BTW
+        $this->uitgaven_excl_btw = $aftrekken->sum('bedrag_excl_btw');
+
+        // BTW betaald
+        $this->betaalde_btw = $aftrekken->sum('btw_bedrag');
+
+        // Bereken verschil (BTW te betalen of terug)
         $verschil = $this->ontvangen_btw - $this->betaalde_btw;
 
         if ($verschil > 0) {
-            $this->btw_afdracht = $verschil; // Te betalen
+            $this->btw_afdracht = $verschil; // Te betalen aan belastingdienst
             $this->btw_terug = 0;
         } else {
-            $this->btw_terug = abs($verschil); // Te ontvangen
+            $this->btw_terug = abs($verschil); // Te ontvangen van belastingdienst
             $this->btw_afdracht = 0;
         }
     }
