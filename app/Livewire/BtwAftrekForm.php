@@ -105,7 +105,7 @@ final class BtwAftrekForm extends Component
             session()->flash('message', 'BTW aftrek toegevoegd!');
         }
 
-        return redirect()->route('app.btw-aftrek.index');
+        $this->redirect(route('app.btw-aftrek.index'), navigate: true);
     }
 
     public function render()
