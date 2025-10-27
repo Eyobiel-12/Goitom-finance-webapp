@@ -20,11 +20,16 @@ Ga naar het Railway dashboard en voeg deze environment variables toe:
 #### Database (Railway Postgres)
 ```env
 DB_CONNECTION=pgsql
-DB_HOST=<railway-postgres-host>
-DB_PORT=5432
+DB_HOST=centerbeam.proxy.rlwy.net
+DB_PORT=52027
 DB_DATABASE=railway
 DB_USERNAME=postgres
-DB_PASSWORD=<railway-postgres-password>
+DB_PASSWORD=PassWord
+```
+
+Of gebruik de DATABASE_URL:
+```env
+DATABASE_URL=postgresql://postgres:PassWord@centerbeam.proxy.rlwy.net:52027/railway
 ```
 
 #### Mail (Hostinger)
