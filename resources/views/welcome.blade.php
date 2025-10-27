@@ -47,6 +47,11 @@
     <section class="min-h-screen flex items-center justify-center pt-24 pb-12 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
+                <!-- Logo -->
+                <div class="flex justify-center mb-8">
+                    <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="h-24 rounded-lg shadow-2xl shadow-yellow-400/20 object-contain">
+                </div>
+                
                 <h1 class="text-6xl md:text-7xl font-bold mb-6 leading-tight">
                     <span class="text-white">Beheer je financiën</span>
                     <br>

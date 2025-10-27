@@ -2,9 +2,7 @@
         <!-- Logo -->
         <div class="text-center">
             <div class="flex justify-center mb-6">
-                <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-yellow-400/30">
-                    <span class="text-4xl font-bold text-gray-900">G</span>
-                </div>
+                <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="h-20 rounded-2xl shadow-2xl shadow-yellow-400/30 object-contain">
             </div>
             <h2 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                 Account Aanmaken
