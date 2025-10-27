@@ -49,11 +49,14 @@ WORKDIR /var/www
 # Copy composer files
 COPY composer.json composer.lock ./
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install dependencies (skip scripts because artisan file doesn't exist yet)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 # Copy application files
 COPY . .
+
+# Run composer scripts now that artisan exists
+RUN composer dump-autoload --optimize --no-interaction
 
 # Build frontend assets
 RUN apk add --no-cache nodejs npm && \
