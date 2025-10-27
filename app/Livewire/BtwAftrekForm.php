@@ -53,6 +53,13 @@ final class BtwAftrekForm extends Component
 
     public function nextStep(): void
     {
+        // Validate current step before proceeding
+        if ($this->current_step === 1) {
+            $this->validate(['naam' => 'required|string|max:255', 'datum' => 'required|date']);
+        } elseif ($this->current_step === 2) {
+            $this->validate(['bedrag_excl_btw' => 'required|numeric|min:0', 'btw_percentage' => 'required|numeric|min:0|max:100']);
+        }
+
         if ($this->current_step < $this->total_steps) {
             $this->current_step++;
         }

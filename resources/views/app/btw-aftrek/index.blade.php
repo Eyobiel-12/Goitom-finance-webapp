@@ -17,45 +17,55 @@
                 </a>
             </div>
 
+            <!-- Success Message -->
+            @if(session('message'))
+            <div class="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center space-x-3 animate-fade-in">
+                <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-green-400 font-semibold">{{ session('message') }}</p>
+            </div>
+            @endif
+
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm text-gray-400">Totaal Aftrek</p>
+                        <p class="text-sm text-gray-400">Totaal BTW Aftrek</p>
                         <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <h2 class="text-3xl font-bold text-white">
-                        €{{ number_format(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->sum('btw_bedrag'), 2) }}
+                    <h2 class="text-3xl font-bold text-white mb-1">
+                        €{{ number_format(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->sum('btw_bedrag'), 2, ',', '.') }}
                     </h2>
-                    <p class="text-xs text-gray-500 mt-2">Alle aftrekposten bij elkaar</p>
+                    <p class="text-xs text-gray-500">Alle aftrekposten bij elkaar</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm text-gray-400">Aantal Posten</p>
                         <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
                     </div>
-                    <h2 class="text-3xl font-bold text-white">
+                    <h2 class="text-3xl font-bold text-white mb-1">
                         {{ \App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->count() }}
                     </h2>
-                    <p class="text-xs text-gray-500 mt-2">Totaal aantal aftrekposten</p>
+                    <p class="text-xs text-gray-500">Totaal aantal aftrekposten</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm text-gray-400">Dit Jaar</p>
+                        <p class="text-sm text-gray-400">Dit Jaar ({{ now()->year }})</p>
                         <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
-                    <h2 class="text-3xl font-bold text-white">
-                        €{{ number_format(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->whereYear('datum', now()->year)->sum('btw_bedrag'), 2) }}
+                    <h2 class="text-3xl font-bold text-white mb-1">
+                        €{{ number_format(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->whereYear('datum', now()->year)->sum('btw_bedrag'), 2, ',', '.') }}
                     </h2>
-                    <p class="text-xs text-gray-500 mt-2">BTW aftrek {{ now()->year }}</p>
+                    <p class="text-xs text-gray-500">BTW aftrek dit jaar</p>
                 </div>
             </div>
 
