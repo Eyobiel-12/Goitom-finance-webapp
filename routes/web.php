@@ -76,6 +76,14 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::get('/pdf-settings', function () {
         return view('app.pdf-settings');
     })->name('pdf-settings');
+    
+    // BTW Aftrek routes
+    Route::get('/btw-aftrek', function () {
+        return view('app.btw-aftrek.index');
+    })->name('btw-aftrek.index');
+    Route::get('/btw-aftrek/create', function () {
+        return view('app.btw-aftrek.create');
+    })->name('btw-aftrek.create');
 });
 
 // Legacy dashboard route for Breeze compatibility
