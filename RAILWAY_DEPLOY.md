@@ -18,18 +18,26 @@ railway link --project goitom-finance
 Ga naar het Railway dashboard en voeg deze environment variables toe:
 
 #### Database (Railway Postgres)
+
+**⚠️ BELANGRIJK**: Gebruik de private endpoint om egress fees te vermijden!
+
+Railway stelt automatisch deze variabelen beschikbaar:
+- `${{Postgres.DATABASE_URL}}` - Private endpoint (GEBRUIK DIT!)
+- `${{Postgres.DATABASE_PUBLIC_URL}}` - Public endpoint (INCR LOSSEN!)
+
+Set deze in Railway dashboard:
+```env
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+```
+
+Of handmatig met private host (in dashboard wordt de private host getoond):
 ```env
 DB_CONNECTION=pgsql
-DB_HOST=centerbeam.proxy.rlwy.net
-DB_PORT=52027
+DB_HOST=<private-host-from-railway>
+DB_PORT=5432
 DB_DATABASE=railway
 DB_USERNAME=postgres
 DB_PASSWORD=PassWord
-```
-
-Of gebruik de DATABASE_URL:
-```env
-DATABASE_URL=postgresql://postgres:PassWord@centerbeam.proxy.rlwy.net:52027/railway
 ```
 
 #### Mail (Hostinger)
@@ -114,6 +122,35 @@ railway run php artisan <command>
 
 - Zorg dat APP_KEY is gegenereerd
 - Database wordt automatisch geconfigureerd door Railway
+- **GEBRUIK PRIVATE ENDPOINT** (`${{Postgres.DATABASE_URL}}`) om egress fees te vermijden
 - Mail configuratie is al aanwezig
 - Queue worker moet als aparte service draaien
+
+## Environment Variables Setup in Railway
+
+Ga naar Railway Dashboard → goitom-finance project → Selecteer je service → Settings → Variables
+
+### Required Variables
+
+1. `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (Railway reference)
+2. `APP_ENV` = `production`
+3. `APP_DEBUG` = `false`
+4. `APP_KEY` = Run `php artisan key:generate` in Railway shell
+5. `APP_URL` = `https://goitom-finance-production.up.railway.app`
+
+### Mail Variables
+
+6. `MAIL_MAILER` = `smtp`
+7. `MAIL_HOST` = `smtp.hostinger.com`
+8. `MAIL_PORT` = `465`
+9. `MAIL_USERNAME` = `info@goitomfinance.email`
+10. `MAIL_PASSWORD` = `Mydude12=`
+11. `MAIL_ENCRYPTION` = `ssl`
+12. `MAIL_FROM_ADDRESS` = `info@goitomfinance.email`
+13. `MAIL_FROM_NAME` = `Goitom Finance`
+
+### Other
+
+14. `QUEUE_CONNECTION` = `database`
+15. `FILESYSTEM_DISK` = `public`
 
