@@ -21,7 +21,7 @@
         <aside class="w-72 bg-gray-950/95 backdrop-blur-xl border-r border-yellow-400/20 min-h-screen flex flex-col shadow-2xl">
             <!-- Logo -->
             <div class="p-6 border-b border-yellow-400/20">
-                <a href="{{ route('app.dashboard') }}" class="group flex items-center space-x-3">
+                <a href="{{ route('app.dashboard') }}" class="group flex items-center justify-center">
                     <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="h-10 rounded-lg shadow-lg shadow-yellow-400/20 group-hover:shadow-yellow-400/40 transition-all group-hover:scale-105 object-contain">
                 </a>
             </div>
