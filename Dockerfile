@@ -82,7 +82,11 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Configure PHP
 COPY docker/php.ini /usr/local/etc/php/php.ini
 
+# Copy startup script
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 8000
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/start.sh"]
 
