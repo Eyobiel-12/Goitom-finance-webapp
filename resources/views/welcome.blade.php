@@ -23,10 +23,11 @@
         <div class="max-w-7xl mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
-                        <span class="text-xl font-bold text-gray-900">G</span>
+                    <img src="{{ asset('logo.png') }}" alt="Goitom Finance" class="w-10 h-10 rounded-lg shadow-lg object-cover">
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Goitom</span>
+                        <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Finance</span>
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Goitom Finance</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
