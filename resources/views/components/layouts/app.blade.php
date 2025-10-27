@@ -16,9 +16,11 @@
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex relative">
+        @livewire('sidebar-toggle')
+        
         <!-- Sidebar -->
-        <aside class="w-72 bg-gray-950/95 backdrop-blur-xl border-r border-yellow-400/20 min-h-screen flex flex-col shadow-2xl">
+        <aside id="sidebar" class="w-72 bg-gray-950/95 backdrop-blur-xl border-r border-yellow-400/20 min-h-screen flex flex-col shadow-2xl transition-all duration-300">
             <!-- Logo -->
             <div class="p-6 border-b border-yellow-400/20">
                 <a href="{{ route('app.dashboard') }}" class="group flex items-center justify-center">

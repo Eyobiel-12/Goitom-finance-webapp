@@ -215,6 +215,7 @@ final class InvoiceService
         $year = now()->year;
         $prefix = "INV-{$year}-";
         
+        // Get the last invoice number
         $lastInvoice = Invoice::where('organization_id', $organizationId)
             ->where('number', 'like', $prefix . '%')
             ->orderBy('number', 'desc')
@@ -227,6 +228,18 @@ final class InvoiceService
             $nextNumber = 1;
         }
 
-        return $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+        $invoiceNumber = $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+        
+        // Check if number already exists, increment if it does
+        $maxAttempts = 100;
+        $attempts = 0;
+        
+        while (Invoice::where('number', $invoiceNumber)->exists() && $attempts < $maxAttempts) {
+            $nextNumber++;
+            $invoiceNumber = $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+            $attempts++;
+        }
+
+        return $invoiceNumber;
     }
 }
