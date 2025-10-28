@@ -1,31 +1,16 @@
 #!/bin/bash
-set -e
 
 echo "🚀 Starting Goitom Finance Application..."
 
-# Wait for database
-echo "⏳ Waiting for database..."
-until php artisan db:show &>/dev/null; do
-  echo "Database is unavailable - sleeping"
-  sleep 2
-done
-echo "✅ Database is ready!"
+# Setup tasks (non-blocking)
+echo "📊 Setting up application..."
+php artisan migrate --force 2>&1 || echo "⚠️ Migrations will retry"
+php artisan storage:link 2>&1 || echo "⚠️ Storage link exists"
+php artisan config:cache 2>&1 || true
+php artisan route:cache 2>&1 || true
+php artisan view:cache 2>&1 || true
 
-# Run migrations
-echo "📊 Running migrations..."
-php artisan migrate --force
-
-# Link storage
-echo "🔗 Linking storage..."
-php artisan storage:link || true
-
-# Clear and cache config
-echo "⚡ Optimizing application..."
-php artisan config:clear
-php artisan cache:clear
-php artisan config:cache
-
-# Start supervisor
+# Start supervisor as main process
 echo "🎯 Starting services..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 

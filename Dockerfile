@@ -79,13 +79,14 @@ RUN chmod -R 755 /var/www/storage && \
 
 # Configure nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/default.conf /etc/nginx/http.d/default.conf
+COPY docker/default.conf /etc/nginx/conf.d/default.conf
 
 # Configure supervisor
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Configure PHP
 COPY docker/php.ini /usr/local/etc/php/php.ini
+COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Copy startup script
 COPY docker/start.sh /start.sh
