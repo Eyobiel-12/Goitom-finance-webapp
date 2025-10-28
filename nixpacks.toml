@@ -1,0 +1,22 @@
+[providers]
+php = "^8.2"
+composer = true
+
+[phases.setup]
+nixpkgs = []
+aptPackages = ["libicu-dev", "zlib1g-dev"]
+commands = [
+  "docker-php-ext-install intl zip"
+]
+
+[phases.install]
+cmds = [
+  "composer install --optimize-autoloader --no-dev --no-interaction --ignore-platform-reqs"
+]
+
+[phases.build]
+cmds = []
+
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
+
