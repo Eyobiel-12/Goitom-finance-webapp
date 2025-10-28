@@ -1,0 +1,15 @@
+{
+  "providers": {
+    "php": "^8.2",
+    "composer": true
+  },
+  "build": {
+    "instructions": [
+      "install-php-extensions intl zip"
+    ]
+  },
+  "start": {
+    "command": "php artisan serve --host=0.0.0.0 --port=$PORT"
+  }
+}
+
