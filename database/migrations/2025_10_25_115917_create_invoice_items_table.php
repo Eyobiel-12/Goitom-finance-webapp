@@ -11,29 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('project_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('number')->unique();
-            $table->date('issue_date');
-            $table->date('due_date')->nullable();
-            $table->decimal('subtotal', 15, 2)->default(0);
-            $table->decimal('vat_total', 15, 2)->default(0);
-            $table->decimal('total', 15, 2)->default(0);
-            $table->string('currency', 3)->default('EUR');
-            $table->enum('status', ['draft', 'sent', 'paid', 'overdue', 'cancelled'])->default('draft');
-            $table->string('pdf_path')->nullable();
-            $table->timestamp('sent_at')->nullable();
-            $table->text('notes')->nullable();
-            $table->json('metadata')->nullable(); // extra data like payment terms, etc.
+            $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
+            $table->string('description');
+            $table->decimal('qty', 10, 2)->default(1);
+            $table->decimal('unit_price', 10, 2);
+            $table->decimal('vat_rate', 5, 2)->default(21.00);
+            $table->decimal('net_amount', 10, 2); // qty * unit_price
+            $table->decimal('vat_amount', 10, 2); // net_amount * vat_rate / 100
+            $table->decimal('line_total', 10, 2); // net_amount + vat_amount
             $table->timestamps();
             
-            $table->index(['organization_id', 'status']);
-            $table->index(['client_id', 'status']);
-            $table->index(['issue_date', 'status']);
-            $table->index(['due_date', 'status']);
+            $table->index(['invoice_id']);
         });
     }
 
@@ -42,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('invoice_items');
     }
 };
