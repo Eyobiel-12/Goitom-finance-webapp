@@ -165,15 +165,15 @@
             <div class="space-y-4">
                 <div class="flex justify-between items-center p-3 bg-gray-900/50 rounded-xl">
                     <span class="text-gray-300 font-medium">Bedrag excl. BTW:</span>
-                    <span class="text-white font-bold text-lg">€{{ number_format($bedrag_excl_btw, 2, ',', '.') }}</span>
+                    <span class="text-white font-bold text-lg">€{{ number_format((float)($bedrag_excl_btw ?? 0), 2, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between items-center p-3 bg-gray-900/50 rounded-xl">
                     <span class="text-gray-300 font-medium">BTW ({{ $btw_percentage }}%):</span>
-                    <span class="text-yellow-400 font-bold text-lg">€{{ number_format($this->calculatedBtw, 2, ',', '.') }}</span>
+                    <span class="text-yellow-400 font-bold text-lg">€{{ number_format((float)($this->calculatedBtw ?? 0), 2, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between items-center p-4 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-xl border-2 border-yellow-400/30">
                     <span class="text-white font-bold text-xl">Totaal Bedrag:</span>
-                    <span class="text-yellow-400 font-bold text-2xl">€{{ number_format($this->calculatedTotal, 2, ',', '.') }}</span>
+                    <span class="text-yellow-400 font-bold text-2xl">€{{ number_format((float)($this->calculatedTotal ?? 0), 2, ',', '.') }}</span>
                 </div>
             </div>
         </div>
@@ -248,15 +248,15 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center p-3 bg-gray-900/50 rounded-xl">
                         <span class="text-gray-300">Bedrag excl. BTW:</span>
-                        <span class="text-white font-bold text-lg">€{{ number_format($bedrag_excl_btw, 2, ',', '.') }}</span>
+                        <span class="text-white font-bold text-lg">€{{ number_format((float)($bedrag_excl_btw ?? 0), 2, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center p-3 bg-gray-900/50 rounded-xl">
                         <span class="text-gray-300">BTW Bedrag:</span>
-                        <span class="text-green-400 font-bold text-lg">+ €{{ number_format($this->calculatedBtw, 2, ',', '.') }}</span>
+                        <span class="text-green-400 font-bold text-lg">+ €{{ number_format((float)($this->calculatedBtw ?? 0), 2, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center p-5 bg-gradient-to-r from-green-400/20 to-green-600/20 rounded-xl border-2 border-green-400/30">
                         <span class="text-white font-bold text-xl">Totaal Aftrek:</span>
-                        <span class="text-green-400 font-bold text-3xl">€{{ number_format($this->calculatedTotal, 2, ',', '.') }}</span>
+                        <span class="text-green-400 font-bold text-3xl">€{{ number_format((float)($this->calculatedTotal ?? 0), 2, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
