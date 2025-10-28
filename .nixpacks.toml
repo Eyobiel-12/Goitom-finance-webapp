@@ -4,9 +4,9 @@ composer = true
 
 [phases.setup]
 nixpkgs = []
-aptPackages = ["libicu-dev", "libzip-dev"]
+aptPackages = ["libicu-dev", "libzip-dev", "libpq-dev"]
 commands = [
-  "docker-php-ext-install intl zip"
+  "docker-php-ext-install intl zip pgsql pdo_pgsql"
 ]
 
 [phases.install]
