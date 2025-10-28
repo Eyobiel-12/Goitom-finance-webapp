@@ -4,19 +4,14 @@ composer = true
 
 [phases.setup]
 nixpkgs = []
-aptPackages = ["libicu-dev", "zlib1g-dev"]
+aptPackages = ["libicu-dev", "libzip-dev"]
 commands = [
   "docker-php-ext-install intl zip"
 ]
 
 [phases.install]
 cmds = [
-  "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"",
-  "php composer-setup.php",
-  "php -r \"unlink('composer-setup.php');\"",
-  "composer install --no-dev --optimize-autoloader --no-interaction",
-  "npm ci",
-  "npm run build"
+  "composer install --optimize-autoloader --no-dev --no-interaction --ignore-platform-reqs"
 ]
 
 [phases.build]
@@ -24,4 +19,3 @@ cmds = []
 
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
-
