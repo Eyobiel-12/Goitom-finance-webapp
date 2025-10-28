@@ -11,8 +11,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&family=playfair-display:400,500,600,700" rel="stylesheet" />
 
-        <link rel="stylesheet" href="{{ asset('build/assets/app-BVG48AMd.css') }}">
-    <script type="module" src="{{ asset('build/assets/app-CXDpL9bK.js') }}"></script>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
         <div class="min-h-screen flex items-center justify-center px-6 py-12">
