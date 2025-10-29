@@ -80,12 +80,15 @@ final class BtwAftrekForm extends Component
 
     public function getCalculatedBtwProperty(): float
     {
-        return $this->bedrag_excl_btw * ($this->btw_percentage / 100);
+        $bedrag = (float)($this->bedrag_excl_btw ?? 0);
+        $btwPercentage = (float)($this->btw_percentage ?? 0);
+        return $bedrag * ($btwPercentage / 100);
     }
 
     public function getCalculatedTotalProperty(): float
     {
-        return $this->bedrag_excl_btw + $this->calculatedBtw;
+        $bedrag = (float)($this->bedrag_excl_btw ?? 0);
+        return $bedrag + $this->calculatedBtw;
     }
 
     public function save(): void

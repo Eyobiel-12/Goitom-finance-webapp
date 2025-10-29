@@ -6,6 +6,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
+// Lightweight health endpoint for container healthchecks
+Route::get('/health', function () {
+    return response('ok', 200);
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
