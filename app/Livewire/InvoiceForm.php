@@ -23,6 +23,7 @@ final class InvoiceForm extends Component
     public $currency = 'EUR';
     public $status = 'draft';
     public $notes = '';
+    public $vat_percentage = 21;
     
     public $items = [];
     public $newItem = [

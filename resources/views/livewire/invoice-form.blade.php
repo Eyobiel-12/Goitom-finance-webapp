@@ -164,7 +164,7 @@
                     <p class="text-sm text-gray-400 mb-4">BTW en eindberekeningen</p>
                     <div class="mb-6 max-w-md">
                         <label class="block text-sm font-medium text-gray-400 mb-2">BTW Percentage (%)</label>
-                        <input type="number" step="0.01" value="21" 
+                        <input type="number" step="0.01" wire:model="vat_percentage" 
                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
                     </div>
                     <div class="space-y-3">
@@ -173,7 +173,7 @@
                             <span class="font-semibold">€{{ number_format($this->subtotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-gray-400">
-                            <span>BTW</span>
+                            <span>BTW ({{ $vat_percentage }}%)</span>
                             <span class="font-semibold">€{{ number_format($this->vatTotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-2xl font-bold pt-3 border-t border-gray-800">
@@ -182,7 +182,7 @@
                         </div>
                     </div>
                 </div>
-</div>
+            </div>
 
             <!-- Actions -->
             <div class="flex justify-end space-x-4">
