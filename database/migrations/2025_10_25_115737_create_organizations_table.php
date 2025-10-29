@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('owner_user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('owner_user_id');
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('vat_number')->nullable(); // encrypted

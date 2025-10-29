@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vat_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('organization_id');
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal('taxable_base', 15, 2)->default(0);

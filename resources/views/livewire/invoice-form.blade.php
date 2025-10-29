@@ -31,7 +31,8 @@
         <form wire:submit.prevent="save">
             <!-- Invoice Details -->
             <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 mb-6">
-                <h3 class="text-xl font-bold text-white mb-6">Factuur Gegevens</h3>
+                <h3 class="text-xl font-bold text-white mb-1">Factuur Details</h3>
+                <p class="text-sm text-gray-400 mb-6">Basis factuur informatie</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Factuurnummer</label>
@@ -93,41 +94,51 @@
             <!-- Invoice Items -->
             <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 mb-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-white">Factuurregels</h3>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Factuurregels</h3>
+                        <p class="text-sm text-gray-400">Voeg diensten en producten toe</p>
+                    </div>
                     <button type="button" wire:click="addItem" 
                             class="px-4 py-2 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-xl hover:bg-yellow-400/20 transition-all text-sm font-semibold flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                        Regel Toevoegen
+                        Item Toevoegen
                     </button>
                 </div>
 
                 @if(count($items) > 0)
                 <div class="space-y-3">
+                    <!-- Column headers -->
+                    <div class="hidden md:grid md:grid-cols-12 gap-4 px-4 text-xs uppercase tracking-wide text-gray-400">
+                        <div class="md:col-span-6">Omschrijving</div>
+                        <div class="md:col-span-2 text-right">Aantal</div>
+                        <div class="md:col-span-2 text-right">Prijs per stuk (EUR)</div>
+                        <div class="md:col-span-2 text-right">Bedrag</div>
+                    </div>
                     @foreach($items as $index => $item)
-                    <div class="flex items-center gap-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
-                        <input type="text" wire:model="items.{{ $index }}.description" 
-                               placeholder="Omschrijving" 
-                               class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                        <input type="number" step="0.01" wire:model="items.{{ $index }}.qty" 
-                               placeholder="Aantal" 
-                               class="w-24 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                        <input type="number" step="0.01" wire:model="items.{{ $index }}.unit_price" 
-                               placeholder="Prijs" 
-                               class="w-32 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                        <input type="number" step="0.01" wire:model="items.{{ $index }}.vat_rate" 
-                               placeholder="BTW %" 
-                               class="w-24 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                        <div class="w-32 text-right font-bold text-yellow-400">
-                            €{{ number_format($item['qty'] * $item['unit_price'] * (1 + $item['vat_rate'] / 100), 2) }}
+                    <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                            <input type="text" wire:model="items.{{ $index }}.description" 
+                                   placeholder="Omschrijving van dienst of product" 
+                                   class="md:col-span-6 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                            <input type="number" step="0.01" wire:model="items.{{ $index }}.qty" 
+                                   placeholder="1" 
+                                   class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
+                            <input type="number" step="0.01" wire:model="items.{{ $index }}.unit_price" 
+                                   placeholder="0" 
+                                   class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
+                            <div class="md:col-span-2 relative">
+                                <input type="text" disabled placeholder="0.00" value="{{ number_format($item['qty'] * $item['unit_price'] * (1 + ($item['vat_rate'] ?? 0) / 100), 2) }}" 
+                                       class="w-full pr-10 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-right text-yellow-400" />
+                                <button type="button" wire:click="removeItem({{ $index }})" 
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <button type="button" wire:click="removeItem({{ $index }})" 
-                                class="p-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
                     </div>
                     @endforeach
                 </div>
@@ -140,6 +151,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Notes -->
                 <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                    <h3 class="text-xl font-bold text-white mb-4">Aanvullende informatie</h3>
                     <label class="block text-sm font-medium text-gray-400 mb-2">Opmerkingen</label>
                     <textarea wire:model="notes" rows="5" 
                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all"
@@ -148,7 +160,13 @@
 
                 <!-- Totals -->
                 <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
-                    <h3 class="text-xl font-bold text-white mb-6">Overzicht</h3>
+                    <h3 class="text-xl font-bold text-white mb-1">Factuur Totalen</h3>
+                    <p class="text-sm text-gray-400 mb-4">BTW en eindberekeningen</p>
+                    <div class="mb-6 max-w-md">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">BTW Percentage (%)</label>
+                        <input type="number" step="0.01" value="21" 
+                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                    </div>
                     <div class="space-y-3">
                         <div class="flex justify-between text-gray-400">
                             <span>Subtotaal</span>

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('actor_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('organization_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedBigInteger('actor_id')->nullable();
+            $table->unsignedBigInteger('organization_id')->nullable();
             $table->string('action'); // created, updated, deleted, sent, etc.
             $table->string('target_type'); // App\Models\Invoice, App\Models\Client, etc.
             $table->unsignedBigInteger('target_id');

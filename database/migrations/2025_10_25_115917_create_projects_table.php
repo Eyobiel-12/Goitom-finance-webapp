@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('client_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('organization_id');
+            $table->unsignedBigInteger('client_id');
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('status', ['active', 'completed', 'paused', 'cancelled'])->default('active');

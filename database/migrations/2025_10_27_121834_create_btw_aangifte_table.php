@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('btw_aangifte', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('organization_id');
             $table->year('jaar')->index();
             $table->tinyInteger('kwartaal')->nullable(); // 1-4 for quarterly, null for annual
             $table->decimal('btw_afdracht', 10, 2)->default(0); // Te betalen BTW

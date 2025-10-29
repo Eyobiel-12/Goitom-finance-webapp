@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('btw_aftrek', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('organization_id');
             $table->string('naam'); // Naam van de aftrekpost
             $table->text('beschrijving')->nullable();
             $table->decimal('bedrag_excl_btw', 10, 2); // Bedrag zonder BTW

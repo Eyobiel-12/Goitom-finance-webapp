@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('organization_id');
             $table->string('category')->default('invoice'); // invoice, email, etc.
             $table->string('name');
             $table->longText('html');
