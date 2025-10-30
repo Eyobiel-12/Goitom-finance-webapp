@@ -1,12 +1,14 @@
 [providers]
-php = "^8.2"
+php = "^8.3"
 composer = true
 
 [phases.setup]
 nixpkgs = []
-aptPackages = ["libicu-dev", "zlib1g-dev"]
+aptPackages = ["libicu-dev", "zlib1g-dev", "libpng-dev", "libjpeg-dev", "libfreetype6-dev"]
 commands = [
-  "docker-php-ext-install intl zip"
+  "docker-php-ext-install intl zip",
+  "docker-php-ext-configure gd --with-freetype --with-jpeg",
+  "docker-php-ext-install gd"
 ]
 
 [phases.install]
