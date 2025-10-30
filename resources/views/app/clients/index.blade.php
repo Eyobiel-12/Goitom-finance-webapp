@@ -17,18 +17,23 @@
 
             <!-- Search and Filters -->
             <div class="mb-6 flex gap-4 items-center">
-                <div class="flex-1 relative">
-                    <input type="text" placeholder="Zoek klanten..." 
-                           class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <select class="px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-400 transition-all">
-                    <option>Alle klanten</option>
-                    <option>Actieve klanten</option>
-                    <option>Inactieve klanten</option>
-                </select>
+                <form method="GET" action="{{ route('app.clients.index') }}" class="flex-1 relative flex gap-4 items-center">
+                    <div class="flex-1 relative">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Zoek klanten..." 
+                               class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button type="submit" class="px-6 py-3 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-xl hover:bg-yellow-400/20 transition-all duration-150 font-semibold">
+                        Zoeken
+                    </button>
+                    @if(request('search'))
+                    <a href="{{ route('app.clients.index') }}" class="px-6 py-3 bg-gray-800/50 text-gray-300 border border-gray-700 rounded-xl hover:bg-gray-800 transition-all duration-150 font-semibold">
+                        Reset
+                    </a>
+                    @endif
+                </form>
                 <div class="flex items-center bg-gray-900 rounded-xl p-1 border border-gray-700">
                     <button onclick="showGridView()" id="gridViewBtn" class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-lg transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +50,7 @@
 
             <!-- Clients Grid -->
             <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse(\App\Models\Client::where('organization_id', auth()->user()->organization_id)->latest()->get() as $client)
+                @forelse($clients as $client)
                 <div class="group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-400/10 hover:-translate-y-1">
                     <!-- Hover overlay -->
                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -84,11 +89,11 @@
                         <div class="flex gap-4 mt-4 pt-4 border-t border-gray-800">
                             <div>
                                 <p class="text-xs text-gray-500">Projecten</p>
-                                <p class="text-lg font-bold text-white">{{ $client->projects->count() }}</p>
+                                <p class="text-lg font-bold text-white">{{ $client->projects_count }}</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500">Facturen</p>
-                                <p class="text-lg font-bold text-white">{{ $client->invoices->count() }}</p>
+                                <p class="text-lg font-bold text-white">{{ $client->invoices_count }}</p>
                             </div>
                         </div>
 
@@ -120,7 +125,7 @@
 
             <!-- Clients List View -->
             <div id="listView" class="hidden space-y-4">
-                @forelse(\App\Models\Client::where('organization_id', auth()->user()->organization_id)->latest()->get() as $client)
+                @forelse($clients as $client)
                 <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-6 flex-1">
@@ -153,11 +158,11 @@
                             <div class="flex gap-4">
                                 <div>
                                     <p class="text-xs text-gray-500">Projecten</p>
-                                    <p class="text-lg font-bold text-white">{{ $client->projects->count() }}</p>
+                                    <p class="text-lg font-bold text-white">{{ $client->projects_count }}</p>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500">Facturen</p>
-                                    <p class="text-lg font-bold text-white">{{ $client->invoices->count() }}</p>
+                                    <p class="text-lg font-bold text-white">{{ $client->invoices_count }}</p>
                                 </div>
                             </div>
                             <div class="flex gap-2">
@@ -183,6 +188,12 @@
                 </div>
                 @endforelse
             </div>
+            
+            @if($clients->hasPages())
+            <div class="mt-8 px-6 py-4 border-t border-gray-800/50 bg-gray-800/20 rounded-xl">
+                {{ $clients->links() }}
+            </div>
+            @endif
         </div>
     </div>
 

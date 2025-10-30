@@ -15,10 +15,20 @@ final class ClientController extends Controller
 {
     public function index(Request $request): View
     {
-        $clients = Client::forOrganization(auth()->user()->organization_id)
-            ->withCount(['projects', 'invoices'])
-            ->latest()
-            ->paginate(12);
+        $query = Client::forOrganization(auth()->user()->organization_id)
+            ->withCount(['projects', 'invoices']);
+        
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+        
+        $clients = $query->latest()->paginate(12)->withQueryString();
 
         return view('app.clients.index', compact('clients'));
     }

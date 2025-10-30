@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BtwController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
@@ -83,9 +84,7 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     })->name('pdf-settings');
     
     // BTW Management
-    Route::get('/btw', function () {
-        return view('app.btw.index');
-    })->name('btw.index');
+    Route::get('/btw', [\App\Http\Controllers\BtwController::class, 'index'])->name('btw.index');
     
     // BTW Aftrek routes
     Route::get('/btw/aftrek', function () {

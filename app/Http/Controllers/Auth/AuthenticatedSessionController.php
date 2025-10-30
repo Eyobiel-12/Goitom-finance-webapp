@@ -27,8 +27,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+        // Set flash to show welcome message on dashboard
+        $request->session()->flash('show_welcome', true);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirect direct naar het app dashboard zodat de flash beschikbaar is (geen extra redirect stap)
+        return redirect()->intended(route('app.dashboard', absolute: false));
     }
 
     /**

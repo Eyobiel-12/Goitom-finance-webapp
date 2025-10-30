@@ -109,12 +109,21 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Bar -->
-            <header class="bg-gray-950/80 backdrop-blur-xl border-b border-yellow-400/20 px-6 py-4 sticky top-0 z-10 shadow-lg">
-                <h1 class="text-2xl font-bold">
-                    <span class="text-gray-400">Welkom terug,</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{{ Auth::user()->name }}</span>
-                </h1>
+            <header class="bg-transparent backdrop-blur-sm px-6 py-4 sticky top-0 z-10">
             </header>
+
+            <!-- Welcome Popup Overlay -->
+            @if(request()->routeIs('app.dashboard') && session('show_welcome'))
+            <div id="welcomePopupOverlay" class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+                <div id="welcomeMessage" class="welcome-popup opacity-0 pointer-events-none bg-gradient-to-br from-gray-900/95 to-gray-950/95 backdrop-blur-xl rounded-2xl px-8 py-6 border border-yellow-400/30 shadow-2xl">
+                    <h1 class="text-3xl font-bold text-center">
+                        <span class="text-gray-300">Welkom terug,</span>
+                        <br>
+                        <span class="text-yellow-400">{{ Auth::user()->name }}</span>
+                    </h1>
+                </div>
+            </div>
+            @endif
 
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto p-6">
@@ -133,11 +142,67 @@
         .animate-fade-in {
             animation: fade-in 0.4s ease-out;
         }
+        
+        @keyframes welcome-pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(-30px);
+                filter: blur(10px);
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1.1) translateY(0);
+                filter: blur(0);
+            }
+            15% {
+                transform: scale(1) translateY(0);
+            }
+            85% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.7) translateY(-30px);
+                filter: blur(10px);
+            }
+        }
+        
+        .welcome-popup.show {
+            animation: welcome-pop 5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        #welcomePopupOverlay {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
     </style>
 
     @livewireScripts
     
     <!-- Onboarding Tour -->
     @livewire('onboarding-tour')
+    
+    @if(request()->routeIs('app.dashboard') && session('show_welcome'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const welcomeOverlay = document.getElementById('welcomePopupOverlay');
+            if (!welcomeMessage || !welcomeOverlay) return;
+            
+            // Trigger animatie direct bij eerste load na login
+            setTimeout(() => {
+                welcomeMessage.classList.add('show');
+                welcomeOverlay.classList.remove('pointer-events-none');
+            }, 150);
+            
+            // Verwijder na animatie compleet
+            setTimeout(() => {
+                welcomeOverlay.style.display = 'none';
+            }, 5000);
+        });
+    </script>
+    @endif
 </body>
 </html>
+
