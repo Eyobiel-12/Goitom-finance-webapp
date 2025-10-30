@@ -118,6 +118,64 @@
                 </div>
             </div>
 
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Revenue Trend Chart -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-yellow-400/20 overflow-hidden shadow-2xl">
+                    <div class="px-6 py-4 border-b border-yellow-400/20 bg-gradient-to-r from-yellow-400/10 to-transparent">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Omzet Trend (6 Maanden)</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <canvas id="revenueChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Invoice Status Chart -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-yellow-400/20 overflow-hidden shadow-2xl">
+                    <div class="px-6 py-4 border-b border-yellow-400/20 bg-gradient-to-r from-yellow-400/10 to-transparent">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Factuur Status</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <canvas id="statusChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Clients Chart -->
+            @if($topClients->isNotEmpty())
+            <div class="mb-8">
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-yellow-400/20 overflow-hidden shadow-2xl">
+                    <div class="px-6 py-4 border-b border-yellow-400/20 bg-gradient-to-r from-yellow-400/10 to-transparent">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Top 5 Klanten (Omzet)</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <canvas id="clientsChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Recent Activity -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Recent Invoices -->
@@ -198,4 +256,191 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Trend Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: @js($months),
+                    datasets: [{
+                        label: 'Omzet (€)',
+                        data: @js($revenueData),
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#d4af37',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#d4af37',
+                            bodyColor: '#fff',
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return '€' + context.parsed.y.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return '€' + value.toLocaleString('nl-NL');
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Invoice Status Chart
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Concept', 'Verzonden', 'Betaald', 'Achterstallig'],
+                    datasets: [{
+                        data: [
+                            @js($invoiceStatuses['draft']),
+                            @js($invoiceStatuses['sent']),
+                            @js($invoiceStatuses['paid']),
+                            @js($invoiceStatuses['overdue'])
+                        ],
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.8)',
+                            'rgba(251, 146, 60, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: [
+                            '#9ca3af',
+                            '#fb923c',
+                            '#10b981',
+                            '#ef4444'
+                        ],
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#9ca3af',
+                                padding: 15,
+                                usePointStyle: true,
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#d4af37',
+                            bodyColor: '#fff',
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                        }
+                    }
+                }
+            });
+        }
+
+        // Top Clients Chart
+        const clientsCtx = document.getElementById('clientsChart');
+        if (clientsCtx) {
+            new Chart(clientsCtx, {
+                type: 'bar',
+                data: {
+                    labels: @js($topClients->pluck('name')),
+                    datasets: [{
+                        label: 'Omzet (€)',
+                        data: @js($topClients->pluck('revenue')),
+                        backgroundColor: 'rgba(212, 175, 55, 0.8)',
+                        borderColor: '#d4af37',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#d4af37',
+                            bodyColor: '#fff',
+                            borderColor: '#d4af37',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return '€' + context.parsed.x.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            },
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return '€' + value.toLocaleString('nl-NL');
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        });
+    </script>
 </div>

@@ -53,8 +53,36 @@ class ForgotPasswordMultiStep extends Component
             'expires_at' => now()->addMinutes(10),
         ]);
 
-        // Send email
-        Mail::to($this->email)->send(new PasswordResetOtpMail($otpCode));
+        // Log OTP for diagnostics and show in local env
+        \Illuminate\Support\Facades\Log::info('Password reset OTP generated', [
+            'email' => $this->email,
+            'otp' => $otpCode,
+        ]);
+        if (app()->environment('local')) {
+            session()->flash('debug_otp', $otpCode);
+        }
+
+        // Send email (sync) met BCC naar afzender voor audit
+        try {
+            Mail::to($this->email)
+                ->bcc(config('mail.from.address'))
+                ->send(new PasswordResetOtpMail($otpCode));
+        } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
+            // Toon nette melding en log
+            \Illuminate\Support\Facades\Log::error('OTP mail transport error', [
+                'email' => $this->email,
+                'error' => $e->getMessage(),
+            ]);
+            session()->flash('error', 'Kon de verificatiecode niet versturen. Probeer opnieuw of controleer je spam.');
+            return;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('OTP mail error', [
+                'email' => $this->email,
+                'error' => $e->getMessage(),
+            ]);
+            session()->flash('error', 'Kon de verificatiecode niet versturen. Probeer opnieuw.');
+            return;
+        }
 
         session()->flash('message', 'Een 6-cijferige verificatiecode is naar je e-mailadres gestuurd.');
     }
@@ -80,8 +108,8 @@ class ForgotPasswordMultiStep extends Component
         // Store email in session for password reset
         session(['password_reset_email' => $this->email]);
 
-        // Redirect to reset password page with email in query string
-        $this->redirect(route('password.reset', ['email' => $this->email]), navigate: true);
+        // Redirect to reset password page (full page to avoid Alpine.navigate dependency)
+        $this->redirect(route('password.reset', ['email' => $this->email]), navigate: false);
     }
 
     public function render()

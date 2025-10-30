@@ -12,8 +12,7 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&family=playfair-display:400,500,600,700" rel="stylesheet" />
 
     <!-- Scripts -->
-    <link rel="stylesheet" href="{{ asset('build/assets/app-BVG48AMd.css') }}">
-    <script type="module" src="{{ asset('build/assets/app-CXDpL9bK.js') }}"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100">
@@ -66,6 +65,7 @@
                     </svg>
                     <span class="nav-text">BTW</span>
                 </a>
+                
                 <a href="{{ route('app.pdf-settings') }}" 
                    class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 {{ request()->routeIs('app.pdf-settings') ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/10 text-yellow-400 border border-yellow-400/30 shadow-lg shadow-yellow-400/10' : 'text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-2 hover:shadow-lg' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,10 +111,13 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Bar -->
             <header class="bg-gray-950/80 backdrop-blur-xl border-b border-yellow-400/20 px-6 py-4 sticky top-0 z-10 shadow-lg">
-                <h1 class="text-2xl font-bold">
-                    <span class="text-gray-400">Welkom terug,</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{{ Auth::user()->name }}</span>
-                </h1>
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold">
+                        <span class="text-gray-400">Welkom terug,</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{{ Auth::user()->name }}</span>
+                    </h1>
+                    @livewire('notification-bell')
+                </div>
             </header>
 
             <!-- Page Content -->

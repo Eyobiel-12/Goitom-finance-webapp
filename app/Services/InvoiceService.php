@@ -139,19 +139,40 @@ final class InvoiceService
             'sent_at' => now(),
         ]);
 
-        // Send email with PDF attachment
+        // Send email with PDF attachment (fallback zonder PDF bij blokkade)
         try {
-            \Illuminate\Support\Facades\Mail::to($invoice->client->email)
-                ->send(new \App\Mail\InvoiceSentMail($invoice));
+            try {
+                // Eerst met PDF
+                \Illuminate\Support\Facades\Mail::to($invoice->client->email)
+                    ->send(new \App\Mail\InvoiceSentMail($invoice, withAttachment: true));
+            } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
+                if (str_contains($e->getMessage(), '554')) {
+                    \Illuminate\Support\Facades\Log::warning("SMTP blocked invoice email with attachment, retrying without PDF", [
+                        'invoice' => $invoice->number,
+                        'email' => $invoice->client->email,
+                    ]);
+                    \Illuminate\Support\Facades\Mail::to($invoice->client->email)
+                        ->send(new \App\Mail\InvoiceSentMail($invoice, withAttachment: false));
+                } else {
+                    throw $e;
+                }
+            }
             
             \Illuminate\Support\Facades\Log::info("Invoice email sent to {$invoice->client->email} for invoice {$invoice->number}");
+            
+            // Create notification voor organisatie users
+            $notificationService = new \App\Services\NotificationService();
+            $users = $invoice->organization->users;
+            foreach ($users as $user) {
+                $notificationService->createInvoiceSentNotification($invoice, $user->id);
+            }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to send invoice email to {$invoice->client->email}: " . $e->getMessage());
             throw $e;
         }
     }
 
-    private function generatePdfSync(Invoice $invoice): string
+    public function generatePdfSync(Invoice $invoice): string
     {
         // Generate HTML for the invoice
         $template = $invoice->organization->settings['pdf_template'] ?? 'classic';

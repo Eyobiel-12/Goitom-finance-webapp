@@ -85,6 +85,14 @@ final class Invoice extends Model
     }
 
     /**
+     * Get all notifications for this invoice.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    /**
      * Calculate total paid amount.
      */
     public function getTotalPaidAttribute(): float

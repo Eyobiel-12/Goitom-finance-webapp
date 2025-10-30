@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Exports\InvoicesExport;
 use App\Http\Requests\InvoiceRequest;
 use App\Models\Client;
 use App\Models\Invoice;
@@ -12,6 +13,8 @@ use App\Services\InvoiceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 final class InvoiceController extends Controller
 {
@@ -88,5 +91,17 @@ final class InvoiceController extends Controller
 
         return redirect()->route('app.invoices.index')
             ->with('success', 'Factuur verwijderd.');
+    }
+
+    public function export(Request $request): BinaryFileResponse
+    {
+        $format = $request->get('format', 'xlsx'); // xlsx, csv
+        
+        $fileName = 'facturen-export-' . now()->format('Y-m-d-His') . '.' . $format;
+        
+        return Excel::download(
+            new InvoicesExport(auth()->user()->organization_id),
+            $fileName
+        );
     }
 }

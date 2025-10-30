@@ -17,7 +17,8 @@ final class InvoiceSentMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Invoice $invoice
+        public Invoice $invoice,
+        public bool $withAttachment = true
     ) {}
 
     public function envelope(): Envelope
@@ -42,6 +43,11 @@ final class InvoiceSentMail extends Mailable
 
     public function attachments(): array
     {
+        if (!$this->withAttachment) {
+            \Illuminate\Support\Facades\Log::info("Sending invoice email without PDF attachment (disabled)");
+            return [];
+        }
+
         if (!$this->invoice->pdf_path) {
             return [];
         }
@@ -53,6 +59,13 @@ final class InvoiceSentMail extends Mailable
             \Illuminate\Support\Facades\Log::error("PDF file not found: {$fullPath}");
             return [];
         }
+
+        $fileSize = filesize($fullPath);
+        \Illuminate\Support\Facades\Log::info("Attaching PDF to invoice email", [
+            'path' => $fullPath,
+            'size' => $fileSize,
+            'invoice' => $this->invoice->number,
+        ]);
 
         return [
             Attachment::fromPath($fullPath)
