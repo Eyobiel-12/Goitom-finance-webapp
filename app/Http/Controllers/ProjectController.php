@@ -15,10 +15,27 @@ final class ProjectController extends Controller
 {
     public function index(Request $request): View
     {
-        $projects = Project::forOrganization(auth()->user()->organization_id)
-            ->with(['client'])
-            ->latest()
-            ->paginate(12);
+        $query = Project::forOrganization(auth()->user()->organization_id)
+            ->with(['client']);
+        
+        // Apply status filter
+        if ($request->filled('filter') && $request->filter !== 'all') {
+            $query->where('status', $request->filter);
+        }
+        
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('client', function ($clientQuery) use ($search) {
+                      $clientQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $projects = $query->latest()->paginate(12)->withQueryString();
 
         return view('app.projects.index', compact('projects'));
     }

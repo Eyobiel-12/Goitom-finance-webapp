@@ -31,7 +31,7 @@
                                     </svg>
                                 </div>
                                 <h3 class="text-2xl font-bold text-white">
-                                    €{{ number_format(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->sum('btw_bedrag'), 2, ',', '.') }}
+                                    €{{ number_format($aftrekStats['total'], 2, ',', '.') }}
                                 </h3>
                             </div>
                             <div class="bg-gray-800/30 rounded-xl p-4">
@@ -42,7 +42,7 @@
                                     </svg>
                                 </div>
                                 <h3 class="text-2xl font-bold text-white">
-                                    {{ \App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->count() }}
+                                    {{ $aftrekStats['count'] }}
                                 </h3>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                         <!-- Recent Items -->
                         <div class="space-y-2">
                             <p class="text-sm font-semibold text-gray-400 mb-3">Recente Aftrekposten</p>
-                            @forelse(\App\Models\BtwAftrek::forOrganization(auth()->user()->organization_id)->orderBy('datum', 'desc')->limit(3)->get() as $aftrek)
+                            @forelse($recentAftrek as $aftrek)
                             <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-xl border border-gray-700/50">
                                 <div class="flex-1">
                                     <p class="font-semibold text-white text-sm">{{ $aftrek->naam }}</p>
@@ -90,7 +90,7 @@
                                     </svg>
                                 </div>
                                 <h3 class="text-2xl font-bold text-white">
-                                    €{{ number_format(\App\Models\BtwAangifte::forOrganization(auth()->user()->organization_id)->where('jaar', now()->year)->sum('btw_afdracht') - \App\Models\BtwAangifte::forOrganization(auth()->user()->organization_id)->where('jaar', now()->year)->sum('btw_terug'), 2, ',', '.') }}
+                                    €{{ number_format($aangifteStats['this_year'], 2, ',', '.') }}
                                 </h3>
                                 <p class="text-xs text-gray-500 mt-1">{{ now()->year }}</p>
                             </div>
@@ -99,7 +99,7 @@
                         <!-- Recent Aangifte -->
                         <div class="space-y-2">
                             <p class="text-sm font-semibold text-gray-400 mb-3">Recente Aangiften</p>
-                            @forelse(\App\Models\BtwAangifte::forOrganization(auth()->user()->organization_id)->orderBy('created_at', 'desc')->limit(3)->get() as $aangifte)
+                            @forelse($recentAangifte as $aangifte)
                             <div class="flex items-center justify-between p-3 bg-gray-800/30 rounded-xl border border-gray-700/50">
                                 <div class="flex-1">
                                     <p class="font-semibold text-white text-sm">

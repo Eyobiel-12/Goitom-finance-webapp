@@ -51,14 +51,6 @@
 
             <!-- Projects Grid -->
             <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @php
-                $query = \App\Models\Project::where('organization_id', auth()->user()->organization_id)->with('client');
-                $filter = request('filter', 'all');
-                if ($filter !== 'all') {
-                    $query->where('status', $filter);
-                }
-                $projects = $query->latest()->get();
-                @endphp
                 @forelse($projects as $project)
                 <div class="group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all duration-300 hover:shadow-2xl h-full flex flex-col">
                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -136,14 +128,6 @@
 
             <!-- Projects List View -->
             <div id="listView" class="hidden space-y-4">
-                @php
-                $query = \App\Models\Project::where('organization_id', auth()->user()->organization_id)->with('client');
-                $filter = request('filter', 'all');
-                if ($filter !== 'all') {
-                    $query->where('status', $filter);
-                }
-                $projects = $query->latest()->get();
-                @endphp
                 @forelse($projects as $project)
                 <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all">
                     <div class="flex items-center justify-between">
@@ -194,6 +178,12 @@
                 </div>
                 @endforelse
             </div>
+            
+            @if($projects->hasPages())
+            <div class="mt-8 px-6 py-4 border-t border-gray-800/50 bg-gray-800/20 rounded-xl">
+                {{ $projects->links() }}
+            </div>
+            @endif
         </div>
     </div>
 
