@@ -79,10 +79,10 @@
             <div class="p-4 border-t border-yellow-400/20 bg-gray-950/50 backdrop-blur-xl user-section-container">
                 <div id="user-section" class="flex items-center space-x-3 mb-3 p-3 rounded-xl bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-800 hover:border-yellow-400/20 transition-all">
                     <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-lg shadow-yellow-400/20 user-avatar">
-                        {{ substr(Auth::user()->name, 0, 1) }}
+                        {{ substr(Auth::user()?->name ?? '', 0, 1) }}
                     </div>
                     <div class="flex-1 min-w-0 user-info">
-                        <p class="text-sm font-medium text-gray-100 truncate">{{ Auth::user()->name }}</p>
+                        <p class="text-sm font-medium text-gray-100 truncate">{{ Auth::user()?->name }}</p>
                         <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="flex items-center justify-between">
                     <h1 class="text-2xl font-bold">
                         <span class="text-gray-400">Welkom terug,</span>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{{ Auth::user()->name }}</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">{{ Auth::user()?->name }}</span>
                     </h1>
                     @livewire('notification-bell')
                 </div>
@@ -127,7 +127,7 @@
                     <h1 class="text-3xl font-bold text-center">
                         <span class="text-gray-300">Welkom terug,</span>
                         <br>
-                        <span class="text-yellow-400">{{ Auth::user()->name }}</span>
+                        <span class="text-yellow-400">{{ Auth::user()?->name }}</span>
                     </h1>
                 </div>
             </div>
