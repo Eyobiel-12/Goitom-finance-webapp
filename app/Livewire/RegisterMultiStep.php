@@ -64,15 +64,29 @@ class RegisterMultiStep extends Component
             'password.confirmed' => 'Wachtwoorden komen niet overeen.',
         ]);
 
-        // Generate and send OTP
+        // Generate OTP record
         $this->emailVerification = EmailVerification::generateForEmail($this->email);
 
         try {
+            // Probeer async (queue); val terug op sync als queue niet beschikbaar is
             Mail::to($this->email)->queue(new OtpVerificationMail($this->emailVerification->otp_code));
             $this->otp_sent = true;
-        } catch (\Exception $e) {
-            $this->addError('otp', 'Er is een fout opgetreden bij het versturen van de e-mail. Probeer het opnieuw.');
-            return;
+        } catch (\Throwable $e) {
+            \Log::warning('Queue mail failed, falling back to sync send for OTP', [
+                'email' => $this->email,
+                'error' => $e->getMessage(),
+            ]);
+            try {
+                Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
+                $this->otp_sent = true;
+            } catch (\Throwable $e2) {
+                \Log::error('OTP mail send failed', [
+                    'email' => $this->email,
+                    'error' => $e2->getMessage(),
+                ]);
+                $this->addError('otp', 'Verzenden van OTP mislukt. Controleer e-mailconfiguratie en probeer opnieuw.');
+                return;
+            }
         }
 
         $this->currentStep = 3;
