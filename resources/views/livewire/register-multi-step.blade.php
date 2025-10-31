@@ -104,6 +104,10 @@
                         Code Versturen
                     </button>
                 </div>
+
+                @error('otp')
+                    <div class="mt-3 text-red-400 text-sm">{{ $message }}</div>
+                @enderror
             </div>
             @endif
 
