@@ -4,7 +4,7 @@
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-4xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">Dashboard</h1>
-                <p class="mt-2 text-gray-400 text-lg">Welkom terug, {{ auth()->user()->name }}!</p>
+                <p class="mt-2 text-gray-400 text-lg">Welkom terug, {{ auth()->user()?->name }}</p>
             </div>
 
             <!-- Stats Grid -->
