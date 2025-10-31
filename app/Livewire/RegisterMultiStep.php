@@ -157,6 +157,6 @@ class RegisterMultiStep extends Component
 
     public function render()
     {
-        return view('livewire.register-multi-step');
+        return view('livewire.register-multi-step')->layout('layouts.guest');
     }
 }
