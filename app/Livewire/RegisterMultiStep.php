@@ -91,7 +91,7 @@ class RegisterMultiStep extends Component
                 'otp_code' => $this->emailVerification->otp_code,
             ]);
             $this->otp_sent = true;
-        } catch (\Swift_TransportException $e) {
+        } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
             \Log::error('SMTP Transport error', [
                 'email' => $this->email,
                 'otp_code' => $this->emailVerification->otp_code,
