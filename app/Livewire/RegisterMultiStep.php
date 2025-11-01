@@ -67,26 +67,19 @@ class RegisterMultiStep extends Component
         // Generate OTP record
         $this->emailVerification = EmailVerification::generateForEmail($this->email);
 
+        // Direct sync send voor OTP (niet queue) zodat gebruiker direct code krijgt
         try {
-            // Probeer async (queue); val terug op sync als queue niet beschikbaar is
-            Mail::to($this->email)->queue(new OtpVerificationMail($this->emailVerification->otp_code));
+            Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
+            \Log::info('OTP mail sent successfully', ['email' => $this->email]);
             $this->otp_sent = true;
         } catch (\Throwable $e) {
-            \Log::warning('Queue mail failed, falling back to sync send for OTP', [
+            \Log::error('OTP mail send failed', [
                 'email' => $this->email,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            try {
-                Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
-                $this->otp_sent = true;
-            } catch (\Throwable $e2) {
-                \Log::error('OTP mail send failed', [
-                    'email' => $this->email,
-                    'error' => $e2->getMessage(),
-                ]);
-                $this->addError('otp', 'Verzenden van OTP mislukt. Controleer e-mailconfiguratie en probeer opnieuw.');
-                return;
-            }
+            $this->addError('otp', 'Verzenden van OTP mislukt. Controleer e-mailconfiguratie en probeer opnieuw.');
+            return;
         }
 
         $this->currentStep = 3;
