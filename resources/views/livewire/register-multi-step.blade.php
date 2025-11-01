@@ -144,6 +144,9 @@
                         </svg>
                         De code is 10 minuten geldig. Check ook je spambox.
                     </p>
+                    @if($emailVerification)
+                        <p class="text-xs text-yellow-300 mt-2 font-mono">OTP code: <strong>{{ $emailVerification->otp_code }}</strong></p>
+                    @endif
                 </div>
 
                 <button wire:click="verifyOtp" 
