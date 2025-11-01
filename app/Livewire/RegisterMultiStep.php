@@ -67,14 +67,25 @@ class RegisterMultiStep extends Component
         // Generate OTP record
         $this->emailVerification = EmailVerification::generateForEmail($this->email);
 
+        // Log OTP code voor debug (verwijder dit later in production!)
+        \Log::info('OTP generated', [
+            'email' => $this->email,
+            'otp_code' => $this->emailVerification->otp_code,
+            'expires_at' => $this->emailVerification->expires_at,
+        ]);
+
         // Direct sync send voor OTP (niet queue) zodat gebruiker direct code krijgt
         try {
             Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
-            \Log::info('OTP mail sent successfully', ['email' => $this->email]);
+            \Log::info('OTP mail sent successfully', [
+                'email' => $this->email,
+                'otp_code' => $this->emailVerification->otp_code,
+            ]);
             $this->otp_sent = true;
         } catch (\Throwable $e) {
             \Log::error('OTP mail send failed', [
                 'email' => $this->email,
+                'otp_code' => $this->emailVerification->otp_code,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
