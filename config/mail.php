@@ -39,9 +39,9 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            // Scheme: use "smtp" (STARTTLS on 587) or "smtps" (implicit TLS on 465)
-            'scheme' => env('MAIL_SCHEME', 'smtp'),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            // Scheme: use "smtp" (STARTTLS on 587) or "smtps" (implicit SSL on 465)
+            'scheme' => env('MAIL_SCHEME', 'smtps'),
+            'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),
