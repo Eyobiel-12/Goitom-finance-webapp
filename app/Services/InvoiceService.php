@@ -133,11 +133,17 @@ final class InvoiceService
             $invoice->update(['pdf_path' => $pdf]);
         }
 
+        // Refresh invoice to get latest pdf_path
+        $invoice = $invoice->fresh();
+
         // Update status and sent timestamp
         $invoice->update([
             'status' => 'sent',
             'sent_at' => now(),
         ]);
+
+        // Refresh again to get updated status
+        $invoice = $invoice->fresh();
 
         // Send email with PDF attachment (fallback zonder PDF bij blokkade)
         try {
