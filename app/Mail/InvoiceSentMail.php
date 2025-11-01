@@ -49,14 +49,35 @@ final class InvoiceSentMail extends Mailable
         }
 
         if (!$this->invoice->pdf_path) {
+            \Illuminate\Support\Facades\Log::warning("Invoice has no pdf_path", [
+                'invoice_id' => $this->invoice->id,
+                'invoice_number' => $this->invoice->number,
+            ]);
             return [];
         }
 
-        // Check if file exists
-        $fullPath = storage_path('app/public/' . $this->invoice->pdf_path);
+        // Check if file exists - try multiple possible paths
+        $possiblePaths = [
+            storage_path('app/public/' . $this->invoice->pdf_path),
+            storage_path('app/' . $this->invoice->pdf_path),
+            $this->invoice->pdf_path,
+        ];
+
+        $fullPath = null;
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                $fullPath = $path;
+                break;
+            }
+        }
         
-        if (!file_exists($fullPath)) {
-            \Illuminate\Support\Facades\Log::error("PDF file not found: {$fullPath}");
+        if (!$fullPath || !file_exists($fullPath)) {
+            \Illuminate\Support\Facades\Log::error("PDF file not found for invoice", [
+                'invoice_id' => $this->invoice->id,
+                'invoice_number' => $this->invoice->number,
+                'pdf_path' => $this->invoice->pdf_path,
+                'tried_paths' => $possiblePaths,
+            ]);
             return [];
         }
 
@@ -65,6 +86,7 @@ final class InvoiceSentMail extends Mailable
             'path' => $fullPath,
             'size' => $fileSize,
             'invoice' => $this->invoice->number,
+            'invoice_id' => $this->invoice->id,
         ]);
 
         return [
