@@ -17,7 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
         "maatwebsite/excel": "*",
-        "resend/resend-php": "^4.0",
+        "resend/resend-php": "^1.0",
         "spatie/browsershot": "^5.0",
         "spatie/laravel-permission": "^6.21"
     },
