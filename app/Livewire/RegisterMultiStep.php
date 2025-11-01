@@ -76,12 +76,12 @@ class RegisterMultiStep extends Component
 
         // Direct sync send voor OTP (niet queue) zodat gebruiker direct code krijgt
         try {
-            // Log SMTP config voor debugging
-            \Log::info('SMTP config check', [
-                'host' => config('mail.mailers.smtp.host'),
-                'port' => config('mail.mailers.smtp.port'),
-                'encryption' => config('mail.mailers.smtp.encryption'),
-                'username' => config('mail.mailers.smtp.username'),
+            // Log mail config voor debugging
+            \Log::info('Mail config check', [
+                'mailer' => config('mail.default'),
+                'from_address' => config('mail.from.address'),
+                'from_name' => config('mail.from.name'),
+                'resend_key_set' => !empty(config('services.resend.key')),
             ]);
 
             Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
