@@ -84,7 +84,8 @@ class RegisterMultiStep extends Component
                 'resend_key_set' => !empty(config('services.resend.key')),
             ]);
 
-            Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
+            // Forceer directe verzending (geen queue)
+            Mail::to($this->email)->sendNow(new OtpVerificationMail($this->emailVerification->otp_code));
             
             \Log::info('OTP mail sent successfully', [
                 'email' => $this->email,
@@ -92,13 +93,24 @@ class RegisterMultiStep extends Component
             ]);
             $this->otp_sent = true;
         } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-            \Log::error('SMTP Transport error', [
+            \Log::error('Mail Transport error', [
                 'email' => $this->email,
                 'otp_code' => $this->emailVerification->otp_code,
                 'error' => $e->getMessage(),
                 'code' => $e->getCode(),
+                'mailer' => config('mail.default'),
             ]);
-            $this->addError('otp', 'SMTP verbinding mislukt: ' . $e->getMessage());
+            $this->addError('otp', 'Mail verzending mislukt: ' . $e->getMessage());
+            return;
+        } catch (\Resend\Exceptions\ErrorException $e) {
+            \Log::error('Resend API error', [
+                'email' => $this->email,
+                'otp_code' => $this->emailVerification->otp_code,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'response' => method_exists($e, 'getResponse') ? $e->getResponse() : null,
+            ]);
+            $this->addError('otp', 'Resend API fout: ' . $e->getMessage());
             return;
         } catch (\Throwable $e) {
             \Log::error('OTP mail send failed', [
@@ -106,9 +118,10 @@ class RegisterMultiStep extends Component
                 'otp_code' => $this->emailVerification->otp_code,
                 'error' => $e->getMessage(),
                 'class' => get_class($e),
-                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
-            $this->addError('otp', 'Verzenden van OTP mislukt. Controleer e-mailconfiguratie en probeer opnieuw.');
+            $this->addError('otp', 'Verzenden van OTP mislukt: ' . $e->getMessage());
             return;
         }
 
