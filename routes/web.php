@@ -33,6 +33,7 @@ Route::post('/login', function (\Illuminate\Http\Request $request) {
     $remember = (bool) $request->boolean('remember');
     if (\Illuminate\Support\Facades\Auth::attempt($credentials, $remember)) {
         $request->session()->regenerate();
+        $request->session()->flash('show_welcome', true);
         return redirect()->intended(route('app.dashboard'));
     }
 

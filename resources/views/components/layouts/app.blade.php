@@ -120,15 +120,28 @@
                 </div>
             </header>
 
-            <!-- Welcome Popup Overlay -->
-            @if(request()->routeIs('app.dashboard') && session('show_welcome'))
-            <div id="welcomePopupOverlay" class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-                <div id="welcomeMessage" class="welcome-popup opacity-0 pointer-events-none bg-gradient-to-br from-gray-900/95 to-gray-950/95 backdrop-blur-xl rounded-2xl px-8 py-6 border border-yellow-400/30 shadow-2xl">
-                    <h1 class="text-3xl font-bold text-center">
-                        <span class="text-gray-300">Welkom terug,</span>
-                        <br>
-                        <span class="text-yellow-400">{{ Auth::user()?->name }}</span>
-                    </h1>
+            <!-- Welcome Toast -->
+            @if(session('show_welcome'))
+            <div id="welcomeToast" class="fixed top-6 right-6 z-50 pointer-events-none opacity-0 transform translate-x-full">
+                <div class="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 backdrop-blur-xl rounded-2xl px-6 py-5 border-2 border-yellow-400/40 shadow-2xl shadow-yellow-400/20 min-w-[320px] pointer-events-auto">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-gray-900 font-bold text-xl shadow-lg shadow-yellow-400/30 animate-bounce-subtle">
+                                {{ substr(Auth::user()?->name ?? '', 0, 1) }}
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+                                Welkom terug, {{ Auth::user()?->name }}
+                            </h3>
+                            <p class="text-sm text-gray-400 mt-1">Fijn dat je er weer bent!</p>
+                        </div>
+                        <button onclick="dismissWelcomeToast()" class="flex-shrink-0 text-gray-500 hover:text-yellow-400 transition-colors cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
             @endif
@@ -151,38 +164,47 @@
             animation: fade-in 0.4s ease-out;
         }
         
-        @keyframes welcome-pop {
+        @keyframes slide-in-right {
             0% {
                 opacity: 0;
-                transform: scale(0.7) translateY(-30px);
-                filter: blur(10px);
+                transform: translateX(100%);
             }
             10% {
                 opacity: 1;
-                transform: scale(1.1) translateY(0);
-                filter: blur(0);
+                transform: translateX(0);
             }
-            15% {
-                transform: scale(1) translateY(0);
-            }
-            85% {
+        }
+        
+        @keyframes slide-out-right {
+            0% {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: translateX(0);
             }
             100% {
                 opacity: 0;
-                transform: scale(0.7) translateY(-30px);
-                filter: blur(10px);
+                transform: translateX(100%);
             }
         }
         
-        .welcome-popup.show {
-            animation: welcome-pop 5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        @keyframes bounce-subtle {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
         }
         
-        #welcomePopupOverlay {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
+        .animate-bounce-subtle {
+            animation: bounce-subtle 2s ease-in-out infinite;
+        }
+        
+        .toast-show {
+            animation: slide-in-right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        .toast-hide {
+            animation: slide-out-right 0.3s ease-in forwards;
         }
     </style>
 
@@ -191,26 +213,36 @@
     <!-- Onboarding Tour -->
     @livewire('onboarding-tour')
     
-    @if(request()->routeIs('app.dashboard') && session('show_welcome'))
+    @if(session('show_welcome'))
     <script>
+        function dismissWelcomeToast() {
+            const toast = document.getElementById('welcomeToast');
+            if (toast) {
+                toast.classList.remove('toast-show');
+                toast.classList.add('toast-hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            const welcomeOverlay = document.getElementById('welcomePopupOverlay');
-            if (!welcomeMessage || !welcomeOverlay) return;
+            const welcomeToast = document.getElementById('welcomeToast');
+            if (!welcomeToast) return;
             
-            // Trigger animatie direct bij eerste load na login
+            // Trigger animatie direct bij load
             setTimeout(() => {
-                welcomeMessage.classList.add('show');
-                welcomeOverlay.classList.remove('pointer-events-none');
-            }, 150);
+                welcomeToast.classList.add('toast-show');
+            }, 200);
             
-            // Verwijder na animatie compleet
+            // Auto-dismiss na 5 seconden
             setTimeout(() => {
-                welcomeOverlay.style.display = 'none';
+                dismissWelcomeToast();
             }, 5000);
         });
     </script>
     @endif
 </body>
 </html>
+
 
