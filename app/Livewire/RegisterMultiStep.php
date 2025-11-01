@@ -76,17 +76,36 @@ class RegisterMultiStep extends Component
 
         // Direct sync send voor OTP (niet queue) zodat gebruiker direct code krijgt
         try {
+            // Log SMTP config voor debugging
+            \Log::info('SMTP config check', [
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+            ]);
+
             Mail::to($this->email)->send(new OtpVerificationMail($this->emailVerification->otp_code));
+            
             \Log::info('OTP mail sent successfully', [
                 'email' => $this->email,
                 'otp_code' => $this->emailVerification->otp_code,
             ]);
             $this->otp_sent = true;
+        } catch (\Swift_TransportException $e) {
+            \Log::error('SMTP Transport error', [
+                'email' => $this->email,
+                'otp_code' => $this->emailVerification->otp_code,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+            $this->addError('otp', 'SMTP verbinding mislukt: ' . $e->getMessage());
+            return;
         } catch (\Throwable $e) {
             \Log::error('OTP mail send failed', [
                 'email' => $this->email,
                 'otp_code' => $this->emailVerification->otp_code,
                 'error' => $e->getMessage(),
+                'class' => get_class($e),
                 'trace' => $e->getTraceAsString(),
             ]);
             $this->addError('otp', 'Verzenden van OTP mislukt. Controleer e-mailconfiguratie en probeer opnieuw.');
