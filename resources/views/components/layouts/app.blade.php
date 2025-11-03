@@ -181,7 +181,7 @@
     @livewireScripts
     
     <!-- Onboarding Tour -->
-    @livewire('onboarding-tour')
+    <x-onboarding-tour />
     
     @if(request()->routeIs('app.dashboard') && session('show_welcome'))
     <script>

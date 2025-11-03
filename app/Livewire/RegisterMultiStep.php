@@ -108,6 +108,7 @@ class RegisterMultiStep extends Component
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'role' => 'ondernemer',
+            'email_verified_at' => now(),
         ]);
 
         // Create organization for the user

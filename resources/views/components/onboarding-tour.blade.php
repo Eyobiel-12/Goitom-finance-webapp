@@ -1,4 +1,10 @@
-<div>
+<!-- Modern Intro.js Onboarding Tour -->
+
+<!-- Intro.js Library -->
+<link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
+<script src="https://unpkg.com/intro.js/intro.js"></script>
+
+<!-- Modern Intro.js Styling -->
 <style>
     .introjs-overlay {
         background: rgba(0, 0, 0, 0.92) !important;
@@ -220,11 +226,29 @@
         color: #e5e7eb;
         font-weight: 500;
     }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
 </style>
-
-<!-- Intro.js Library -->
-<link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
-<script src="https://unpkg.com/intro.js/intro.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -389,25 +413,22 @@
                 })
                 .oncomplete(function() {
                     localStorage.setItem('goitom_onboarding_complete', 'true');
-                    // Optional: Show a success message
                     showCompletionMessage();
                 })
                 .onexit(function() {
                     localStorage.setItem('goitom_onboarding_complete', 'true');
                 })
                 .onchange(function(targetElement) {
-                    // Scroll to element smoothly if needed
                     if (targetElement) {
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 })
                 .start();
-            }, 1200); // 1.2 second delay for smooth experience
+            }, 1200);
         }
     });
     
     function showCompletionMessage() {
-        // Create a beautiful completion notification
         const notification = document.createElement('div');
         notification.innerHTML = `
             <div style="position: fixed; top: 20px; right: 20px; z-index: 99999; 
@@ -432,27 +453,3 @@
     }
 </script>
 
-<style>
-    @keyframes slideIn {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-</style>
-</div>
