@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\BtwAangifte;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
+use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -52,6 +54,55 @@ final class Dashboard extends Component
             ],
             default => null
         };
+    }
+
+    private function getBtwDeadlines(int $organizationId): array
+    {
+        $deadlines = [];
+        $currentYear = now()->year;
+        $currentQuarter = ceil(now()->month / 3);
+        
+        // Get next 4 quarters
+        for ($i = 0; $i < 4; $i++) {
+            $quarter = $currentQuarter + $i;
+            $year = $currentYear;
+            
+            if ($quarter > 4) {
+                $quarter = $quarter - 4;
+                $year++;
+            }
+            
+            // Calculate deadline (last day of month following quarter)
+            $quarterEndMonth = $quarter * 3;
+            $deadlineMonth = $quarterEndMonth + 1;
+            
+            if ($deadlineMonth > 12) {
+                $deadlineMonth = 1;
+                $year++;
+            }
+            
+            $deadline = Carbon::create($year, $deadlineMonth, 1)->endOfMonth();
+            
+            // Check if aangifte exists
+            $aangifte = BtwAangifte::forOrganization($organizationId)
+                ->where('jaar', $quarterEndMonth <= 12 ? $year : ($year - 1))
+                ->where('kwartaal', $quarter)
+                ->where('status', 'ingediend')
+                ->first();
+            
+            $daysUntil = now()->diffInDays($deadline, false);
+            
+            $deadlines[] = [
+                'period' => "Q{$quarter} {$year}",
+                'deadline' => $deadline,
+                'days_until' => $daysUntil,
+                'is_overdue' => $deadline < now() && !$aangifte,
+                'is_urgent' => $daysUntil >= 0 && $daysUntil <= 7 && !$aangifte,
+                'is_filed' => (bool) $aangifte,
+            ];
+        }
+        
+        return $deadlines;
     }
 
     public function render()
@@ -231,12 +282,16 @@ final class Dashboard extends Component
         // Sort activities by date
         $recentActivities = $recentActivities->sortByDesc('created_at')->take(10);
 
+        // BTW Deadline Alerts
+        $btwDeadlines = $this->getBtwDeadlines($organizationId);
+        
         return view('livewire.dashboard', compact(
             'stats', 
             'growth',
             'recentInvoices', 
             'recentClients',
             'revenueByMonth',
+            'btwDeadlines',
             'invoiceStatusBreakdown',
             'recentActivities',
             'upcomingDue',

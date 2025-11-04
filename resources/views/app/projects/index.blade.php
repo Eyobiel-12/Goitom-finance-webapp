@@ -15,38 +15,62 @@
                 </a>
             </div>
 
-            <!-- Status Tabs and View Toggle -->
-            <div class="mb-6 flex gap-4 items-center justify-between">
-                <div class="flex gap-2 border-b border-gray-800">
-                    <a href="{{ route('app.projects.index', ['filter' => 'all']) }}" 
-                       class="px-4 py-2 text-sm font-medium {{ request('filter', 'all') === 'all' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
-                        Alle
+            <!-- Controls: Tabs, Search, Sort, View Toggle -->
+            <div class="mb-6 flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
+                <!-- Tabs with counts -->
+                <div class="flex gap-2 bg-gray-900/50 rounded-xl p-1 border border-gray-800">
+                    @php $activeFilter = request('filter', 'all'); @endphp
+                    <a href="{{ route('app.projects.index', array_filter(['filter' => 'all', 'search' => request('search'), 'sort' => request('sort')])) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg {{ $activeFilter === 'all' ? 'bg-yellow-400 text-gray-900' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        Alle <span class="ml-1 text-xs {{ $activeFilter==='all' ? 'text-gray-900' : 'text-gray-500' }}">({{ $counts['all'] ?? 0 }})</span>
                     </a>
-                    <a href="{{ route('app.projects.index', ['filter' => 'active']) }}" 
-                       class="px-4 py-2 text-sm font-medium {{ request('filter') === 'active' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
-                        Actief
+                    <a href="{{ route('app.projects.index', array_filter(['filter' => 'active', 'search' => request('search'), 'sort' => request('sort')])) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg {{ $activeFilter === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        Actief <span class="ml-1 text-xs {{ $activeFilter==='active' ? 'text-emerald-300' : 'text-gray-500' }}">({{ $counts['active'] ?? 0 }})</span>
                     </a>
-                    <a href="{{ route('app.projects.index', ['filter' => 'completed']) }}" 
-                       class="px-4 py-2 text-sm font-medium {{ request('filter') === 'completed' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
-                        Voltooid
+                    <a href="{{ route('app.projects.index', array_filter(['filter' => 'completed', 'search' => request('search'), 'sort' => request('sort')])) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg {{ $activeFilter === 'completed' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        Voltooid <span class="ml-1 text-xs {{ $activeFilter==='completed' ? 'text-blue-300' : 'text-gray-500' }}">({{ $counts['completed'] ?? 0 }})</span>
                     </a>
-                    <a href="{{ route('app.projects.index', ['filter' => 'paused']) }}" 
-                       class="px-4 py-2 text-sm font-medium {{ request('filter') === 'paused' ? 'border-b-2 border-yellow-400 text-yellow-400' : 'text-gray-400 hover:text-white transition-colors' }}">
-                        Gepauzeerd
+                    <a href="{{ route('app.projects.index', array_filter(['filter' => 'paused', 'search' => request('search'), 'sort' => request('sort')])) }}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg {{ $activeFilter === 'paused' ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800' }}">
+                        Gepauzeerd <span class="ml-1 text-xs {{ $activeFilter==='paused' ? 'text-orange-300' : 'text-gray-500' }}">({{ $counts['paused'] ?? 0 }})</span>
                     </a>
                 </div>
-                <div class="flex items-center bg-gray-900 rounded-xl p-1 border border-gray-700">
-                    <button onclick="showGridView()" id="gridViewBtn" class="px-4 py-2 bg-gray-800 text-yellow-400 rounded-lg transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z"></path>
-                        </svg>
-                    </button>
-                    <button onclick="showListView()" id="listViewBtn" class="px-4 py-2 text-gray-400 rounded-lg hover:bg-gray-800 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+
+                <!-- Search + Sort + View toggle -->
+                <form method="GET" action="{{ route('app.projects.index') }}" class="w-full lg:w-auto flex items-center gap-3">
+                    <input type="hidden" name="filter" value="{{ request('filter', 'all') }}">
+                    <div class="flex-1 lg:flex-none">
+                        <div class="relative">
+                            <input name="search" value="{{ request('search') }}" placeholder="Zoek op project of klant..." 
+                                   class="w-full lg:w-72 bg-gray-900 border border-gray-700 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400/40 focus:border-yellow-400/30" />
+                            <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <select name="sort" onchange="this.form.submit()" class="bg-gray-900 border border-gray-700 rounded-xl text-sm text-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400/40">
+                        <option value="" {{ (request('sort')===''||request('sort')===null) ? 'selected' : '' }}>Nieuwste</option>
+                        <option value="name_asc" {{ request('sort')==='name_asc' ? 'selected' : '' }}>Naam A-Z</option>
+                        <option value="name_desc" {{ request('sort')==='name_desc' ? 'selected' : '' }}>Naam Z-A</option>
+                        <option value="hours_desc" {{ request('sort')==='hours_desc' ? 'selected' : '' }}>Meeste uren</option>
+                        <option value="rate_desc" {{ request('sort')==='rate_desc' ? 'selected' : '' }}>Hoogste tarief</option>
+                        <option value="oldest" {{ request('sort')==='oldest' ? 'selected' : '' }}>Oudste</option>
+                    </select>
+                    <div class="flex items-center bg-gray-900 rounded-xl p-1 border border-gray-700">
+                        <button type="button" onclick="showGridView()" id="gridViewBtn" class="px-3 py-2 bg-gray-800 text-yellow-400 rounded-lg transition-all" aria-label="Grid">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" onclick="showListView()" id="listViewBtn" class="px-3 py-2 text-gray-400 rounded-lg hover:bg-gray-800 transition-all" aria-label="List">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- Projects Grid -->
@@ -105,6 +129,9 @@
                             <div class="flex gap-2">
                                 <a href="{{ route('app.projects.show', $project) }}" class="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium text-center">
                                     Bekijken
+                                </a>
+                                <a href="{{ route('app.invoices.create', ['project_id' => $project->id]) }}" class="px-4 py-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-all text-sm font-medium">
+                                    Factuur
                                 </a>
                                 <a href="{{ route('app.projects.edit', $project) }}" class="px-4 py-2 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg hover:bg-yellow-400/20 transition-all">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

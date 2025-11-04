@@ -15,7 +15,17 @@ final class ProjectController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Project::forOrganization(auth()->user()->organization_id)
+        $organizationId = auth()->user()->organization_id;
+
+        // Tab counters for a functional UI
+        $counts = [
+            'all' => Project::forOrganization($organizationId)->count(),
+            'active' => Project::forOrganization($organizationId)->where('status', 'active')->count(),
+            'completed' => Project::forOrganization($organizationId)->where('status', 'completed')->count(),
+            'paused' => Project::forOrganization($organizationId)->where('status', 'paused')->count(),
+        ];
+
+        $query = Project::forOrganization($organizationId)
             ->with(['client']);
         
         // Apply status filter
@@ -35,9 +45,20 @@ final class ProjectController extends Controller
             });
         }
         
-        $projects = $query->latest()->paginate(12)->withQueryString();
+        // Sorting
+        $sort = $request->string('sort')->toString();
+        match ($sort) {
+            'name_asc' => $query->orderBy('name'),
+            'name_desc' => $query->orderByDesc('name'),
+            'hours_desc' => $query->orderByDesc('hours'),
+            'rate_desc' => $query->orderByDesc('rate'),
+            'oldest' => $query->orderBy('created_at'),
+            default => $query->latest(),
+        };
 
-        return view('app.projects.index', compact('projects'));
+        $projects = $query->paginate(12)->withQueryString();
+
+        return view('app.projects.index', compact('projects', 'counts', 'sort'));
     }
 
     public function create(): View

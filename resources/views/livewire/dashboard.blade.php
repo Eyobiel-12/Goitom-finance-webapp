@@ -93,6 +93,45 @@
                 </div>
             </div>
 
+            <!-- BTW Deadline Alerts -->
+            @if(isset($btwDeadlines) && count($btwDeadlines) > 0)
+            @php
+                $urgentDeadlines = collect($btwDeadlines)->filter(fn($d) => $d['is_urgent'] || $d['is_overdue']);
+            @endphp
+            @if($urgentDeadlines->count() > 0)
+            <div class="mb-8 bg-gradient-to-r from-red-500/10 via-orange-500/10 to-red-500/10 rounded-xl border border-red-500/30 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        BTW Deadline Waarschuwing
+                    </h3>
+                    <a href="{{ route('app.btw.index') }}" class="text-sm text-yellow-400 hover:text-yellow-300 font-semibold">
+                        Ga naar BTW →
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-{{ min($urgentDeadlines->count(), 4) }} gap-3">
+                    @foreach($urgentDeadlines->take(4) as $deadline)
+                    <div class="bg-gray-900/50 rounded-lg p-4 border {{ $deadline['is_overdue'] ? 'border-red-500/50' : 'border-orange-500/50' }}">
+                        <p class="text-sm font-bold text-white mb-1">{{ $deadline['period'] }}</p>
+                        <p class="text-xs text-gray-400 mb-2">{{ $deadline['deadline']->format('d M Y') }}</p>
+                        @if($deadline['is_overdue'])
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-400">
+                                Achterstallig!
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-orange-500/20 text-orange-400">
+                                Over {{ $deadline['days_until'] }} dagen
+                            </span>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+            @endif
+
             <!-- Stats Grid with Growth Indicators -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <!-- Total Clients -->

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Crypt;
 
 final class Organization extends Model
@@ -27,6 +28,7 @@ final class Organization extends Model
         'branding_color',
         'settings',
         'status',
+        'btw_stelsel',
     ];
 
     protected function casts(): array
@@ -115,6 +117,14 @@ final class Organization extends Model
     public function btwAangifte(): HasMany
     {
         return $this->hasMany(BtwAangifte::class);
+    }
+
+    /**
+     * Get BTW settings for this organization.
+     */
+    public function btwSettings(): HasOne
+    {
+        return $this->hasOne(BtwSettings::class);
     }
 
     /**
