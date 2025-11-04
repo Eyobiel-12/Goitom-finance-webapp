@@ -72,10 +72,48 @@
                     </svg>
                     <span class="nav-text">PDF-instellingen</span>
                 </a>
+                <a href="{{ route('app.subscription.index') }}" 
+                   class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 {{ request()->routeIs('app.subscription.*') ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-600/10 text-yellow-400 border border-yellow-400/30 shadow-lg shadow-yellow-400/10' : 'text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-2 hover:shadow-lg' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                    <span class="nav-text">Abonnement</span>
+                    @if(Auth::user()->organization->subscription_plan === 'pro')
+                    <span class="ml-auto px-2 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">Pro</span>
+                    @endif
+                </a>
             </nav>
 
             <!-- User Section -->
             <div class="p-4 border-t border-yellow-400/20 bg-gray-950/50 backdrop-blur-xl user-section-container">
+                <!-- Subscription Badge -->
+                @if(Auth::user()->organization)
+                @php
+                    $org = Auth::user()->organization;
+                    $isPro = $org->subscription_plan === 'pro';
+                    $onTrial = $org->onTrial();
+                @endphp
+                <div class="mb-3 p-3 rounded-xl border {{ $isPro ? 'bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border-yellow-500/30' : 'bg-gray-900/50 border-gray-800' }}">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs text-gray-400">Plan</span>
+                        @if($isPro)
+                        <span class="px-2 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 font-semibold">Pro</span>
+                        @else
+                        <span class="px-2 py-0.5 text-xs rounded bg-gray-700 text-gray-300 font-semibold">Starter</span>
+                        @endif
+                    </div>
+                    @if($onTrial)
+                    <p class="text-xs text-blue-400">
+                        🎁 Trial: {{ $org->trialDaysRemaining() }} {{ $org->trialDaysRemaining() === 1 ? 'dag' : 'dagen' }} over
+                    </p>
+                    @else
+                    <p class="text-xs {{ $org->subscription_status === 'active' ? 'text-green-400' : 'text-red-400' }}">
+                        {{ ucfirst($org->subscription_status) }}
+                    </p>
+                    @endif
+                </div>
+                @endif
+
                 <div id="user-section" class="flex items-center space-x-3 mb-3 p-3 rounded-xl bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-800 hover:border-yellow-400/20 transition-all">
                     <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-gray-900 font-bold shadow-lg shadow-yellow-400/20 user-avatar">
                         {{ substr(Auth::user()->name, 0, 1) }}
@@ -110,6 +148,15 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Bar -->
             <header class="bg-transparent backdrop-blur-sm px-6 py-4 sticky top-0 z-10">
+                @php $org = Auth::user()->organization ?? null; @endphp
+                @if($org && $org->shouldShowPaywallBanner())
+                <div class="mb-2 rounded-xl border {{ $org->isSuspended() ? 'border-red-500/40 bg-red-500/10' : 'border-yellow-500/40 bg-yellow-500/10' }} px-4 py-3 flex items-center justify-between">
+                    <div class="text-sm {{ $org->isSuspended() ? 'text-red-300' : 'text-yellow-300' }} font-semibold">
+                        {{ $org->isSuspended() ? 'Je account is geblokkeerd vanwege een gemiste betaling.' : 'Je trial is verlopen. Je zit in een read-only periode.' }}
+                    </div>
+                    <a href="{{ route('app.subscription.index') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 font-semibold shadow-md">Betaal nu</a>
+                </div>
+                @endif
             </header>
 
             <!-- Welcome Popup Overlay -->
@@ -182,6 +229,9 @@
     
     <!-- Onboarding Tour -->
     <x-onboarding-tour />
+    
+    <!-- Upgrade Modal -->
+    <x-upgrade-modal />
     
     @if(request()->routeIs('app.dashboard') && session('show_welcome'))
     <script>

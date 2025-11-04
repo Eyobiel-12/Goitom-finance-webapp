@@ -84,6 +84,12 @@ final class ProjectForm extends Component
 
     public function save()
     {
+        // Check limits before creating new project
+        if (!$this->project && !auth()->user()->organization->canCreateProject()) {
+            session()->flash('error', 'Je hebt je limiet bereikt (' . auth()->user()->organization->limit_active_projects . ' actieve projecten). Upgrade naar Pro voor onbeperkt projecten.');
+            return redirect()->route('app.projects.index');
+        }
+
         $this->validate();
 
         $data = [

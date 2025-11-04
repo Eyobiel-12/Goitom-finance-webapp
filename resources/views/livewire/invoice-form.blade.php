@@ -28,6 +28,23 @@
         </div>
         @endif
 
+        @if ($errors->any())
+        <div class="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400">
+            <strong>Kan niet opslaan:</strong>
+            <ul class="mt-2 list-disc list-inside text-sm">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if (session()->has('message'))
+        <div class="mb-4 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400">
+            {{ session('message') }}
+        </div>
+        @endif
+
         <form wire:submit.prevent="save">
             <!-- Invoice Details -->
             <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 mb-6">
@@ -43,13 +60,18 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Klant *</label>
-                        <select wire:model="client_id" 
-                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-400 transition-all">
-                            <option value="">Selecteer klant</option>
-                            @foreach($this->clients as $client)
-                                <option value="{{ $client->id }}">{{ $client->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="space-y-2">
+                            <div class="flex gap-2">
+                                <input type="text" placeholder="Zoek klant..." wire:model.debounce.300ms="clientSearch" class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-yellow-400">
+                                <button type="button" @click="$wire.set('showClientModal', true)" class="px-3 py-2 text-sm border border-yellow-400/30 text-yellow-400 rounded-lg hover:bg-yellow-400/10">+ Nieuwe klant</button>
+                            </div>
+                            <select wire:model="client_id" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-400 transition-all">
+                                <option value="">Selecteer klant</option>
+                                @foreach($this->clients as $client)
+                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         @error('client_id') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
                     </div>
 
@@ -73,8 +95,17 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Vervaldatum</label>
-                        <input type="date" wire:model="due_date" 
-                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-400 transition-all">
+                        <div class="flex gap-2">
+                            <input type="date" wire:model="due_date" 
+                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-yellow-400 transition-all">
+                            <select wire:model="payment_terms" class="px-3 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white">
+                                <option value="0">0d</option>
+                                <option value="7">7d</option>
+                                <option value="14">14d</option>
+                                <option value="30">30d</option>
+                                <option value="45">45d</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -113,26 +144,37 @@
                     <div class="hidden md:grid md:grid-cols-12 gap-4 px-4 text-xs uppercase tracking-wide text-gray-400">
                         <div class="md:col-span-6">Omschrijving</div>
                         <div class="md:col-span-2 text-right">Aantal</div>
-                        <div class="md:col-span-2 text-right">Prijs per stuk (EUR)</div>
+                        <div class="md:col-span-2 text-right">Prijs per stuk</div>
                         <div class="md:col-span-2 text-right">Bedrag</div>
                     </div>
                     @foreach($items as $index => $item)
-                    <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
+                    <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50" x-data>
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                             <input type="text" wire:model="items.{{ $index }}.description" 
                                    placeholder="Omschrijving van dienst of product" 
                                    class="md:col-span-6 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                            <input type="number" step="0.01" wire:model="items.{{ $index }}.qty" 
-                                   placeholder="1" 
+                            <input type="text" inputmode="decimal" wire:model.lazy="items.{{ $index }}.qty" 
+                                   placeholder="1,00" 
+                                   @keydown.enter.prevent="$wire.addItem()"
                                    class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
-                            <input type="number" step="0.01" wire:model="items.{{ $index }}.unit_price" 
-                                   placeholder="0" 
-                                   class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
-                            <div class="md:col-span-2 relative">
-                                <input type="text" disabled placeholder="0.00" value="{{ number_format($item['qty'] * $item['unit_price'] * (1 + ($item['vat_rate'] ?? 0) / 100), 2) }}" 
-                                       class="w-full pr-10 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-right text-yellow-400" />
+                            <div class="md:col-span-2">
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+                                    <input type="text" inputmode="decimal" wire:model.lazy="items.{{ $index }}.unit_price" 
+                                           placeholder="0,00" 
+                                           @keydown.enter.prevent="$wire.addItem()"
+                                           class="w-full pl-7 pr-3 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
+                                </div>
+                                <div class="mt-2 text-xs text-gray-400">BTW tarief: <span class="text-gray-300">{{ (int)($item['vat_rate'] ?? $vat_percentage) }}%</span> (standaard van factuur)</div>
+                            </div>
+                            <div class="md:col-span-2 relative flex items-center gap-2 justify-end">
+                                <input type="text" disabled placeholder="0.00" value="{{ number_format(($item['qty'] * $item['unit_price']) * (1 + ($item['vat_rate'] ?? 0) / 100), 2, ',', '.') }}" 
+                                       class="w-full max-w-[140px] pr-10 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-right text-yellow-400" />
+                                <button type="button" wire:click="duplicateItem({{ $index }})" class="p-2 text-gray-400 hover:bg-gray-500/10 rounded-md" title="Dupliceren">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2V9a2 2 0 012-2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7V5a2 2 0 00-2-2H8a2 2 0 00-2 2v2"/></svg>
+                                </button>
                                 <button type="button" wire:click="removeItem({{ $index }})" 
-                                        class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors">
+                                        class="p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors" title="Verwijderen">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
@@ -159,21 +201,32 @@
                 </div>
 
                 <!-- Totals -->
-                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 lg:sticky lg:top-4 self-start">
                     <h3 class="text-xl font-bold text-white mb-1">Factuur Totalen</h3>
                     <p class="text-sm text-gray-400 mb-4">BTW en eindberekeningen</p>
                     <div class="mb-6 max-w-md">
                         <label class="block text-sm font-medium text-gray-400 mb-2">BTW Percentage (%)</label>
-                        <input type="number" step="0.01" wire:model="vat_percentage" 
-                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                        <div class="flex items-center gap-3">
+                            <input type="number" step="0.01" wire:model="vat_percentage" 
+                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                            <div class="flex gap-1 bg-gray-900/70 border border-gray-700 rounded-lg p-1">
+                                <button type="button" wire:click="$set('vat_percentage', 0)" class="px-3 py-1.5 text-sm rounded-md {{ (int)$vat_percentage===0 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-400' : 'text-gray-300 hover:bg-gray-800' }}">0%</button>
+                                <button type="button" wire:click="$set('vat_percentage', 9)" class="px-3 py-1.5 text-sm rounded-md {{ (int)$vat_percentage===9 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-400' : 'text-gray-300 hover:bg-gray-800' }}">9%</button>
+                                <button type="button" wire:click="$set('vat_percentage', 21)" class="px-3 py-1.5 text-sm rounded-md {{ (int)$vat_percentage===21 ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-400' : 'text-gray-300 hover:bg-gray-800' }}">21%</button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Snel kiezen: stel standaard BTW voor deze factuur in. Per regel overschrijven kan nog steeds.</p>
                     </div>
                     <div class="space-y-3">
                         <div class="flex justify-between text-gray-400">
                             <span>Subtotaal</span>
                             <span class="font-semibold">€{{ number_format($this->subtotal, 2) }}</span>
                         </div>
+                        <div class="flex justify-between text-gray-400"><span>BTW 0%</span><span class="font-semibold">€{{ number_format($this->vat0, 2) }}</span></div>
+                        <div class="flex justify-between text-gray-400"><span>BTW 9%</span><span class="font-semibold">€{{ number_format($this->vat9, 2) }}</span></div>
+                        <div class="flex justify-between text-gray-400"><span>BTW 21%</span><span class="font-semibold">€{{ number_format($this->vat21, 2) }}</span></div>
                         <div class="flex justify-between text-gray-400">
-                            <span>BTW ({{ $vat_percentage }}%)</span>
+                            <span>Totaal BTW</span>
                             <span class="font-semibold">€{{ number_format($this->vatTotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-2xl font-bold pt-3 border-t border-gray-800">
@@ -190,10 +243,46 @@
                    class="px-6 py-3 border border-gray-700 rounded-xl text-gray-400 hover:bg-gray-800 transition-all font-semibold">
                     Annuleren
                 </a>
-                <button type="submit" 
-                        class="px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl font-semibold text-gray-900 shadow-lg shadow-yellow-400/30 hover:shadow-yellow-400/50 transition-all">
-                    {{ $invoice ? 'Bijwerken' : 'Aanmaken' }}
+                <button type="button" wire:click.prevent="saveDraft" wire:loading.attr="disabled" wire:target="saveDraft" class="px-6 py-3 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-800 transition-all font-semibold">
+                    <span wire:loading.remove wire:target="saveDraft">Opslaan als concept</span>
+                    <span wire:loading wire:target="saveDraft">Bezig...</span>
+                </button>
+                <button type="button" wire:click.prevent="save" wire:loading.attr="disabled" wire:target="save" class="px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl font-semibold text-gray-900 shadow-lg shadow-yellow-400/30 hover:shadow-yellow-400/50 transition-all">
+                    <span wire:loading.remove wire:target="save">{{ $invoice ? 'Bijwerken' : 'Aanmaken' }}</span>
+                    <span wire:loading wire:target="save">Bezig...</span>
+                </button>
+                <button type="button" wire:click.prevent="saveAndSend" wire:loading.attr="disabled" wire:target="saveAndSend" class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl font-semibold text-white shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all">
+                    <span wire:loading.remove wire:target="saveAndSend">Opslaan & Verzenden</span>
+                    <span wire:loading wire:target="saveAndSend">Verzenden...</span>
                 </button>
             </div>
         </form>
+
+        <!-- Quick Add Client Modal -->
+        @if($showClientModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-lg">
+                <h3 class="text-xl font-bold text-white mb-4">Nieuwe klant</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Naam</label>
+                        <input type="text" wire:model.defer="newClient.name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white">
+                        @error('newClient.name') <span class="text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">E-mail</label>
+                        <input type="email" wire:model.defer="newClient.email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Telefoon</label>
+                        <input type="text" wire:model.defer="newClient.phone" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" wire:click="$set('showClientModal', false)" class="px-4 py-2 border border-gray-700 rounded-xl text-gray-300">Annuleren</button>
+                    <button type="button" wire:click="createClient" class="px-4 py-2 bg-yellow-500 text-gray-900 rounded-xl font-semibold">Opslaan</button>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>

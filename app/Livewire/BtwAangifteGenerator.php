@@ -94,6 +94,13 @@ final class BtwAangifteGenerator extends Component
 
     public function createCorrection(): void
     {
+        // Check Pro feature
+        if (!auth()->user()->organization->canUseFeature('advanced_btw')) {
+            session()->flash('error', 'BTW correcties zijn een Pro feature. Upgrade je plan om door te gaan.');
+            $this->dispatch('show-upgrade-modal');
+            return;
+        }
+
         // Validate using component rules so Livewire maps to real properties
         $this->validate();
 

@@ -15,11 +15,14 @@ class ResetPasswordMultiStep extends Component
     public string $password = '';
     public string $password_confirmation = '';
 
-    protected array $rules = [
-        'email' => ['required', 'email'],
-        'password' => ['required', 'string', Password::defaults(), 'confirmed'],
-        'password_confirmation' => ['required', 'string'],
-    ];
+    public function rules(): array
+    {
+        return [
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            'password_confirmation' => ['required', 'string'],
+        ];
+    }
 
     public function mount(string $email): void
     {
@@ -48,7 +51,8 @@ class ResetPasswordMultiStep extends Component
         ]);
 
         // Redirect to login
-        $this->redirect(route('login')->with('status', 'Je wachtwoord is succesvol gereset. Je kunt nu inloggen.'), navigate: true);
+        session()->flash('status', 'Je wachtwoord is succesvol gereset. Je kunt nu inloggen.');
+        $this->redirect(route('login'), navigate: true);
     }
 
     public function render()

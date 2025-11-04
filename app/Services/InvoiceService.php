@@ -28,6 +28,9 @@ final class InvoiceService
                 'status' => 'draft',
                 'notes' => $data['notes'] ?? null,
             ]);
+            
+            // Track usage for Starter plan
+            $invoice->organization->incrementInvoiceUsage();
 
             // Create invoice items
             $subtotal = 0;
