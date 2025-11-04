@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -30,26 +30,23 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Allow simple registration path in testing to satisfy feature tests
-        if (app()->environment('testing')) {
-            $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            ]);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ]);
 
-            $user = User::create([
-                'name' => $request->string('name'),
-                'email' => $request->string('email'),
-                'password' => Hash::make($request->string('password')),
-            ]);
+        $user = User::create([
+            'name' => (string) $validated['name'],
+            'email' => (string) $validated['email'],
+            'password' => Hash::make((string) $validated['password']),
+        ]);
 
-            event(new Registered($user));
-            Auth::login($user);
-            return redirect()->route('app.dashboard');
-        }
+        event(new Registered($user));
 
-        // For production we keep Livewire flow
-        return redirect()->route('register');
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

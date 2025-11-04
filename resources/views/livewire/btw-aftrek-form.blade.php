@@ -1,24 +1,4 @@
 <div>
-    <!-- Error Message Display at Top -->
-    @if(session()->has('error'))
-    <div class="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center space-x-3 animate-fade-in">
-        <svg class="w-6 h-6 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-red-400 font-semibold">{{ session('error') }}</p>
-    </div>
-    @endif
-
-    <!-- Success Message Display at Top -->
-    @if(session()->has('message'))
-    <div class="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center space-x-3 animate-fade-in">
-        <svg class="w-6 h-6 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-green-400 font-semibold">{{ session('message') }}</p>
-    </div>
-    @endif
-
     <!-- Progress Steps -->
     <div class="mb-8">
         <div class="flex items-center justify-between">
@@ -143,10 +123,9 @@
                 </label>
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl font-semibold">€</span>
-                    <input type="number" step="0.01" wire:model="bedrag_excl_btw" wire:change="calculate" placeholder="0.00" min="0.01" class="w-full pl-10 pr-4 py-4 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all hover:border-gray-600 text-lg font-semibold">
+                    <input type="number" step="0.01" wire:model.live="bedrag_excl_btw" placeholder="0,00" class="w-full pl-10 pr-4 py-4 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all hover:border-gray-600 text-lg font-semibold">
                 </div>
                 @error('bedrag_excl_btw') <p class="text-red-400 text-sm mt-1 flex items-center"><svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
-                @error('save') <p class="text-red-400 text-sm mt-1 flex items-center"><svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>{{ $message }}</p> @enderror
                 <p class="text-xs text-gray-500 mt-1">Voer het bedrag in zonder BTW</p>
             </div>
 
@@ -317,24 +296,11 @@
         @endif
 
         @if($current_step === 3)
-        <button type="button" 
-                wire:click="save" 
-                wire:loading.attr="disabled" 
-                wire:target="save"
-                class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-xl font-semibold text-white shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all duration-200 flex items-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed">
-            <span wire:loading.remove wire:target="save">
-                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </span>
-            <span wire:loading wire:target="save" class="flex items-center">
-                <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </span>
-            <span wire:loading.remove wire:target="save">Opslaan</span>
-            <span wire:loading wire:target="save">Opslaan...</span>
+        <button wire:click="save" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-xl font-semibold text-white shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all duration-200 flex items-center space-x-2 group">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Opslaan</span>
         </button>
         @else
         <button wire:click="nextStep" class="px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl font-semibold text-gray-900 shadow-lg shadow-yellow-400/30 hover:shadow-yellow-400/50 transition-all duration-200 flex items-center space-x-2 group">
@@ -345,24 +311,4 @@
         </button>
         @endif
     </div>
-
-    <!-- Error Message Display -->
-    @if(session()->has('error'))
-    <div class="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center space-x-3 animate-fade-in">
-        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-red-400 font-semibold">{{ session('error') }}</p>
-    </div>
-    @endif
-
-    <!-- Success Message Display -->
-    @if(session()->has('message'))
-    <div class="mt-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center space-x-3 animate-fade-in">
-        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <p class="text-green-400 font-semibold">{{ session('message') }}</p>
-    </div>
-    @endif
 </div>

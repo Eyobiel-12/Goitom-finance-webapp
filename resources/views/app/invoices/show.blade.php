@@ -228,15 +228,8 @@
             <div class="mt-8 flex space-x-3">
                 <form action="{{ route('app.invoices.send', $invoice) }}" method="POST" class="flex-1">
                     @csrf
-                    <button type="submit" 
-                            @if(!auth()->user()->organization->canUseFeature('email_sending')) 
-                                onclick="event.preventDefault(); window.dispatchEvent(new CustomEvent('show-upgrade-modal'));" 
-                            @endif
-                            class="w-full px-6 py-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg font-bold text-gray-900 hover:shadow-lg transition-all">
+                    <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg font-bold text-gray-900 hover:shadow-lg transition-all">
                         Versturen
-                        @if(!auth()->user()->organization->canUseFeature('email_sending'))
-                        <span class="ml-2 text-xs px-2 py-0.5 bg-gray-900/30 rounded">Pro</span>
-                        @endif
                     </button>
                 </form>
                 <button onclick="closeEmailPreview()" class="px-6 py-4 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-all">

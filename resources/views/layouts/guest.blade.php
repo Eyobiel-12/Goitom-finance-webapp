@@ -12,7 +12,6 @@
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&family=playfair-display:400,500,600,700" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @livewireStyles
     </head>
     <body class="font-sans antialiased bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
         <div class="min-h-screen flex items-center justify-center px-6 py-12">
@@ -41,6 +40,5 @@
                 </div>
             </div>
         </div>
-        @livewireScripts
     </body>
 </html>
