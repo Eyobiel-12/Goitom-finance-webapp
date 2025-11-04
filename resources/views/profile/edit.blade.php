@@ -7,22 +7,6 @@
                 <p class="mt-2 text-gray-400 text-lg">Beheer je accountgegevens</p>
             </div>
 
-            <!-- Profile Header -->
-            <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-8 mb-6 flex items-center gap-6">
-                <img src="{{ 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($user->email))) . '?s=120&d=identicon' }}" alt="Avatar" class="w-20 h-20 rounded-xl ring-2 ring-yellow-400/30">
-                <div class="flex-1">
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-2xl font-bold text-white">{{ $user->name }}</h2>
-                        <span class="px-2 py-1 text-xs rounded-md border border-yellow-400/30 text-yellow-400">{{ ucfirst($user->role) }}</span>
-                    </div>
-                    <p class="text-gray-400">{{ $user->email }}</p>
-                    @if($user->organization)
-                    <p class="text-sm text-gray-500 mt-1">Organisatie: <span class="text-gray-300">{{ $user->organization->name ?? ('#' . $user->organization_id) }}</span></p>
-                    @endif
-                </div>
-                <a href="https://gravatar.com" target="_blank" class="px-4 py-2 text-sm bg-gray-800 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-700 transition-all">Wijzig avatar</a>
-            </div>
-
             <!-- Profile Information -->
             <div class="bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-8 mb-6">
                 <div class="mb-6">

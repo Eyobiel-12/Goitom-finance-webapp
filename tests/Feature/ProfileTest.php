@@ -12,15 +12,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_page_is_displayed(): void
     {
-        $organization = \App\Models\Organization::factory()->create([
-            'subscription_status' => 'trial',
-            'subscription_plan' => 'starter',
-            'trial_ends_at' => now()->addDays(3),
-        ]);
-
-        $user = User::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+        $user = User::factory()->create();
 
         $response = $this
             ->actingAs($user)

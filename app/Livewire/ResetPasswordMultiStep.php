@@ -11,11 +11,11 @@ use Livewire\Component;
 
 class ResetPasswordMultiStep extends Component
 {
-    public string $email = '';
+    public ?string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
 
-    public function rules(): array
+    protected function rules(): array
     {
         return [
             'email' => ['required', 'email'],
@@ -24,9 +24,9 @@ class ResetPasswordMultiStep extends Component
         ];
     }
 
-    public function mount(string $email): void
+    public function mount(?string $email = ''): void
     {
-        $this->email = $email;
+        $this->email = $email ?? '';
     }
 
     public function updated(string $propertyName): void
@@ -50,7 +50,7 @@ class ResetPasswordMultiStep extends Component
             'password' => Hash::make($this->password),
         ]);
 
-        // Redirect to login
+        // Redirect to login with flash message
         session()->flash('status', 'Je wachtwoord is succesvol gereset. Je kunt nu inloggen.');
         $this->redirect(route('login'), navigate: true);
     }

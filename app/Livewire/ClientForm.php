@@ -101,12 +101,6 @@ final class ClientForm extends Component
 
     public function save()
     {
-        // Check limits before creating new client
-        if (!$this->client && !auth()->user()->organization->canCreateClient()) {
-            session()->flash('error', 'Je hebt je limiet bereikt (' . auth()->user()->organization->limit_clients . ' klanten). Upgrade naar Pro voor onbeperkt klanten.');
-            return redirect()->route('app.clients.index');
-        }
-
         // Validate only required fields for all steps
         $this->validate([
             'name' => 'required|string|max:255',

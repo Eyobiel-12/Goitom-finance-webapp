@@ -69,7 +69,7 @@
 
             <!-- Right Side - Reset Form -->
             <div class="w-full lg:w-1/2 flex items-center justify-center p-8">
-                @livewire('reset-password-multi-step', ['email' => $request->query('email', '')])
+                @livewire('reset-password-multi-step', ['email' => $request->query('email')])
             </div>
         </div>
     </div>

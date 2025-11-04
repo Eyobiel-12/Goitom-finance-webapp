@@ -23,7 +23,7 @@ final class BtwAftrekForm extends Component
 
     protected array $rules = [
         'naam' => 'required|string|max:255',
-        'bedrag_excl_btw' => 'required|numeric|min:0.01',
+        'bedrag_excl_btw' => 'required|numeric|min:0',
         'btw_percentage' => 'required|numeric|min:0|max:100',
         'categorie' => 'nullable|string|max:255',
         'datum' => 'required|date',
@@ -46,11 +46,6 @@ final class BtwAftrekForm extends Component
 
     public function updated($propertyName): void
     {
-        // Normalize bedrag_excl_btw if it's a string with EU format (comma as decimal)
-        if ($propertyName === 'bedrag_excl_btw' && is_string($this->bedrag_excl_btw)) {
-            $this->bedrag_excl_btw = (float) str_replace([',', ' '], ['.', ''], $this->bedrag_excl_btw);
-        }
-        
         if (in_array($propertyName, ['bedrag_excl_btw', 'btw_percentage'])) {
             $this->validateOnly($propertyName);
         }
@@ -62,7 +57,7 @@ final class BtwAftrekForm extends Component
         if ($this->current_step === 1) {
             $this->validate(['naam' => 'required|string|max:255', 'datum' => 'required|date']);
         } elseif ($this->current_step === 2) {
-            $this->validate(['bedrag_excl_btw' => 'required|numeric|min:0.01', 'btw_percentage' => 'required|numeric|min:0|max:100']);
+            $this->validate(['bedrag_excl_btw' => 'required|numeric|min:0', 'btw_percentage' => 'required|numeric|min:0|max:100']);
         }
 
         if ($this->current_step < $this->total_steps) {
@@ -96,63 +91,12 @@ final class BtwAftrekForm extends Component
         return $bedrag + $this->calculatedBtw;
     }
 
-    public function save()
+    public function save(): void
     {
-        // Ensure numeric values first
-        if (!is_numeric($this->bedrag_excl_btw)) {
-            if (is_string($this->bedrag_excl_btw)) {
-                $this->bedrag_excl_btw = (float) str_replace([',', ' '], ['.', ''], $this->bedrag_excl_btw);
-            } else {
-                $this->bedrag_excl_btw = 0;
-            }
-        } else {
-            $this->bedrag_excl_btw = (float) $this->bedrag_excl_btw;
-        }
-        $this->btw_percentage = (float) $this->btw_percentage;
-
-        \Log::info('BTW Aftrek save method called - after normalization', [
-            'naam' => $this->naam,
-            'bedrag_excl_btw' => $this->bedrag_excl_btw,
-            'bedrag_excl_btw_type' => gettype($this->bedrag_excl_btw),
-            'btw_percentage' => $this->btw_percentage,
-            'datum' => $this->datum,
-            'categorie' => $this->categorie,
-            'calculated_btw' => $this->calculatedBtw,
-            'calculated_total' => $this->calculatedTotal,
-        ]);
-
-        // Normalize date (accept both Y-m-d and d-m-Y)
-        if ($this->datum) {
-            try {
-                $parsed = \Carbon\Carbon::createFromFormat('Y-m-d', $this->datum);
-            } catch (\Throwable) {
-                try {
-                    $parsed = \Carbon\Carbon::createFromFormat('d-m-Y', $this->datum);
-                    $this->datum = $parsed->format('Y-m-d');
-                } catch (\Throwable) {
-                    // leave as-is; validation will catch
-                }
-            }
-        }
-
-        // Validate - Livewire will automatically show errors
         $this->validate();
 
-        $organizationId = auth()->user()->organization_id;
-        
-        if (!$organizationId) {
-            $this->addError('organization', 'Geen organisatie gevonden. Log opnieuw in.');
-            return;
-        }
-
-        // Check if bedrag_excl_btw is valid
-        if ($this->bedrag_excl_btw <= 0) {
-            $this->addError('bedrag_excl_btw', 'Bedrag moet groter zijn dan 0');
-            return;
-        }
-
         $data = [
-            'organization_id' => $organizationId,
+            'organization_id' => auth()->user()->organization_id,
             'naam' => $this->naam,
             'beschrijving' => $this->beschrijving ?: null,
             'bedrag_excl_btw' => $this->bedrag_excl_btw,
@@ -161,38 +105,17 @@ final class BtwAftrekForm extends Component
             'totaal_bedrag' => $this->calculatedTotal,
             'categorie' => $this->categorie ?: null,
             'datum' => $this->datum,
-            'status' => 'draft',
         ];
 
-        try {
-            DB::beginTransaction();
-            
-            if ($this->btwAftrek) {
-                $this->btwAftrek->update($data);
-                session()->flash('message', 'BTW aftrek bijgewerkt!');
-            } else {
-                BtwAftrek::create($data);
-                session()->flash('message', 'BTW aftrek toegevoegd!');
-            }
-            
-            DB::commit();
-            
-            return redirect()->route('app.btw-aftrek.index');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            \Log::error('BTW Aftrek save failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'data' => $data,
-                'request_data' => [
-                    'naam' => $this->naam,
-                    'bedrag_excl_btw' => $this->bedrag_excl_btw,
-                    'btw_percentage' => $this->btw_percentage,
-                    'datum' => $this->datum,
-                ]
-            ]);
-            $this->addError('save', 'Opslaan mislukt: ' . $e->getMessage());
+        if ($this->btwAftrek) {
+            $this->btwAftrek->update($data);
+            session()->flash('message', 'BTW aftrek bijgewerkt!');
+        } else {
+            BtwAftrek::create($data);
+            session()->flash('message', 'BTW aftrek toegevoegd!');
         }
+
+        $this->redirect(route('app.btw-aftrek.index'), navigate: true);
     }
 
     public function render()
