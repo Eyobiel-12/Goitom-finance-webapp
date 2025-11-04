@@ -5,27 +5,27 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use App\Models\Invoice;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-final class InvoiceSentMail extends Mailable
+final class InvoiceSentMail extends BaseMail
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public Invoice $invoice
     ) {}
 
-    public function envelope(): Envelope
+    protected function buildEnvelope(): Envelope
     {
         return new Envelope(
-            subject: 'Uw Factuur van ' . $this->invoice->organization->name,
+            subject: 'Uw Factuur ' . $this->invoice->number . ' van ' . $this->invoice->organization->name,
             from: config('mail.from.address'),
             replyTo: $this->invoice->organization->owner->email ?? config('mail.from.address'),
+            tags: ['invoice', 'factuur'],
+            metadata: [
+                'invoice_id' => (string) $this->invoice->id,
+                'invoice_number' => $this->invoice->number,
+            ],
         );
     }
 

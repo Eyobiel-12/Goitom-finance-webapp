@@ -165,6 +165,11 @@
         <div class="footer">
             <p>© {{ date('Y') }} {{ $organization->name }}</p>
             <p>Professionele Financiële Diensten</p>
+            <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333333;">
+                <a href="{{ config('app.url') }}/unsubscribe" style="color: #999999; font-size: 12px; text-decoration: underline;">
+                    Uitschrijven van deze e-mails
+                </a>
+            </p>
         </div>
     </div>
 </body>

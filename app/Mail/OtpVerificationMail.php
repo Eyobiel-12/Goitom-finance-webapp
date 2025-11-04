@@ -2,17 +2,11 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class OtpVerificationMail extends Mailable
+class OtpVerificationMail extends BaseMail
 {
-    use Queueable, SerializesModels;
-
     /**
      * Create a new message instance.
      */
@@ -21,12 +15,18 @@ class OtpVerificationMail extends Mailable
     ) {}
 
     /**
-     * Get the message envelope.
+     * Build the message envelope.
      */
-    public function envelope(): Envelope
+    protected function buildEnvelope(): Envelope
     {
         return new Envelope(
             subject: 'E-mail Bevestiging - Goitom Finance',
+            from: config('mail.from.address'),
+            replyTo: config('mail.from.address'),
+            tags: ['otp', 'verification'],
+            metadata: [
+                'type' => 'otp_verification',
+            ],
         );
     }
 

@@ -117,20 +117,27 @@
                         <div class="md:col-span-2 text-right">Bedrag</div>
                     </div>
                     @foreach($items as $index => $item)
-                    <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
+                    <div class="p-4 bg-gray-800/30 rounded-xl border border-gray-700/50" wire:key="item-{{ $index }}">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                            <input type="text" wire:model="items.{{ $index }}.description" 
+                            <input type="text" wire:model.live="items.{{ $index }}.description" 
                                    placeholder="Omschrijving van dienst of product" 
                                    class="md:col-span-6 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
-                            <input type="number" step="0.01" wire:model="items.{{ $index }}.qty" 
+                            <input type="number" step="0.01" wire:model.live="items.{{ $index }}.qty" 
                                    placeholder="1" 
                                    class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
-                            <input type="number" step="0.01" wire:model="items.{{ $index }}.unit_price" 
+                            <input type="number" step="0.01" wire:model.live="items.{{ $index }}.unit_price" 
                                    placeholder="0" 
                                    class="md:col-span-2 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all text-right">
                             <div class="md:col-span-2 relative">
-                                <input type="text" disabled placeholder="0.00" value="{{ number_format($item['qty'] * $item['unit_price'] * (1 + ($item['vat_rate'] ?? 0) / 100), 2) }}" 
-                                       class="w-full pr-10 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-right text-yellow-400" />
+                                @php
+                                    $qty = (float)($item['qty'] ?? 0);
+                                    $unitPrice = (float)($item['unit_price'] ?? 0);
+                                    $vatRate = (float)($item['vat_rate'] ?? 21);
+                                    $lineTotal = $qty * $unitPrice * (1 + ($vatRate / 100));
+                                @endphp
+                                <input type="text" disabled placeholder="0.00" 
+                                       value="€{{ number_format($lineTotal, 2, ',', '.') }}" 
+                                       class="w-full pr-10 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-right text-yellow-400 font-semibold" />
                                 <button type="button" wire:click="removeItem({{ $index }})" 
                                         class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,21 +171,22 @@
                     <p class="text-sm text-gray-400 mb-4">BTW en eindberekeningen</p>
                     <div class="mb-6 max-w-md">
                         <label class="block text-sm font-medium text-gray-400 mb-2">BTW Percentage (%)</label>
-                        <input type="number" step="0.01" wire:model="vat_percentage" 
+                        <input type="number" step="0.01" wire:model.live="vat_percentage" 
                                class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all">
+                        <p class="text-xs text-gray-500 mt-1">Standaard BTW percentage voor alle items</p>
                     </div>
                     <div class="space-y-3">
                         <div class="flex justify-between text-gray-400">
                             <span>Subtotaal</span>
-                            <span class="font-semibold">€{{ number_format($this->subtotal, 2) }}</span>
+                            <span class="font-semibold text-white">€{{ number_format($this->subtotal, 2, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-400">
                             <span>BTW ({{ $vat_percentage }}%)</span>
-                            <span class="font-semibold">€{{ number_format($this->vatTotal, 2) }}</span>
+                            <span class="font-semibold text-white">€{{ number_format($this->vatTotal, 2, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-2xl font-bold pt-3 border-t border-gray-800">
                             <span class="text-white">Totaal</span>
-                            <span class="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">€{{ number_format($this->total, 2) }}</span>
+                            <span class="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">€{{ number_format($this->total, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>

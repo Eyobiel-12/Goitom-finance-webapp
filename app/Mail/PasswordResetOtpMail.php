@@ -2,24 +2,25 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class PasswordResetOtpMail extends Mailable
+class PasswordResetOtpMail extends BaseMail
 {
-    use Queueable, SerializesModels;
-
     public function __construct(
         public string $otpCode
     ) {}
 
-    public function envelope(): Envelope
+    protected function buildEnvelope(): Envelope
     {
         return new Envelope(
             subject: 'Wachtwoord Reset - Goitom Finance',
+            from: config('mail.from.address'),
+            replyTo: config('mail.from.address'),
+            tags: ['password', 'reset', 'otp'],
+            metadata: [
+                'type' => 'password_reset',
+            ],
         );
     }
 

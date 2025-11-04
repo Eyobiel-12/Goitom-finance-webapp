@@ -2,17 +2,11 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class WelcomeMail extends Mailable
+class WelcomeMail extends BaseMail
 {
-    use Queueable, SerializesModels;
-
     /**
      * Create a new message instance.
      */
@@ -21,12 +15,18 @@ class WelcomeMail extends Mailable
     ) {}
 
     /**
-     * Get the message envelope.
+     * Build the message envelope.
      */
-    public function envelope(): Envelope
+    protected function buildEnvelope(): Envelope
     {
         return new Envelope(
             subject: 'Welkom bij Goitom Finance!',
+            from: config('mail.from.address'),
+            replyTo: config('mail.from.address'),
+            tags: ['welcome', 'onboarding'],
+            metadata: [
+                'user_id' => (string) $this->user->id,
+            ],
         );
     }
 

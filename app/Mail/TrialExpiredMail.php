@@ -2,17 +2,11 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class TrialExpiredMail extends Mailable
+class TrialExpiredMail extends BaseMail
 {
-    use Queueable, SerializesModels;
-
     /**
      * Create a new message instance.
      */
@@ -21,12 +15,19 @@ class TrialExpiredMail extends Mailable
     }
 
     /**
-     * Get the message envelope.
+     * Build the message envelope.
      */
-    public function envelope(): Envelope
+    protected function buildEnvelope(): Envelope
     {
         return new Envelope(
             subject: 'Je trial is verlopen – rond je betaling af',
+            from: config('mail.from.address'),
+            replyTo: config('mail.from.address'),
+            tags: ['trial', 'expired', 'payment'],
+            metadata: [
+                'organization_id' => (string) $this->organization->id,
+                'type' => 'trial_expired',
+            ],
         );
     }
 

@@ -85,7 +85,7 @@ final class InvoiceForm extends Component
             'description' => '',
             'qty' => 1,
             'unit_price' => 0,
-            'vat_rate' => 21,
+            'vat_rate' => $this->vat_percentage,
         ];
     }
 
@@ -155,14 +155,19 @@ final class InvoiceForm extends Component
     public function getSubtotalProperty()
     {
         return collect($this->items)->sum(function ($item) {
-            return $item['qty'] * $item['unit_price'];
+            $qty = (float)($item['qty'] ?? 0);
+            $unitPrice = (float)($item['unit_price'] ?? 0);
+            return $qty * $unitPrice;
         });
     }
 
     public function getVatTotalProperty()
     {
         return collect($this->items)->sum(function ($item) {
-            return ($item['qty'] * $item['unit_price']) * ($item['vat_rate'] / 100);
+            $qty = (float)($item['qty'] ?? 0);
+            $unitPrice = (float)($item['unit_price'] ?? 0);
+            $vatRate = (float)($item['vat_rate'] ?? 21);
+            return ($qty * $unitPrice) * ($vatRate / 100);
         });
     }
 
