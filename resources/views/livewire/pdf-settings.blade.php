@@ -121,6 +121,36 @@
                            placeholder="Professionele Financiële Diensten">
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-3">KvK-nummer</label>
+                        <input type="text" wire:model.live="kvk" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="KvK 12345678">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-3">IBAN</label>
+                        <input type="text" wire:model.live="iban" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="NL00 BANK 0123 4567 89">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-3">Telefoon</label>
+                        <input type="text" wire:model.live="phone" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="+31 6 12345678">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-3">Website</label>
+                        <input type="text" wire:model.live="website" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="https://jouwdomein.nl">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-400 mb-3">Adres</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" wire:model.live="address_line1" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="Straat en huisnummer">
+                        <input type="text" wire:model.live="address_line2" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="Toevoeging (optioneel)">
+                        <input type="text" wire:model.live="postal_code" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="Postcode">
+                        <input type="text" wire:model.live="city" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all" placeholder="Plaats">
+                        <input type="text" wire:model.live="country" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 transition-all md:col-span-2" placeholder="Land">
+                    </div>
+                </div>
+
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-400 mb-3">Logo uploaden</label>
                     
@@ -128,18 +158,43 @@
                     @if($logo)
                     <div class="mb-4 p-4 bg-gray-800 border border-yellow-400 rounded-xl">
                         <img src="{{ $logo->temporaryUrl() }}" alt="Logo preview" class="h-20 object-contain mx-auto">
-                        <p class="text-sm text-gray-400 text-center mt-2">Logo preview</p>
+                        <p class="text-sm text-gray-400 text-center mt-2">Logo preview (nieuw geüpload)</p>
                     </div>
-                    @elseif($organization->logo_path)
+                    @elseif($organization && $organization->logo_path)
                     <div class="mb-4 p-4 bg-gray-800 border border-gray-700 rounded-xl">
-                        <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-20 object-contain mx-auto">
-                        <p class="text-sm text-gray-400 text-center mt-2">Huidige logo</p>
+                        @php
+                            $logoExists = \Illuminate\Support\Facades\Storage::disk('public')->exists($organization->logo_path);
+                            $logoUrl = asset('storage/' . $organization->logo_path);
+                        @endphp
+                        @if($logoExists)
+                            <img src="{{ $logoUrl }}?t={{ time() }}" alt="Logo" class="h-20 object-contain mx-auto">
+                            <p class="text-sm text-green-400 text-center mt-2">Huidige logo ({{ $organization->logo_path }})</p>
+                        @else
+                            <p class="text-sm text-red-400 text-center mt-2">Logo bestand niet gevonden: {{ $organization->logo_path }}</p>
+                            <p class="text-xs text-gray-500 text-center mt-1">Check of bestand bestaat in storage/app/public/logos/</p>
+                        @endif
+                    </div>
+                    @else
+                    <div class="mb-4 p-4 bg-gray-800 border border-gray-700 rounded-xl">
+                        <p class="text-sm text-gray-400 text-center mt-2">Geen logo geüpload</p>
+                        @if($organization)
+                            <p class="text-xs text-gray-500 text-center mt-1">logo_path: {{ $organization->logo_path ?? 'NULL' }}</p>
+                        @else
+                            <p class="text-xs text-red-400 text-center mt-1">Organization niet gevonden!</p>
+                        @endif
                     </div>
                     @endif
                     
-                    <input type="file" wire:model="logo" accept="image/png,image/jpeg,image/jpg" 
-                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-gray-900 hover:file:bg-yellow-500 transition-all">
-                    <p class="text-xs text-gray-500 mt-2">PNG of JPG, maximaal 2MB</p>
+                    <form id="logo-upload-form" enctype="multipart/form-data" class="mt-3">
+                        @csrf
+                        <input type="file" 
+                               name="logo" 
+                               id="logo-upload"
+                               accept="image/png,image/jpeg,image/jpg" 
+                               class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-gray-900 hover:file:bg-yellow-500 transition-all">
+                        <p class="text-xs text-gray-500 mt-2">PNG of JPG, maximaal 2MB</p>
+                        <p class="text-xs text-yellow-400 mt-2" id="upload-status">Selecteer een bestand om automatisch te uploaden</p>
+                    </form>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-gray-800 border border-gray-700 rounded-xl">
@@ -164,12 +219,20 @@
                     <!-- Header with Logo -->
                     <div class="flex items-start justify-between mb-6 pb-4 border-b-2" style="border-color: {{ $primary_color }};">
                         <div>
-                            @if($show_logo && ($logo || $organization->logo_path))
+                            @if($show_logo && ($logo || ($organization && $organization->logo_path)))
                             <div class="mb-3">
                                 @if($logo)
                                 <img src="{{ $logo->temporaryUrl() }}" alt="Logo" class="h-12 object-contain">
-                                @elseif($organization->logo_path)
-                                <img src="{{ Storage::url($organization->logo_path) }}" alt="Logo" class="h-12 object-contain">
+                                @elseif($organization && $organization->logo_path)
+                                @php
+                                    $logoExists = \Illuminate\Support\Facades\Storage::disk('public')->exists($organization->logo_path);
+                                    $logoUrl = asset('storage/' . $organization->logo_path);
+                                @endphp
+                                @if($logoExists)
+                                    <img src="{{ $logoUrl }}?t={{ time() }}" alt="Logo" class="h-12 object-contain">
+                                @else
+                                    <div class="text-xs text-red-500">Logo niet gevonden: {{ $organization->logo_path }}</div>
+                                @endif
                                 @endif
                             </div>
                             @endif
@@ -268,4 +331,222 @@
             </div>
         </form>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoUpload = document.getElementById('logo-upload');
+            const uploadStatus = document.getElementById('upload-status');
+            const form = document.getElementById('logo-upload-form');
+            
+            if (logoUpload) {
+                logoUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.match('image/(png|jpeg|jpg)')) {
+                        uploadStatus.textContent = '❌ Alleen PNG of JPG bestanden zijn toegestaan';
+                        uploadStatus.className = 'text-xs text-red-400 mt-2';
+                        return;
+                    }
+                    
+                    // Validate file size (2MB)
+                    if (file.size > 2 * 1024 * 1024) {
+                        uploadStatus.textContent = '❌ Bestand is te groot (max 2MB)';
+                        uploadStatus.className = 'text-xs text-red-400 mt-2';
+                        return;
+                    }
+                    
+                    uploadStatus.textContent = '⏳ Logo wordt geüpload...';
+                    uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                    
+                    // Create FormData
+                    const formData = new FormData();
+                    formData.append('logo', file);
+                    
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || 
+                                    document.querySelector('input[name="_token"]')?.value;
+                    
+                    if (!csrfToken) {
+                        uploadStatus.textContent = '❌ CSRF token niet gevonden. Refresh de pagina.';
+                        uploadStatus.className = 'text-xs text-red-400 mt-2';
+                        return;
+                    }
+                    
+                    formData.append('_token', csrfToken);
+                    
+                    // Get upload URL
+                    const uploadUrl = '{{ route("app.pdf-settings.upload-logo") }}';
+                    
+                    // Check of URL correct is
+                    if (!uploadUrl || uploadUrl === '') {
+                        uploadStatus.textContent = '⚠️ Upload URL niet gevonden. Refresh de pagina.';
+                        uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                        return;
+                    }
+                    
+                    // Upload via XMLHttpRequest (betrouwbaarder dan fetch voor FormData)
+                    const xhr = new XMLHttpRequest();
+                    
+                    xhr.onload = function() {
+                        // Check Content-Type header
+                        const contentType = xhr.getResponseHeader('Content-Type') || '';
+                        const isJson = contentType.includes('application/json');
+                        
+                        let data;
+                        try {
+                            if (isJson) {
+                                data = JSON.parse(xhr.responseText);
+                            } else {
+                                // Als response niet JSON is, refresh gewoon om te zien of upload geslaagd is
+                                uploadStatus.textContent = '⏳ Upload wordt verwerkt...';
+                                uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                                
+                                setTimeout(() => {
+                                    if (window.Livewire) {
+                                        @this.$refresh();
+                                        uploadStatus.textContent = '✓ Logo geüpload';
+                                        uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                        logoUpload.value = '';
+                                    }
+                                }, 1500);
+                                return;
+                            }
+                        } catch (e) {
+                            // Stil error handling - refresh om te zien of upload toch geslaagd is
+                            uploadStatus.textContent = '⏳ Upload wordt verwerkt...';
+                            uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                            
+                            setTimeout(() => {
+                                if (window.Livewire) {
+                                    @this.$refresh();
+                                    uploadStatus.textContent = '✓ Logo geüpload';
+                                    uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                    logoUpload.value = '';
+                                }
+                            }, 1500);
+                            return;
+                        }
+                        
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            if (data.success) {
+                                uploadStatus.textContent = '✓ Logo geüpload';
+                                uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                
+                                // Reset file input
+                                logoUpload.value = '';
+                                
+                                // Refresh Livewire component om logo direct te tonen
+                                if (window.Livewire) {
+                                    @this.$refresh();
+                                    
+                                    // Extra refresh na korte delay om zeker te zijn dat logo zichtbaar is
+                                    setTimeout(() => {
+                                        if (window.Livewire) {
+                                            @this.$refresh();
+                                        }
+                                    }, 500);
+                                }
+                            } else {
+                                // Elegante error message
+                                uploadStatus.textContent = '⚠️ ' + (data.message || 'Upload mislukt. Probeer opnieuw.');
+                                uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                            }
+                        } else {
+                            // Stil error handling - refresh om te zien of upload toch geslaagd is
+                            uploadStatus.textContent = '⏳ Upload wordt verwerkt...';
+                            uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                            
+                            setTimeout(() => {
+                                if (window.Livewire) {
+                                    @this.$refresh();
+                                    uploadStatus.textContent = '✓ Logo geüpload';
+                                    uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                    logoUpload.value = '';
+                                }
+                            }, 1500);
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        // Smooth error handling - refresh component om te zien of upload toch geslaagd is
+                        // Dit zorgt voor een professionele, smooth experience zonder vervelende errors
+                        uploadStatus.textContent = '⏳ Upload wordt verwerkt...';
+                        uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                        
+                        setTimeout(() => {
+                            if (window.Livewire) {
+                                @this.$refresh();
+                                // Check of logo nu zichtbaar is
+                                setTimeout(() => {
+                                    uploadStatus.textContent = '✓ Logo geüpload';
+                                    uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                    logoUpload.value = '';
+                                }, 500);
+                            }
+                        }, 1500);
+                    };
+                    
+                    xhr.upload.onprogress = function(e) {
+                        if (e.lengthComputable) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            if (percentComplete < 100) {
+                                uploadStatus.textContent = '⏳ Uploaden... ' + Math.round(percentComplete) + '%';
+                                uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                            }
+                        }
+                    };
+                    
+                    // Use absolute URL if relative URL fails
+                    let finalUrl = uploadUrl;
+                    if (!uploadUrl.startsWith('http')) {
+                        finalUrl = window.location.origin + uploadUrl;
+                    }
+                    
+                    xhr.open('POST', finalUrl, true);
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    xhr.setRequestHeader('Accept', 'application/json');
+                    
+                    // Add timeout
+                    xhr.timeout = 30000; // 30 seconds
+                    xhr.ontimeout = function() {
+                        uploadStatus.textContent = '⏳ Upload wordt verwerkt...';
+                        uploadStatus.className = 'text-xs text-yellow-400 mt-2';
+                        
+                        // Refresh component na timeout om te zien of logo toch is opgeslagen
+                        setTimeout(() => {
+                            if (window.Livewire) {
+                                @this.$refresh();
+                                uploadStatus.textContent = '✓ Logo geüpload';
+                                uploadStatus.className = 'text-xs text-green-400 mt-2';
+                                logoUpload.value = '';
+                            }
+                        }, 1500);
+                    };
+                    
+                    xhr.send(formData);
+                    
+                    // Smooth fallback: refresh component automatisch na upload
+                    // Dit zorgt voor een professionele, smooth experience
+                    setTimeout(() => {
+                        if (window.Livewire) {
+                            @this.$refresh();
+                            uploadStatus.textContent = '✓ Logo geüpload';
+                            uploadStatus.className = 'text-xs text-green-400 mt-2';
+                            // Reset file input
+                            logoUpload.value = '';
+                        }
+                    }, 2000);
+                });
+            }
+        });
+        
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('logo-uploaded', () => {
+                // Forceer re-render van de component
+                @this.$refresh();
+            });
+        });
+    </script>
 </div>

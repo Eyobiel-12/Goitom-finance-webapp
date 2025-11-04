@@ -83,6 +83,109 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
         return view('app.pdf-settings');
     })->name('pdf-settings');
     
+    Route::post('/pdf-settings/upload-logo', function (\Illuminate\Http\Request $request) {
+        // Zorg dat ALLES als JSON wordt geretourneerd, ook errors
+        // Start output buffering om alle PHP errors/notices te vangen
+        ob_start();
+        
+        try {
+            // Check of gebruiker is ingelogd
+            if (!auth()->check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Niet ingelogd'
+                ], 401)->header('Content-Type', 'application/json');
+            }
+            
+            // Validate logo
+            try {
+                $request->validate([
+                    'logo' => 'required|image|max:2048',
+                ]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validatie mislukt: ' . implode(', ', $e->errors()['logo'] ?? ['Ongeldig bestand'])
+                ], 422)->header('Content-Type', 'application/json');
+            }
+            
+            // Check of bestand bestaat
+            if (!$request->hasFile('logo')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Geen logo bestand ontvangen'
+                ], 400)->header('Content-Type', 'application/json');
+            }
+            
+            $organization = auth()->user()->organization;
+            
+            if (!$organization) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Organization niet gevonden'
+                ], 404)->header('Content-Type', 'application/json');
+            }
+            
+            // Verwijder oude logo als die bestaat
+            if ($organization->logo_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($organization->logo_path)) {
+                try {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($organization->logo_path);
+                } catch (\Exception $e) {
+                    // Ignore delete errors
+                }
+            }
+            
+            // Upload nieuw logo
+            $path = $request->file('logo')->store('logos', 'public');
+            
+            // Verifieer dat bestand bestaat
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Logo upload mislukt. Bestand niet gevonden na upload.'
+                ], 500)->header('Content-Type', 'application/json');
+            }
+            
+            // Update organization met logo_path
+            $organization->logo_path = $path;
+            $organization->save();
+            
+            // Clean output buffer voordat we response sturen
+            ob_clean();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Logo succesvol geüpload!',
+                'logo_path' => $path
+            ], 200)->header('Content-Type', 'application/json');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            ob_clean();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validatie mislukt: ' . implode(', ', $e->errors()['logo'] ?? ['Ongeldig bestand'])
+            ], 422)->header('Content-Type', 'application/json');
+        } catch (\Throwable $e) {
+            // Clean output buffer
+            ob_clean();
+            
+            \Log::error('Logo upload error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Logo upload mislukt: ' . $e->getMessage()
+            ], 500)->header('Content-Type', 'application/json');
+        } finally {
+            // Clean up output buffer
+            ob_end_clean();
+        }
+    })->name('pdf-settings.upload-logo');
+    
     // BTW Management
     Route::get('/btw', [\App\Http\Controllers\BtwController::class, 'index'])->name('btw.index');
     

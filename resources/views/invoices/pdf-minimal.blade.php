@@ -184,17 +184,57 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="company-info">
-                @if($invoice->organization->settings['pdf_show_logo'] ?? true && $invoice->organization->logo_path)
-                <img src="{{ public_path('storage/' . $invoice->organization->logo_path) }}" alt="Logo" style="height: 40px; margin-bottom: 15px;">
+            <div class="company-info" style="max-width:60%">
+                @if(($invoice->organization->settings['pdf_show_logo'] ?? true) && $invoice->organization->logo_path)
+                @php
+                    $logoPath = public_path('storage/' . $invoice->organization->logo_path);
+                    $logoExists = file_exists($logoPath);
+                @endphp
+                @if($logoExists)
+                <div style="margin-bottom:12px">
+                    <img src="{{ $logoPath }}" alt="{{ $invoice->organization->name }} Logo" style="max-height: 50px; max-width: 220px; object-fit: contain; display: block; height: auto;">
+                </div>
+                @endif
                 @endif
                 <h1>{{ $invoice->organization->name }}</h1>
-                <p class="tagline">{{ $invoice->organization->tagline ?? '' }}</p>
+                @if($invoice->organization->tagline)
+                <p class="tagline">{{ $invoice->organization->tagline }}</p>
+                @endif
+                @php($orgSettings = $invoice->organization->settings ?? [])
+                <div style="margin-top:12px; line-height: 1.8;">
+                    @if($invoice->organization->vat_number || ($orgSettings['kvk'] ?? null) || ($orgSettings['iban'] ?? null))
+                    <p style="color: #666666; font-size: 10px; margin-bottom:4px">
+                        @if($invoice->organization->vat_number) <strong>BTW:</strong> {{ $invoice->organization->vat_number }} @endif
+                        @if(($orgSettings['kvk'] ?? null)) @if($invoice->organization->vat_number) | @endif <strong>KvK:</strong> {{ $orgSettings['kvk'] }} @endif
+                        @if(($orgSettings['iban'] ?? null)) @if($invoice->organization->vat_number || ($orgSettings['kvk'] ?? null)) | @endif <strong>IBAN:</strong> {{ $orgSettings['iban'] }} @endif
+                    </p>
+                    @endif
+                    @if(($orgSettings['address_line1'] ?? null) || ($orgSettings['city'] ?? null))
+                    <p style="color: #666666; font-size: 10px; margin-bottom:4px">
+                        @if(($orgSettings['address_line1'] ?? null)) {{ $orgSettings['address_line1'] }} @endif
+                        @if(($orgSettings['address_line2'] ?? null)) {{ $orgSettings['address_line2'] }} @endif
+                    </p>
+                    <p style="color: #666666; font-size: 10px; margin-bottom:4px">
+                        @if(($orgSettings['postal_code'] ?? null)) {{ $orgSettings['postal_code'] }} @endif
+                        @if(($orgSettings['city'] ?? null)) {{ $orgSettings['city'] }} @endif
+                        @if(($orgSettings['country'] ?? null)) {{ $orgSettings['country'] }} @endif
+                    </p>
+                    @endif
+                    @if(($orgSettings['phone'] ?? null) || ($orgSettings['website'] ?? null) || $invoice->organization->owner)
+                    <p style="color: #666666; font-size: 10px; margin-bottom:4px">
+                        @if(($orgSettings['phone'] ?? null)) <strong>Tel:</strong> {{ $orgSettings['phone'] }} @endif
+                        @if(($orgSettings['website'] ?? null)) @if(($orgSettings['phone'] ?? null)) | @endif <strong>Web:</strong> {{ $orgSettings['website'] }} @endif
+                        @if($invoice->organization->owner) @if(($orgSettings['phone'] ?? null) || ($orgSettings['website'] ?? null)) | @endif <strong>E-mail:</strong> {{ $invoice->organization->owner->email }} @endif
+                    </p>
+                    @endif
+                </div>
             </div>
             <div class="invoice-header">
-                <h2>FACTUUR</h2>
+                <h2>Factuur</h2>
                 <div class="invoice-number">#{{ $invoice->number }}</div>
-                <div class="status-badge">{{ strtoupper($invoice->status) }}</div>
+                @if($invoice->status !== 'draft')
+                <div class="status-badge">{{ ['sent' => 'Verzonden', 'paid' => 'Betaald'][$invoice->status] ?? ucfirst($invoice->status) }}</div>
+                @endif
             </div>
         </div>
 
@@ -202,18 +242,9 @@
 
         <!-- Info Grid -->
         <div class="info-grid">
-            <!-- Company Details -->
-            <div class="info-box">
-                <h3>Bedrijfsgegevens</h3>
-                <p>{{ $invoice->organization->name }}</p>
-                @if($invoice->organization->owner)
-                <p>{{ $invoice->organization->owner->email }}</p>
-                @endif
-            </div>
-
             <!-- Invoice To -->
             <div class="info-box">
-                <h3>Factuur Aan</h3>
+                <h3>Aan</h3>
                 <p><strong>{{ $invoice->client->name }}</strong></p>
                 @if($invoice->client->contact_name)
                 <p>{{ $invoice->client->contact_name }}</p>
@@ -221,7 +252,19 @@
                 @if($invoice->client->email)
                 <p>{{ $invoice->client->email }}</p>
                 @endif
+                @if($invoice->client->phone)
+                <p>{{ $invoice->client->phone }}</p>
+                @endif
+                @if(!empty($invoice->client->address['street']))
+                <p>{{ $invoice->client->address['street'] }}</p>
+                <p>{{ $invoice->client->address['postal_code'] ?? '' }} {{ $invoice->client->address['city'] ?? '' }}</p>
+                <p>{{ $invoice->client->address['country'] ?? '' }}</p>
+                @endif
+                @if($invoice->client->tax_id)
+                <p>BTW: {{ $invoice->client->tax_id }}</p>
+                @endif
             </div>
+            <div class="info-box"></div>
         </div>
 
         <!-- Invoice Details -->
