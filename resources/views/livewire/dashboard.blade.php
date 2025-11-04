@@ -62,6 +62,28 @@
                 </div>
             </div>
 
+            <!-- Trial Banner -->
+            @if(auth()->user()->organization->onTrial())
+            <div class="mb-6 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 rounded-xl border border-blue-500/30 p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">🎁 Je trial loopt over {{ auth()->user()->organization->trialDaysRemaining() }} dagen af</h3>
+                            <p class="text-sm text-gray-400">Upgrade nu en behoud toegang tot al je gegevens zonder onderbreking</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('app.subscription.index') }}" class="px-6 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl font-semibold text-gray-900 shadow-lg shadow-yellow-400/30 hover:shadow-yellow-400/50 transition-all whitespace-nowrap">
+                        Upgrade Nu
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <!-- Header with Quick Actions -->
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
                 <div>
@@ -77,18 +99,24 @@
                 <!-- Quick Actions -->
                 <div class="mt-4 lg:mt-0 flex flex-wrap gap-3">
                     <a href="{{ route('app.invoices.create') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 rounded-xl font-semibold text-sm shadow-lg hover:shadow-yellow-400/50 transform hover:scale-105 transition-all duration-300">
+                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 rounded-xl font-semibold text-sm shadow-lg hover:shadow-yellow-400/50 transform hover:scale-105 transition-all duration-300 {{ !auth()->user()->organization->canCreateInvoice() ? 'opacity-50 cursor-not-allowed' : '' }}">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                         Nieuwe Factuur
+                        @if(!auth()->user()->organization->isPro())
+                        <span class="ml-2 text-xs opacity-70">({{ auth()->user()->organization->getInvoicesRemaining() > 0 ? auth()->user()->organization->getInvoicesRemaining() : 0 }}/{{ auth()->user()->organization->limit_invoices_per_month }})</span>
+                        @endif
                     </a>
                     <a href="{{ route('app.clients.create') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-gray-800 text-yellow-400 border border-yellow-400/30 rounded-xl font-semibold text-sm hover:bg-gray-700 transform hover:scale-105 transition-all duration-300">
+                       class="inline-flex items-center px-4 py-2 bg-gray-800 text-yellow-400 border border-yellow-400/30 rounded-xl font-semibold text-sm hover:bg-gray-700 transform hover:scale-105 transition-all duration-300 {{ !auth()->user()->organization->canCreateClient() ? 'opacity-50 cursor-not-allowed' : '' }}">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                         </svg>
                         Nieuwe Klant
+                        @if(!auth()->user()->organization->isPro())
+                        <span class="ml-2 text-xs opacity-70">({{ auth()->user()->organization->getClientsRemaining() > 0 ? auth()->user()->organization->getClientsRemaining() : 0 }}/{{ auth()->user()->organization->limit_clients }})</span>
+                        @endif
                     </a>
                 </div>
             </div>
@@ -130,6 +158,57 @@
                 </div>
             </div>
             @endif
+            @endif
+
+            <!-- Usage Limits (Starter only) -->
+            @if(!auth()->user()->organization->isPro())
+            <div class="mb-6 bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white">Gebruik dit maand</h3>
+                    <a href="{{ route('app.subscription.index') }}" class="text-sm text-yellow-400 hover:text-yellow-300 font-semibold">Upgrade voor unlimited →</a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Invoices -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Facturen</span>
+                            <span class="text-white font-semibold">{{ auth()->user()->organization->usage_invoices_this_month }}/{{ auth()->user()->organization->limit_invoices_per_month }}</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 transition-all" style="width: {{ min(100, auth()->user()->organization->getUsagePercentage('invoices')) }}%"></div>
+                        </div>
+                        @if(auth()->user()->organization->getInvoicesRemaining() <= 3)
+                        <p class="text-xs text-orange-400 mt-1">Nog {{ auth()->user()->organization->getInvoicesRemaining() }} over</p>
+                        @endif
+                    </div>
+                    <!-- Clients -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Klanten</span>
+                            <span class="text-white font-semibold">{{ auth()->user()->organization->clients()->count() }}/{{ auth()->user()->organization->limit_clients }}</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all" style="width: {{ min(100, auth()->user()->organization->getUsagePercentage('clients')) }}%"></div>
+                        </div>
+                        @if(auth()->user()->organization->getClientsRemaining() <= 5)
+                        <p class="text-xs text-orange-400 mt-1">Nog {{ auth()->user()->organization->getClientsRemaining() }} over</p>
+                        @endif
+                    </div>
+                    <!-- Projects -->
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-gray-400">Actieve Projecten</span>
+                            <span class="text-white font-semibold">{{ auth()->user()->organization->projects()->where('status', 'active')->count() }}/{{ auth()->user()->organization->limit_active_projects }}</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all" style="width: {{ min(100, auth()->user()->organization->getUsagePercentage('projects')) }}%"></div>
+                        </div>
+                        @if(auth()->user()->organization->getProjectsRemaining() <= 2)
+                        <p class="text-xs text-orange-400 mt-1">Nog {{ auth()->user()->organization->getProjectsRemaining() }} over</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
             @endif
 
             <!-- Stats Grid with Growth Indicators -->
@@ -375,7 +454,7 @@
                                 </div>
                                 <h3 class="text-lg font-bold text-white">Omzet Ontwikkeling</h3>
                             </div>
-                            <span class="text-xs text-gray-500">Laatste 6 maanden</span>
+                            <span class="text-xs text-gray-400">Laatste 6 maanden</span>
                         </div>
                     </div>
                     <div class="p-6">
@@ -740,6 +819,34 @@
                 });
                 const data = Object.values(revenueData);
 
+                // gradient fill
+                const ctx = revenueCtx.getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+                gradient.addColorStop(0, 'rgba(212, 175, 55, 0.35)');
+                gradient.addColorStop(1, 'rgba(212, 175, 55, 0.02)');
+
+                // average line plugin
+                const avg = data.length ? data.reduce((a,b)=>a+b,0) / data.length : 0;
+                const avgLine = {
+                    id: 'avgLine',
+                    afterDatasetsDraw(chart, args, pluginOptions) {
+                        const {ctx, chartArea:{left, right}, scales:{y}} = chart;
+                        const yPos = y.getPixelForValue(avg);
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+                        ctx.setLineDash([6,6]);
+                        ctx.beginPath();
+                        ctx.moveTo(left, yPos);
+                        ctx.lineTo(right, yPos);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        ctx.fillStyle = '#9ca3af';
+                        ctx.font = '12px Inter, ui-sans-serif';
+                        ctx.fillText('Gemiddelde: ' + avg.toLocaleString('nl-NL', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).replace('EUR', '€'), left + 8, yPos - 6);
+                        ctx.restore();
+                    }
+                };
+
                 new Chart(revenueCtx, {
                     type: 'line',
                     data: {
@@ -748,7 +855,7 @@
                             label: 'Omzet (€)',
                             data: data,
                             borderColor: 'rgb(212, 175, 55)',
-                            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                            backgroundColor: gradient,
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
@@ -804,7 +911,8 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    plugins: [avgLine]
                 });
             }
 

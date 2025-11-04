@@ -131,6 +131,15 @@ class RegisterMultiStep extends Component
             'default_vat_rate' => 21.00,
             'branding_color' => '#d4af37',
             'status' => 'active',
+            'subscription_status' => 'trial',
+            'subscription_plan' => 'starter',
+            'trial_ends_at' => now()->addDays(3),
+            'limit_invoices_per_month' => 20,
+            'limit_clients' => 50,
+            'limit_active_projects' => 10,
+            'limit_storage_mb' => 100,
+            'usage_invoices_this_month' => 0,
+            'usage_month_started' => now()->startOfMonth(),
         ]);
 
         // Update user with organization
