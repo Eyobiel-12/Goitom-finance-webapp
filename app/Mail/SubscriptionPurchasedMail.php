@@ -7,8 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 use App\Models\SubscriptionPayment;
+use App\Services\SubscriptionService;
 
 class SubscriptionPurchasedMail extends Mailable
 {
@@ -52,6 +54,24 @@ class SubscriptionPurchasedMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        try {
+            // Generate PDF invoice
+            $pdfPath = SubscriptionService::generatePaymentInvoicePdf($this->payment);
+            $fullPath = storage_path('app/public/' . $pdfPath);
+            
+            if (!file_exists($fullPath)) {
+                \Illuminate\Support\Facades\Log::error("Subscription invoice PDF not found: {$fullPath}");
+                return [];
+            }
+
+            return [
+                Attachment::fromPath($fullPath)
+                    ->as('Factuur-Abonnement-' . str_pad((string)$this->payment->id, 6, '0', STR_PAD_LEFT) . '.pdf')
+                    ->withMime('application/pdf'),
+            ];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to generate subscription invoice PDF: " . $e->getMessage());
+            return [];
+        }
     }
 }

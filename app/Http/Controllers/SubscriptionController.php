@@ -23,6 +23,7 @@ final class SubscriptionController extends Controller
             'intervals' => SubscriptionService::getIntervals(),
             'payments' => $organization->subscriptionPayments()->orderByDesc('paid_at')->limit(12)->get(),
             'total_months_paid' => (int) $organization->subscriptionPayments()->where('status', 'paid')->sum('interval_months'),
+            'current_interval' => $organization->getCurrentBillingInterval(),
         ]);
     }
 
@@ -125,6 +126,22 @@ final class SubscriptionController extends Controller
                 
                 if ($organization) {
                     $this->subscriptionService->createSubscription($organization, $plan, $intervalMonths);
+                    
+                    // Send email with invoice PDF
+                    $latestPayment = $organization->subscriptionPayments()
+                        ->where('plan', $plan)
+                        ->where('interval_months', $intervalMonths)
+                        ->orderByDesc('created_at')
+                        ->first();
+                    
+                    if ($latestPayment && $organization->owner?->email) {
+                        try {
+                            \Mail::to($organization->owner->email)
+                                ->send(new \App\Mail\SubscriptionPurchasedMail($latestPayment));
+                        } catch (\Throwable $e) {
+                            \Log::error('Failed to send subscription email', ['error' => $e->getMessage()]);
+                        }
+                    }
                 }
             }
             

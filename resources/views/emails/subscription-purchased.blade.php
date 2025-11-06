@@ -9,6 +9,10 @@
         <li>Referentie: {{ $payment->gateway_payment_id }}</li>
     </ul>
     <p>Je kunt je abonnement beheren via de pagina Abonnement.</p>
+    <p style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 4px;">
+        <strong>📎 Factuur bijgevoegd</strong><br>
+        Je ontvangt een PDF-factuur als bijlage bij deze e-mail. Bewaar deze voor je administratie.
+    </p>
 </div>
 
 

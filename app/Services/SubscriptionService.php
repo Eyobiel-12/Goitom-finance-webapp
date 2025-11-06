@@ -226,5 +226,25 @@ final class SubscriptionService
     {
         return self::PLANS;
     }
+
+    public static function generatePaymentInvoicePdf(SubscriptionPayment $payment): string
+    {
+        // Generate HTML for the subscription invoice
+        $html = view('subscriptions.invoice-pdf', [
+            'payment' => $payment,
+            'organization' => $payment->organization,
+        ])->render();
+
+        // Generate PDF using DomPDF
+        $pdf = \PDF::loadHtml($html)
+            ->setPaper('a4', 'portrait')
+            ->setOption('enable-local-file-access', true);
+
+        // Store PDF in storage
+        $filename = "subscriptions/invoice-{$payment->id}-" . now()->format('YmdHis') . ".pdf";
+        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $pdf->output());
+
+        return $filename;
+    }
 }
 

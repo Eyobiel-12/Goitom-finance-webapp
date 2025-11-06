@@ -85,6 +85,7 @@
                         selectedInterval: 1, 
                         planKey: '{{ $planKey }}', 
                         basePrice: {{ $plan['price'] }},
+                        currentInterval: {{ $organization->subscription_plan === $planKey ? ($current_interval ?? 1) : 1 }},
                         getDiscount(months) {
                             const discounts = {1: 0, 3: 0.10, 6: 0.15, 12: 0.20};
                             return discounts[months] || 0;
@@ -111,10 +112,11 @@
                                 @foreach($intervals as $intervalMonths => $interval)
                                 <button 
                                     type="button"
-                                    @click="selectedInterval = {{ $intervalMonths }}"
-                                    :class="selectedInterval === {{ $intervalMonths }} 
-                                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-500' 
-                                        : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700'"
+                                    @click="if({{ $intervalMonths }} >= currentInterval) selectedInterval = {{ $intervalMonths }}"
+                                    :class="[
+                                        selectedInterval === {{ $intervalMonths }} ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-500' : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700',
+                                        {{ $intervalMonths }} < currentInterval ? 'opacity-50 cursor-not-allowed' : ''
+                                    ]"
                                     class="px-3 py-2 rounded-lg border text-xs font-semibold transition-all"
                                 >
                                     {{ $interval['label'] }}
@@ -164,9 +166,10 @@
                         @if($isCurrentPlan)
                             <!-- Current plan: allow renewal with different period -->
                             <a 
-                                :href="'{{ route('app.subscription.checkout', $planKey) }}?interval=' + selectedInterval"
-                                class="inline-block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all">
-                                <span x-text="selectedInterval === 1 ? 'Hernieuw maandelijks' : 'Betaal voor ' + selectedInterval + ' maanden'"></span>
+                                :href="selectedInterval >= currentInterval ? ('{{ route('app.subscription.checkout', $planKey) }}?interval=' + selectedInterval) : '#'"
+                                :class="selectedInterval < currentInterval ? 'opacity-50 cursor-not-allowed inline-block w-full text-center px-6 py-3 bg-blue-600/40 text-white rounded-xl font-semibold' : 'inline-block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all'"
+                            >
+                                <span x-text="selectedInterval === currentInterval ? ('Hernieuw ' + (selectedInterval === 1 ? 'maandelijks' : (selectedInterval + ' maanden'))) : ('Upgrade naar ' + selectedInterval + ' maanden')"></span>
                             </a>
                         @else
                             <!-- Different plan: upgrade/downgrade -->
