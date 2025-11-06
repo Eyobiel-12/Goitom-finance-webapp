@@ -20,6 +20,9 @@ final class SubscriptionController extends Controller
         return view('app.subscription.index', [
             'organization' => $organization,
             'plans' => SubscriptionService::getAllPlans(),
+            'intervals' => SubscriptionService::getIntervals(),
+            'payments' => $organization->subscriptionPayments()->orderByDesc('paid_at')->limit(12)->get(),
+            'total_months_paid' => (int) $organization->subscriptionPayments()->where('status', 'paid')->sum('interval_months'),
         ]);
     }
 
@@ -32,7 +35,14 @@ final class SubscriptionController extends Controller
                 ->with('error', 'Ongeldig plan geselecteerd');
         }
 
-        $checkoutUrl = $this->subscriptionService->getCheckoutUrl($organization, $plan);
+        $intervalMonths = (int) $request->query('interval', 1);
+        $validIntervals = [1, 3, 6, 12];
+        
+        if (!in_array($intervalMonths, $validIntervals)) {
+            $intervalMonths = 1;
+        }
+
+        $checkoutUrl = $this->subscriptionService->getCheckoutUrl($organization, $plan, $intervalMonths);
         
         return redirect()->away($checkoutUrl);
     }
@@ -41,6 +51,7 @@ final class SubscriptionController extends Controller
     {
         // For localhost testing, activate subscription immediately on callback
         $plan = $request->query('plan', 'starter');
+        $intervalMonths = (int) $request->query('interval', 1);
         $organization = $request->user()->organization;
         
         // Activate subscription directly (webhook won't work on localhost)
@@ -52,8 +63,30 @@ final class SubscriptionController extends Controller
                 'subscription_ends_at' => null,
             ]);
             
+            $intervalLabel = SubscriptionService::getIntervalLabel($intervalMonths);
+
+            // Create a local payment record and send email
+            $price = SubscriptionService::calculatePrice($plan, $intervalMonths);
+            $payment = \App\Models\SubscriptionPayment::create([
+                'organization_id' => $organization->id,
+                'plan' => $plan,
+                'interval_months' => $intervalMonths,
+                'amount' => $price,
+                'currency' => 'EUR',
+                'gateway' => 'mollie',
+                'gateway_payment_id' => 'local-callback',
+                'status' => 'paid',
+                'paid_at' => now(),
+                'metadata' => ['source' => 'callback'],
+            ]);
+
+            try {
+                if ($organization->owner?->email) {
+                    \Mail::to($organization->owner->email)->send(new \App\Mail\SubscriptionPurchasedMail($payment));
+                }
+            } catch (\Throwable) {}
             return redirect()->route('app.subscription.index')
-                ->with('message', 'Betaling succesvol! Je ' . ucfirst($plan) . ' abonnement is nu actief.');
+                ->with('message', 'Betaling succesvol! Je ' . ucfirst($plan) . ' abonnement (' . $intervalLabel . ') is nu actief.');
         }
         
         return redirect()->route('app.subscription.index')
@@ -86,11 +119,12 @@ final class SubscriptionController extends Controller
             if ($payment->isPaid() && isset($payment->metadata->type) && $payment->metadata->type === 'subscription_start') {
                 $organizationId = $payment->metadata->organization_id;
                 $plan = $payment->metadata->plan;
+                $intervalMonths = isset($payment->metadata->interval_months) ? (int) $payment->metadata->interval_months : 1;
                 
                 $organization = \App\Models\Organization::find($organizationId);
                 
                 if ($organization) {
-                    $this->subscriptionService->createSubscription($organization, $plan);
+                    $this->subscriptionService->createSubscription($organization, $plan, $intervalMonths);
                 }
             }
             

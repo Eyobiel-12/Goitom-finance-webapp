@@ -94,6 +94,11 @@ final class Organization extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function subscriptionPayments(): HasMany
+    {
+        return $this->hasMany(SubscriptionPayment::class);
+    }
+
     /**
      * Get all items for this organization.
      */
