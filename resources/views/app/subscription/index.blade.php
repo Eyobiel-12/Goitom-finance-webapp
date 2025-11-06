@@ -227,6 +227,7 @@
                                 <th class="py-3">Periode</th>
                                 <th class="py-3">Bedrag</th>
                                 <th class="py-3">Status</th>
+                                <th class="py-3 text-right">Download</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-300">
@@ -238,6 +239,11 @@
                                 <td class="py-3">€{{ number_format($p->amount, 2, ',', '.') }}</td>
                                 <td class="py-3">
                                     <span class="px-2 py-1 rounded text-xs {{ $p->status === 'paid' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-gray-700 text-gray-300 border border-gray-600' }}">{{ ucfirst($p->status) }}</span>
+                                </td>
+                                <td class="py-3 text-right">
+                                    @if($p->status === 'paid')
+                                    <a href="{{ route('app.subscription.payment.download', $p) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-700 transition-all text-xs">PDF</a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

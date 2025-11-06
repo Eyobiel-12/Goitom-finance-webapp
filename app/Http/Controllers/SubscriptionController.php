@@ -154,5 +154,25 @@ final class SubscriptionController extends Controller
             return response('Error', 500);
         }
     }
+
+    public function downloadPayment(Request $request, \App\Models\SubscriptionPayment $payment)
+    {
+        $organization = $request->user()->organization;
+        if ($payment->organization_id !== $organization->id) {
+            abort(403);
+        }
+
+        $filename = \App\Services\SubscriptionService::generatePaymentInvoicePdf($payment);
+        $fullPath = storage_path('app/public/' . $filename);
+
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+
+        $downloadName = 'Factuur-Abonnement-' . str_pad((string)$payment->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        return response()->download($fullPath, $downloadName, [
+            'Content-Type' => 'application/pdf'
+        ]);
+    }
 }
 
