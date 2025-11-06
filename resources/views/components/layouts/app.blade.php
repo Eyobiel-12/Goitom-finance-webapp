@@ -114,13 +114,65 @@
 
             <!-- Welcome Popup Overlay -->
             @if(request()->routeIs('app.dashboard') && session('show_welcome'))
-            <div id="welcomePopupOverlay" class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-                <div id="welcomeMessage" class="welcome-popup opacity-0 pointer-events-none bg-gradient-to-br from-gray-900/95 to-gray-950/95 backdrop-blur-xl rounded-2xl px-8 py-6 border border-yellow-400/30 shadow-2xl">
-                    <h1 class="text-3xl font-bold text-center">
-                        <span class="text-gray-300">Welkom terug,</span>
-                        <br>
-                        <span class="text-yellow-400">{{ Auth::user()->name }}</span>
-                    </h1>
+            @php
+                $hour = (int)date('H');
+                $greeting = match(true) {
+                    $hour >= 5 && $hour < 12 => 'Goedemorgen',
+                    $hour >= 12 && $hour < 18 => 'Goedenmiddag',
+                    $hour >= 18 && $hour < 22 => 'Goedenavond',
+                    default => 'Goedenacht'
+                };
+                $user = Auth::user();
+                $organization = $user->organization ?? null;
+            @endphp
+            <div id="welcomePopupOverlay" 
+                 class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+                 role="dialog"
+                 aria-labelledby="welcomeMessageTitle"
+                 aria-modal="true"
+                 tabindex="-1">
+                <div id="welcomeMessage" 
+                     class="welcome-popup opacity-0 pointer-events-none group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl px-8 py-6 border border-yellow-400/20 hover:border-yellow-400/50 transition-all duration-300 shadow-2xl shadow-yellow-400/10 max-w-md w-full mx-4">
+                    <!-- Subtle background glow -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    
+                    <!-- Close button -->
+                    <button id="closeWelcomeBtn" 
+                            type="button"
+                            class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all opacity-0 pointer-events-none z-10"
+                            aria-label="Sluit welkomstbericht">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Content -->
+                    <div class="relative z-10">
+                        <!-- Icon -->
+                        <div class="flex justify-center mb-5">
+                            <div class="w-14 h-14 bg-gradient-to-br from-yellow-400/20 to-yellow-600/10 rounded-xl flex items-center justify-center border border-yellow-400/30 shadow-lg">
+                                <svg class="w-7 h-7 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Greeting -->
+                        <h1 id="welcomeMessageTitle" class="text-3xl font-bold text-center mb-3">
+                            <span class="text-gray-300">{{ $greeting }},</span>
+                            <br>
+                            <span class="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                                {{ $user->name }}
+                            </span>
+                        </h1>
+                        
+                        <!-- Organization name -->
+                        @if($organization)
+                        <p class="text-center text-gray-400 text-sm">
+                            {{ $organization->name }}
+                        </p>
+                        @endif
+                    </div>
                 </div>
             </div>
             @endif
@@ -146,35 +198,52 @@
         @keyframes welcome-pop {
             0% {
                 opacity: 0;
-                transform: scale(0.7) translateY(-30px);
-                filter: blur(10px);
+                transform: scale(0.95) translateY(-20px);
             }
             10% {
                 opacity: 1;
-                transform: scale(1.1) translateY(0);
-                filter: blur(0);
-            }
-            15% {
                 transform: scale(1) translateY(0);
             }
-            85% {
+            90% {
                 opacity: 1;
                 transform: scale(1) translateY(0);
             }
             100% {
                 opacity: 0;
-                transform: scale(0.7) translateY(-30px);
-                filter: blur(10px);
+                transform: scale(0.95) translateY(-20px);
             }
         }
         
         .welcome-popup.show {
-            animation: welcome-pop 5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: welcome-pop 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .welcome-popup.show .welcome-popup-close {
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease, background-color 0.2s ease;
         }
         
         #welcomePopupOverlay {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease;
+        }
+        
+        #welcomePopupOverlay.show {
+            pointer-events: auto;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .welcome-popup {
+                max-width: calc(100% - 2rem) !important;
+                padding: 1.5rem !important;
+            }
+            
+            .welcome-popup h1 {
+                font-size: 1.75rem !important;
+            }
         }
     </style>
 
@@ -185,22 +254,70 @@
     
     @if(request()->routeIs('app.dashboard') && session('show_welcome'))
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            const welcomeOverlay = document.getElementById('welcomePopupOverlay');
-            if (!welcomeMessage || !welcomeOverlay) return;
+        (function() {
+            'use strict';
             
-            // Trigger animatie direct bij eerste load na login
-            setTimeout(() => {
-                welcomeMessage.classList.add('show');
-                welcomeOverlay.classList.remove('pointer-events-none');
-            }, 150);
+            function closeWelcomePopup() {
+                const welcomeOverlay = document.getElementById('welcomePopupOverlay');
+                if (!welcomeOverlay) return;
+                
+                // Smooth fade out
+                welcomeOverlay.style.opacity = '0';
+                welcomeOverlay.style.transition = 'opacity 0.3s ease';
+                
+                setTimeout(() => {
+                    welcomeOverlay.style.display = 'none';
+                    // Remove from DOM to prevent memory leaks
+                    welcomeOverlay.remove();
+                }, 300);
+            }
             
-            // Verwijder na animatie compleet
-            setTimeout(() => {
-                welcomeOverlay.style.display = 'none';
-            }, 5000);
-        });
+            document.addEventListener('DOMContentLoaded', function() {
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                const welcomeOverlay = document.getElementById('welcomePopupOverlay');
+                const closeBtn = document.getElementById('closeWelcomeBtn');
+                
+                if (!welcomeMessage || !welcomeOverlay) return;
+                
+                // Trigger animatie direct bij eerste load na login
+                setTimeout(() => {
+                    welcomeMessage.classList.add('show');
+                    welcomeOverlay.classList.add('show');
+                    welcomeOverlay.classList.remove('pointer-events-none');
+                    
+                    // Show close button after animation starts
+                    setTimeout(() => {
+                        if (closeBtn) {
+                            closeBtn.classList.add('welcome-popup-close');
+                        }
+                    }, 500);
+                }, 150);
+                
+                // Close button click
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeWelcomePopup);
+                }
+                
+                // Click outside to close
+                welcomeOverlay.addEventListener('click', function(e) {
+                    if (e.target === welcomeOverlay) {
+                        closeWelcomePopup();
+                    }
+                });
+                
+                // Escape key to close
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && welcomeOverlay && welcomeOverlay.style.display !== 'none') {
+                        closeWelcomePopup();
+                    }
+                });
+                
+                // Auto close na 4 seconden
+                setTimeout(() => {
+                    closeWelcomePopup();
+                }, 4000);
+            });
+        })();
     </script>
     @endif
 </body>

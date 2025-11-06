@@ -28,11 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
         
-        // Optional: flash for UI welcome banner
+        // Set flash to show welcome message on dashboard
         $request->session()->flash('show_welcome', true);
 
-        // Redirect via Breeze-compatibele route zodat tests verwachten '/dashboard'
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirect to app dashboard
+        return redirect()->intended(route('app.dashboard', absolute: false));
     }
 
     /**

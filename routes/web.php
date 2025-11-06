@@ -16,6 +16,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Unsubscribe route (for email deliverability)
+Route::get('/unsubscribe', function () {
+    return view('emails.unsubscribe');
+})->name('mail.unsubscribe');
+
 // App routes - protected by organization access
 Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.')->group(function () {
     Route::get('/', function () {
