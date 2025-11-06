@@ -77,6 +77,24 @@ final class Organization extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function subscriptionPayments(): HasMany
+    {
+        return $this->hasMany(SubscriptionPayment::class);
+    }
+
+    public function getCurrentBillingInterval(): int
+    {
+        // Latest successful payment for the current plan
+        $latest = $this->subscriptionPayments()
+            ->where('status', 'paid')
+            ->where('plan', $this->subscription_plan)
+            ->orderByDesc('paid_at')
+            ->orderByDesc('created_at')
+            ->first();
+
+        return $latest?->interval_months ?? 1;
+    }
+
     /**
      * Get all items for this organization.
      */

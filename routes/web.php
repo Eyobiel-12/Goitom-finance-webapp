@@ -201,6 +201,13 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
     Route::get('/btw/aangifte', function () {
         return view('app.btw-aangifte.index');
     })->name('btw-aangifte.index');
+    
+    // Subscription routes
+    Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::get('/subscription/checkout/{plan}', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/callback', [SubscriptionController::class, 'callback'])->name('subscription.callback');
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
+    Route::get('/subscription/payment/{payment}/download', [SubscriptionController::class, 'downloadPayment'])->name('subscription.payment.download');
 });
 
 // Legacy dashboard route for Breeze compatibility
