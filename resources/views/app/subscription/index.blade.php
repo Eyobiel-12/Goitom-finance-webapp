@@ -81,38 +81,105 @@
                     <span class="absolute top-4 right-4 text-xs px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">Populair</span>
                     @endif
                     
-                    <h3 class="text-2xl font-bold text-white mb-2">{{ $plan['name'] }}</h3>
-                    <p class="text-gray-400 mb-6">{{ $plan['description'] }}</p>
-                    <div class="text-5xl font-extrabold text-white mb-6">€{{ number_format($plan['price'], 0) }}<span class="text-base text-gray-300">/maand</span></div>
-                    
-                    <ul class="text-gray-300 space-y-3 mb-8">
-                        @if($planKey === 'starter')
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Onbeperkt facturen</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Klanten & projecten</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> BTW aangifte basis</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> PDF facturen</li>
-                        @else
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Alles uit Starter</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> E-mail verzenden & herinneringen</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Geavanceerde BTW & correcties</li>
-                        <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Priority support</li>
-                        @endif
-                    </ul>
-                    
-                    @if($organization->subscription_plan !== $planKey)
+                    <div x-data="{ 
+                        selectedInterval: 1, 
+                        planKey: '{{ $planKey }}', 
+                        basePrice: {{ $plan['price'] }},
+                        currentInterval: {{ $organization->subscription_plan === $planKey ? ($current_interval ?? 1) : 1 }},
+                        getDiscount(months) {
+                            const discounts = {1: 0, 3: 0.10, 6: 0.15, 12: 0.20};
+                            return discounts[months] || 0;
+                        },
+                        getPrice(months) {
+                            const total = this.basePrice * months;
+                            const discount = total * this.getDiscount(months);
+                            return (total - discount).toFixed(2);
+                        },
+                        getSavings(months) {
+                            if (months === 1) return '0.00';
+                            const total = this.basePrice * months;
+                            const discount = total * this.getDiscount(months);
+                            return discount.toFixed(2);
+                        }
+                    }">
+                        <h3 class="text-2xl font-bold text-white mb-2">{{ $plan['name'] }}</h3>
+                        <p class="text-gray-400 mb-6">{{ $plan['description'] }}</p>
+                        
+                        <!-- Billing Period Selector -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-gray-400 mb-3">Betalingsperiode</label>
+                            <div class="grid grid-cols-4 gap-2 mb-4">
+                                @foreach($intervals as $intervalMonths => $interval)
+                                <button 
+                                    type="button"
+                                    @click="if({{ $intervalMonths }} >= currentInterval) selectedInterval = {{ $intervalMonths }}"
+                                    :class="[
+                                        selectedInterval === {{ $intervalMonths }} ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 border-yellow-500' : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700',
+                                        {{ $intervalMonths }} < currentInterval ? 'opacity-50 cursor-not-allowed' : ''
+                                    ]"
+                                    class="px-3 py-2 rounded-lg border text-xs font-semibold transition-all"
+                                >
+                                    {{ $interval['label'] }}
+                                    @if($interval['discount'] > 0)
+                                    <span class="block text-xs text-green-400 mt-0.5">-{{ $interval['discount'] }}%</span>
+                                    @endif
+                                </button>
+                                @endforeach
+                            </div>
+                            
+                            <!-- Dynamic Price Display -->
+                            <div class="bg-gray-800/50 rounded-xl p-4 mb-4">
+                                <div class="text-3xl font-extrabold text-white mb-1">
+                                    €<span x-text="getPrice(selectedInterval)"></span>
+                                </div>
+                                <div class="text-sm text-gray-400">
+                                    <span x-text="selectedInterval === 1 ? 'per maand' : 'voor ' + selectedInterval + ' maanden'"></span>
+                                    <template x-if="selectedInterval > 1">
+                                        <span class="text-green-400 ml-2">
+                                            (Bespaar €<span x-text="getSavings(selectedInterval)"></span>)
+                                        </span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ul class="text-gray-300 space-y-3 mb-8">
+                            @if($planKey === 'starter')
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Onbeperkt facturen</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Klanten & projecten</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> BTW aangifte basis</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> PDF facturen</li>
+                            @else
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Alles uit Starter</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> E-mail verzenden & herinneringen</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Geavanceerde BTW & correcties</li>
+                            <li class="flex items-center"><svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Priority support</li>
+                            @endif
+                        </ul>
+                        
                         @php
+                            $isCurrentPlan = $organization->subscription_plan === $planKey;
                             $isDowngrade = ($organization->subscription_plan === 'pro' && $planKey === 'starter');
                             $isUpgrade = ($organization->subscription_plan === 'starter' && $planKey === 'pro');
                         @endphp
-                        <a href="{{ route('app.subscription.checkout', $planKey) }}" 
-                           class="inline-block w-full text-center px-6 py-3 {{ $isUpgrade ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900' : 'bg-gray-800 border border-gray-700 text-gray-300' }} rounded-xl font-semibold shadow-lg {{ $isUpgrade ? 'shadow-yellow-400/30 hover:shadow-yellow-400/50' : '' }} transition-all">
-                            {{ $isDowngrade ? 'Downgrade naar' : 'Upgrade naar' }} {{ $plan['name'] }}
-                        </a>
-                    @else
-                    <button disabled class="w-full px-6 py-3 bg-gray-800 text-gray-500 rounded-xl font-semibold cursor-not-allowed">
-                        Jouw huidig plan
-                    </button>
-                    @endif
+                        
+                        @if($isCurrentPlan)
+                            <!-- Current plan: allow renewal with different period -->
+                            <a 
+                                :href="selectedInterval >= currentInterval ? ('{{ route('app.subscription.checkout', $planKey) }}?interval=' + selectedInterval) : '#'"
+                                :class="selectedInterval < currentInterval ? 'opacity-50 cursor-not-allowed inline-block w-full text-center px-6 py-3 bg-blue-600/40 text-white rounded-xl font-semibold' : 'inline-block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all'"
+                            >
+                                <span x-text="selectedInterval === currentInterval ? ('Hernieuw ' + (selectedInterval === 1 ? 'maandelijks' : (selectedInterval + ' maanden'))) : ('Upgrade naar ' + selectedInterval + ' maanden')"></span>
+                            </a>
+                        @else
+                            <!-- Different plan: upgrade/downgrade -->
+                            <a 
+                                :href="'{{ route('app.subscription.checkout', $planKey) }}?interval=' + selectedInterval"
+                                class="inline-block w-full text-center px-6 py-3 {{ $isUpgrade ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900' : 'bg-gray-800 border border-gray-700 text-gray-300' }} rounded-xl font-semibold shadow-lg {{ $isUpgrade ? 'shadow-yellow-400/30 hover:shadow-yellow-400/50' : '' }} transition-all">
+                                {{ $isDowngrade ? 'Downgrade naar' : 'Upgrade naar' }} {{ $plan['name'] }}
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -140,6 +207,50 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="mt-12 bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-white">Betalingsgeschiedenis</h3>
+                    <div class="text-sm text-gray-400">Totaal betaalde maanden: <span class="text-white font-semibold">{{ $total_months_paid }}</span></div>
+                </div>
+                @if($payments->isEmpty())
+                    <p class="text-gray-500">Nog geen betalingen gevonden.</p>
+                @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400 text-sm">
+                                <th class="py-3">Datum</th>
+                                <th class="py-3">Plan</th>
+                                <th class="py-3">Periode</th>
+                                <th class="py-3">Bedrag</th>
+                                <th class="py-3">Status</th>
+                                <th class="py-3 text-right">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            @foreach($payments as $p)
+                            <tr class="border-b border-gray-800/50">
+                                <td class="py-3">{{ optional($p->paid_at)->format('d-m-Y H:i') ?? $p->created_at->format('d-m-Y H:i') }}</td>
+                                <td class="py-3">{{ ucfirst($p->plan) }}</td>
+                                <td class="py-3">{{ $p->interval_months }} maanden</td>
+                                <td class="py-3">€{{ number_format($p->amount, 2, ',', '.') }}</td>
+                                <td class="py-3">
+                                    <span class="px-2 py-1 rounded text-xs {{ $p->status === 'paid' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-gray-700 text-gray-300 border border-gray-600' }}">{{ ucfirst($p->status) }}</span>
+                                </td>
+                                <td class="py-3 text-right">
+                                    @if($p->status === 'paid')
+                                    <a href="{{ route('app.subscription.payment.download', $p) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-700 transition-all text-xs">PDF</a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
             </div>
         </div>
     </div>
