@@ -51,62 +51,120 @@
             <!-- Clients Grid -->
             <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($clients as $client)
-                <div class="group relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl border border-gray-700/50 p-6 hover:border-yellow-400/30 transition-all duration-300 hover:shadow-2xl hover:shadow-yellow-400/10 hover:-translate-y-1">
-                    <!-- Hover overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                <div class="group relative bg-gradient-to-br from-gray-900/60 to-gray-950/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 hover:border-yellow-400/40 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-400/10 overflow-hidden">
+                    <!-- Gradient overlay on hover -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-600/0 group-hover:from-yellow-400/5 group-hover:to-yellow-600/5 transition-all duration-500 pointer-events-none"></div>
                     
-                    <div class="relative">
-                        <!-- Avatar and Status -->
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-gray-900 shadow-lg">
-                                {{ strtoupper(substr($client->name, 0, 1)) }}
+                    <div class="relative p-6">
+                        <!-- Header: Avatar + Quick Access -->
+                        <div class="flex items-start justify-between mb-6">
+                            <!-- Avatar -->
+                            <div class="relative">
+                                <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 shadow-lg group-hover:shadow-yellow-400/30 group-hover:scale-105 transition-all">
+                                    {{ strtoupper(substr($client->name, 0, 1)) }}
+                                </div>
+                                @if($client->invoices_count > 0)
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 border-2 border-gray-900 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-900">
+                                        {{ $client->invoices_count }}
+                                    </div>
+                                @endif
                             </div>
-                            <span class="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-xs font-semibold">
+                            
+                            <!-- Status Badge -->
+                            <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-semibold">
                                 Actief
                             </span>
                         </div>
 
-                        <!-- Client Info -->
-                        <h3 class="text-xl font-bold text-white mb-1">{{ $client->name }}</h3>
-                        @if($client->email)
-                        <p class="text-gray-400 text-sm mb-2 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                            {{ $client->email }}
-                        </p>
-                        @endif
-                        @if($client->phone)
-                        <p class="text-gray-400 text-sm mb-3 flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                            {{ $client->phone }}
-                        </p>
-                        @endif
+                        <!-- Client Name -->
+                        <a href="{{ route('app.clients.show', $client) }}" 
+                           class="block mb-4 group/name">
+                            <h3 class="text-lg font-bold text-white group-hover/name:text-yellow-400 transition-colors mb-1">
+                                {{ $client->name }}
+                            </h3>
+                            @if($client->contact_name)
+                                <p class="text-xs text-gray-500">{{ $client->contact_name }}</p>
+                            @endif
+                        </a>
+                        
+                        <!-- Quick Contact Actions -->
+                        <div class="space-y-2.5 mb-6">
+                            @if($client->email)
+                            <a href="mailto:{{ $client->email }}" 
+                               class="flex items-center px-3 py-2.5 bg-gray-800/40 rounded-lg hover:bg-blue-500/10 border border-gray-700/50 hover:border-blue-500/30 transition-all group/contact">
+                                <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3 group-hover/contact:bg-blue-500/20 transition-all">
+                                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-400 group-hover/contact:text-blue-400 truncate transition-colors">{{ $client->email }}</span>
+                            </a>
+                            @endif
+                            
+                            @if($client->phone)
+                            <a href="tel:{{ $client->phone }}" 
+                               class="flex items-center px-3 py-2.5 bg-gray-800/40 rounded-lg hover:bg-emerald-500/10 border border-gray-700/50 hover:border-emerald-500/30 transition-all group/contact">
+                                <div class="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center mr-3 group-hover/contact:bg-emerald-500/20 transition-all">
+                                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-400 group-hover/contact:text-emerald-400 transition-colors">{{ $client->phone }}</span>
+                            </a>
+                            @endif
+                        </div>
 
-                        <!-- Stats -->
-                        <div class="flex gap-4 mt-4 pt-4 border-t border-gray-800">
-                            <div>
-                                <p class="text-xs text-gray-500">Projecten</p>
-                                <p class="text-lg font-bold text-white">{{ $client->projects_count }}</p>
+                        <!-- Stats Row -->
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="text-center p-3 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg border border-gray-700/30">
+                                <p class="text-2xl font-bold text-white">{{ $client->projects_count }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Projecten</p>
                             </div>
-                            <div>
-                                <p class="text-xs text-gray-500">Facturen</p>
-                                <p class="text-lg font-bold text-white">{{ $client->invoices_count }}</p>
+                            <div class="text-center p-3 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg border border-gray-700/30">
+                                <p class="text-2xl font-bold text-white">{{ $client->invoices_count }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">Facturen</p>
                             </div>
                         </div>
 
-                        <!-- Actions -->
-                        <div class="flex gap-2 mt-4">
-                            <a href="{{ route('app.clients.show', $client) }}" class="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-yellow-400/10 hover:text-yellow-400 border border-gray-700 hover:border-yellow-400/30 transition-all text-sm font-medium text-center">
-                                Bekijken
-                            </a>
-                            <a href="{{ route('app.clients.edit', $client) }}" class="px-4 py-2 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg hover:bg-yellow-400/20 transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </a>
+                        <!-- Smart Quick Actions (Hidden by default, slides in on hover) -->
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-950 via-gray-900/95 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex items-center justify-center gap-2">
+                                @if($client->email)
+                                <a href="mailto:{{ $client->email }}" 
+                                   title="Email verzenden"
+                                   class="flex-1 flex items-center justify-center h-11 bg-blue-500/10 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 hover:scale-105 transition-all group/action">
+                                    <svg class="w-5 h-5 text-blue-400 group-hover/action:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </a>
+                                @endif
+                                
+                                @if($client->phone)
+                                <a href="tel:{{ $client->phone }}" 
+                                   title="Bellen"
+                                   class="flex-1 flex items-center justify-center h-11 bg-emerald-500/10 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 hover:scale-105 transition-all group/action">
+                                    <svg class="w-5 h-5 text-emerald-400 group-hover/action:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                </a>
+                                @endif
+                                
+                                <a href="{{ route('app.invoices.create', ['client_id' => $client->id]) }}" 
+                                   title="Nieuwe factuur maken"
+                                   class="flex-1 flex items-center justify-center h-11 bg-yellow-500/10 border border-yellow-500/30 rounded-lg hover:bg-yellow-500/20 hover:scale-105 transition-all group/action">
+                                    <svg class="w-5 h-5 text-yellow-400 group-hover/action:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </a>
+                                
+                                <a href="{{ route('app.clients.edit', $client) }}" 
+                                   title="Bewerken"
+                                   class="flex-1 flex items-center justify-center h-11 bg-gray-500/10 border border-gray-500/30 rounded-lg hover:bg-gray-500/20 hover:scale-105 transition-all group/action">
+                                    <svg class="w-5 h-5 text-gray-400 group-hover/action:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
