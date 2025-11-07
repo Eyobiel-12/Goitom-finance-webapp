@@ -78,10 +78,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                     </svg>
                     <span class="nav-text">Abonnement</span>
-                    @if(Auth::user()->organization->subscription_plan === 'pro')
+                    @if(Auth::user()->organization && Auth::user()->organization->subscription_plan === 'pro')
                     <span class="ml-auto px-2 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">Pro</span>
                     @endif
                 </a>
+                
+                @if(Auth::user()->isAdmin())
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="group flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 {{ request()->routeIs('admin.*') ? 'bg-gradient-to-r from-red-400/20 to-red-600/10 text-red-400 border border-red-400/30 shadow-lg shadow-red-400/10' : 'text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-2 hover:shadow-lg' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span class="nav-text">Admin Panel</span>
+                </a>
+                @endif
             </nav>
 
             <!-- User Section -->

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BtwController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
@@ -115,6 +116,33 @@ Route::middleware(['auth', 'verified', 'org.access'])->prefix('app')->name('app.
 
 // Mollie webhook (no auth required)
 Route::post('/mollie/webhook', [SubscriptionController::class, 'webhook'])->name('mollie.webhook');
+
+// Admin routes - protected by admin middleware
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
+    Route::get('/system-health', [AdminController::class, 'systemHealth'])->name('system-health');
+    
+    // Organizations
+    Route::get('/organizations', [AdminController::class, 'organizations'])->name('organizations.index');
+    Route::get('/organizations/{organization}', [AdminController::class, 'showOrganization'])->name('organizations.show');
+    Route::put('/organizations/{organization}', [AdminController::class, 'updateOrganization'])->name('organizations.update');
+    Route::post('/organizations/{organization}/suspend', [AdminController::class, 'suspendOrganization'])->name('organizations.suspend');
+    Route::post('/organizations/{organization}/activate', [AdminController::class, 'activateOrganization'])->name('organizations.activate');
+    Route::post('/organizations/{organization}/extend-trial', [AdminController::class, 'extendTrial'])->name('organizations.extend-trial');
+    Route::post('/organizations/{organization}/change-plan', [AdminController::class, 'changeSubscriptionPlan'])->name('organizations.change-plan');
+    Route::get('/organizations/export', [AdminController::class, 'exportOrganizations'])->name('organizations.export');
+    
+    // Users
+    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::post('/users/{user}/suspend', [AdminController::class, 'suspendUser'])->name('users.suspend');
+    Route::post('/users/{user}/activate', [AdminController::class, 'activateUser'])->name('users.activate');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::get('/users/export', [AdminController::class, 'exportUsers'])->name('users.export');
+    
+    // Subscriptions
+    Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('subscriptions.index');
+});
 
 // Legacy dashboard route for Breeze compatibility
 Route::get('/dashboard', function () {
